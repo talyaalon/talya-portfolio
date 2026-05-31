@@ -74,6 +74,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
 .chip { font-family:'Assistant',sans-serif; font-size:12px; font-weight:600; color:${COLORS.accentDeep};
   background:rgba(181,86,58,.1); padding:4px 10px; border-radius:999px; }
+.card-link { display:inline-flex; align-items:center; gap:4px; align-self:flex-start; max-width:100%;
+  margin-top:14px; padding:5px 11px; border-radius:999px; border:1px solid ${COLORS.line};
+  font-family:'Assistant',sans-serif; font-size:13px; font-weight:600; color:${COLORS.accentDeep};
+  text-decoration:none; transition:.15s; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.card-link:hover { border-color:${COLORS.accent}; background:rgba(181,86,58,.08); }
 .card-foot { margin-top:auto; padding-top:16px; display:flex; justify-content:space-between; align-items:center; }
 .mini { font-family:'Assistant',sans-serif; font-size:12px; font-weight:600; background:none;
   border:1px solid ${COLORS.line}; border-radius:8px; padding:4px 9px; cursor:pointer; color:${COLORS.ink}; }
