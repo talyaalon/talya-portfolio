@@ -149,7 +149,7 @@ function SourceList({ title, rows, empty }) {
   );
 }
 
-// "https://www.google.com/search?q=…" → "google.com"; empty referrer → "כניסה ישירה".
+// "https://www.google.com/search?q=…" → "google.com"; empty referrer → the "direct" label.
 function sourceLabel(referrer) {
   if (!referrer) return "כניסה ישירה";
   try {
