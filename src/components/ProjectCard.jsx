@@ -25,15 +25,7 @@ export default function ProjectCard({ project, index, isAdmin, onOpen, onEdit, o
         <h3 className="display" style={{ fontSize: 25, margin: "16px 0 6px" }}>
           {project.name}
         </h3>
-        <p
-          style={{
-            fontFamily: "'Assistant',sans-serif",
-            color: COLORS.muted,
-            fontSize: 15,
-            lineHeight: 1.5,
-            minHeight: 44,
-          }}
-        >
+        <p className="card-desc" title={project.short}>
           {project.short}
         </p>
         <div className="chips">

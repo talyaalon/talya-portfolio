@@ -61,11 +61,19 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   color:${COLORS.muted}; padding:12px 4px; margin-left:16px; cursor:pointer; border-bottom:2px solid transparent; }
 .tab-active { color:${COLORS.ink}; border-bottom-color:${COLORS.accent}; }
 
-.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:22px; }
+/* grid-auto-rows:1fr makes every row the same height, so all cards match the
+   tallest one regardless of how much content each project has. */
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:22px; grid-auto-rows:1fr; }
 .card {
   background:${COLORS.surface}; border:1px solid ${COLORS.line}; border-radius:18px;
   padding:24px; cursor:pointer; transition:transform .22s, box-shadow .22s, border-color .22s;
-  display:flex; flex-direction:column; text-align:right; width:100%;
+  display:flex; flex-direction:column; text-align:right; width:100%; height:100%;
+}
+/* Description clamped to a fixed 2 lines so one long line can't stretch a card. */
+.card-desc {
+  font-family:'Assistant',sans-serif; color:${COLORS.muted}; font-size:15px; line-height:1.5;
+  min-height:44px; margin:0;
+  display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
 }
 .card:hover { transform:translateY(-4px); box-shadow:0 18px 40px -22px rgba(42,38,34,.35); border-color:${COLORS.accent}; }
 .card-logo { width:54px; height:54px; border-radius:14px; overflow:hidden; margin-bottom:2px;
