@@ -1,15 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase, isConfigured, STORAGE_BUCKET } from "../lib/supabaseClient";
 
-// Maps a DB row to the shape the UI uses (logo_url → logo).
+// Maps a DB row to the shape the UI uses. Content is bilingual: each text
+// field has an English (*_en) and a Hebrew (*_he) value.
 const fromRow = (r) => ({
   id: r.id,
-  name: r.name,
-  short: r.short,
+  nameEn: r.name_en || "",
+  nameHe: r.name_he || "",
+  shortEn: r.short_en || "",
+  shortHe: r.short_he || "",
+  readmeEn: r.readme_en || "",
+  readmeHe: r.readme_he || "",
   tools: r.tools || [],
   link: r.link || "",
   logo: r.logo_url || "",
-  readme: r.readme || "",
   position: r.position ?? 0,
 });
 
@@ -56,13 +60,17 @@ export function useProjects() {
 
   const saveProject = useCallback(
     async (proj) => {
+      const clean = (s) => (s || "").trim();
       const row = {
-        name: proj.name.trim(),
-        short: proj.short.trim(),
+        name_en: clean(proj.nameEn) || null,
+        name_he: clean(proj.nameHe) || null,
+        short_en: clean(proj.shortEn) || null,
+        short_he: clean(proj.shortHe) || null,
+        readme_en: proj.readmeEn || null,
+        readme_he: proj.readmeHe || null,
         tools: proj.tools,
-        link: proj.link.trim() || null,
+        link: clean(proj.link) || null,
         logo_url: proj.logo || null,
-        readme: proj.readme,
       };
       if (proj.id && !proj._isNew) {
         const { error } = await supabase.from("projects").update(row).eq("id", proj.id);

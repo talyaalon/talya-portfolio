@@ -162,5 +162,17 @@ function Shell({ children, isAdmin, onLoginClick, onLogout, adminTabs }) {
 }
 
 function blankProject() {
-  return { _isNew: true, id: null, name: "", short: "", tools: [], link: "", logo: "", readme: "" };
+  return {
+    _isNew: true,
+    id: null,
+    nameEn: "",
+    nameHe: "",
+    shortEn: "",
+    shortHe: "",
+    readmeEn: "",
+    readmeHe: "",
+    tools: [],
+    link: "",
+    logo: "",
+  };
 }

@@ -4,12 +4,13 @@ import { COLORS } from "../styles";
 import { letterLogo } from "../utils/logo";
 import { Loader, ErrorState } from "./Feedback";
 import { useI18n } from "../i18n";
+import { loc } from "../utils/localized";
 
 // Reads this month's events from Supabase (authenticated/admin only) and
 // builds a monthly summary: site views, per-project opens & clicks, and
 // the referral sources + estimated countries that visitors came from.
 export default function Analytics({ projects }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [events, setEvents] = useState(null);
   const [error, setError] = useState(null);
 
@@ -93,13 +94,13 @@ export default function Analytics({ projects }) {
         </div>
         {projects.map((p) => (
           <div className="trow" key={p.id}>
-            <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ display: "flex", alignItems: "center", gap: 10 }} dir="auto">
               <img
-                src={p.logo || letterLogo((p.name || "?")[0], COLORS.accent)}
+                src={p.logo || letterLogo((loc(p, "name", lang) || "?")[0], COLORS.accent)}
                 alt=""
                 style={{ width: 26, height: 26, borderRadius: 7 }}
               />
-              {p.name}
+              {loc(p, "name", lang)}
             </span>
             <span>{summary.opens[p.id] || 0}</span>
             <span>{summary.clicks[p.id] || 0}</span>

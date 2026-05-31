@@ -5,7 +5,8 @@ import { fileToSmallBlob } from "../utils/image";
 import { Banner } from "./Feedback";
 import { useI18n } from "../i18n";
 
-// Add / edit a project. Logo is uploaded to Supabase Storage on save.
+// Add / edit a project. Text content is bilingual (English + Hebrew); the logo
+// is uploaded to Supabase Storage on save.
 export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
   const { t } = useI18n();
   const [form, setForm] = useState({ ...project, tools: project.tools || [] });
@@ -18,8 +19,8 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
   const addTool = () => {
-    const t = toolInput.trim();
-    if (t && !form.tools.includes(t)) set("tools", [...form.tools, t]);
+    const tool = toolInput.trim();
+    if (tool && !form.tools.includes(tool)) set("tools", [...form.tools, tool]);
     setToolInput("");
   };
 
@@ -35,7 +36,8 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
     }
   };
 
-  const valid = form.name.trim() && form.short.trim();
+  const has = (s) => Boolean((s || "").trim());
+  const valid = (has(form.nameEn) || has(form.nameHe)) && (has(form.shortEn) || has(form.shortHe));
 
   const submit = async () => {
     if (!valid || busy) return;
@@ -44,7 +46,7 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
     try {
       let proj = { ...form };
       if (pendingBlob) {
-        const idForPath = proj.id || `new-${Math.abs(hash(proj.name))}`;
+        const idForPath = proj.id || `new-${Math.abs(hash(proj.nameEn || proj.nameHe || "x"))}`;
         proj.logo = await uploadLogo(pendingBlob, idForPath);
       }
       await onSave(proj);
@@ -56,13 +58,45 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
 
   const previewLogo = form.logo || letterLogo("?", COLORS.accent);
 
+  // A pair of inputs (English + Hebrew) for one logical field. This is a plain
+  // helper that is CALLED inline (not rendered as <Component/>), so the inputs
+  // are part of the form's own element tree and never remount on keystroke.
+  const oneField = (fieldKey, dir, textarea) =>
+    textarea ? (
+      <textarea
+        className="inp"
+        dir={dir}
+        rows={6}
+        style={{ resize: "vertical", fontFamily: "'Assistant',sans-serif" }}
+        value={form[fieldKey] || ""}
+        onChange={(e) => set(fieldKey, e.target.value)}
+      />
+    ) : (
+      <input className="inp" dir={dir} value={form[fieldKey] || ""} onChange={(e) => set(fieldKey, e.target.value)} />
+    );
+
+  const bilingualField = (label, fieldEn, fieldHe, textarea) => (
+    <>
+      <label className="lbl">
+        {label} <span style={{ color: COLORS.muted }}>{t("suffixEn")}</span>
+      </label>
+      {oneField(fieldEn, "ltr", textarea)}
+      <label className="lbl">
+        {label} <span style={{ color: COLORS.muted }}>{t("suffixHe")}</span>
+      </label>
+      {oneField(fieldHe, "rtl", textarea)}
+    </>
+  );
+
   return (
     <div>
       <h2 className="display" style={{ fontSize: 28, marginTop: 0 }}>
         {project._isNew ? t("formNew") : t("formEdit")}
       </h2>
 
-      <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 6 }}>
+      <Banner kind="info">{t("formBilingualHint")}</Banner>
+
+      <div style={{ display: "flex", gap: 16, alignItems: "center", margin: "14px 0 6px" }}>
         <div className="card-logo" style={{ width: 64, height: 64, margin: 0 }}>
           <img src={previewLogo} alt="" />
         </div>
@@ -77,11 +111,8 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
         </div>
       </div>
 
-      <label className="lbl">{t("formName")}</label>
-      <input className="inp" dir="auto" value={form.name} onChange={(e) => set("name", e.target.value)} />
-
-      <label className="lbl">{t("formShort")}</label>
-      <input className="inp" dir="auto" value={form.short} onChange={(e) => set("short", e.target.value)} />
+      {bilingualField(t("formName"), "nameEn", "nameHe")}
+      {bilingualField(t("formShort"), "shortEn", "shortHe")}
 
       <label className="lbl">{t("formLink")}</label>
       <input
@@ -119,16 +150,7 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
         ))}
       </div>
 
-      <label className="lbl">{t("formReadme")}</label>
-      <textarea
-        className="inp"
-        dir="auto"
-        rows={7}
-        style={{ resize: "vertical", fontFamily: "'Assistant',sans-serif" }}
-        placeholder={t("formReadmePlaceholder")}
-        value={form.readme}
-        onChange={(e) => set("readme", e.target.value)}
-      />
+      {bilingualField(t("formReadme"), "readmeEn", "readmeHe", true)}
 
       {err && (
         <div style={{ marginTop: 14 }}>

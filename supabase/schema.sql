@@ -2,18 +2,23 @@
 --  Talya Portfolio — Supabase schema, security & seed.
 --  Run this once in the Supabase dashboard:  SQL Editor → New query → Run.
 --  Safe to re-run (uses IF NOT EXISTS / ON CONFLICT / drops policies first).
+--  Content is bilingual: every text field has an English (*_en) and a
+--  Hebrew (*_he) value; the UI shows the one matching the chosen language.
 -- ============================================================
 
 -- ---------- Tables ----------
 
 create table if not exists public.projects (
   id          uuid primary key default gen_random_uuid(),
-  name        text not null,
-  short       text not null,
+  name_en     text,
+  name_he     text,
+  short_en    text,
+  short_he    text,
+  readme_en   text,
+  readme_he   text,
   tools       text[] not null default '{}',
   link        text,
   logo_url    text,
-  readme      text not null default '',
   position    int  not null default 0,
   created_at  timestamptz not null default now()
 );
@@ -81,31 +86,31 @@ create policy "logos_admin_delete" on storage.objects
 
 -- ---------- Seed: the 3 demo projects (only if the table is empty) ----------
 
-insert into public.projects (name, short, tools, link, readme, position)
+insert into public.projects (name_en, name_he, short_en, short_he, readme_en, readme_he, tools, link, position)
 select * from (values
   (
-    'TaskFlow',
+    'TaskFlow', 'TaskFlow',
+    'A task-management app with smart drag-and-drop and team boards',
     'אפליקציית ניהול משימות עם גרירה חכמה ולוחות צוות',
-    array['React','Node.js','MongoDB'],
-    'https://example.com',
+    E'TaskFlow is a Kanban-based task management app that lets you organize tasks into columns, drag them between stages, and share boards with teammates in real time.\n\nWhat it does:\n• Create boards and tasks with tags and due dates\n• Drag and drop between columns\n• Team permissions and real-time sync\n\nChallenges I solved:\nBuilding live sync between multiple users, and managing complex client-side state.',
     E'TaskFlow היא אפליקציית ניהול משימות מבוססת לוחות (Kanban) המאפשרת לארגן משימות בעמודות, לגרור אותן בין שלבים, ולשתף לוחות עם חברי צוות בזמן אמת.\n\nמה הפרויקט עושה:\n• יצירת לוחות ומשימות עם תיוג ותאריכי יעד\n• גרירה ושחרור בין עמודות\n• הרשאות צוות וסנכרון בזמן אמת\n\nאתגרים שפתרתי:\nבניית סנכרון חי בין מספר משתמשים, וניהול state מורכב בצד הלקוח.',
-    0
+    array['React','Node.js','MongoDB'], 'https://example.com', 0
   ),
   (
-    'ColorPal',
+    'ColorPal', 'ColorPal',
+    'Accessible color-palette generator for designers',
     'מחולל פלטות צבעים נגישות למעצבים',
-    array['JavaScript','CSS','Canvas API'],
-    'https://example.com',
+    E'ColorPal is a tool that generates harmonious color palettes and checks their contrast against accessibility standards (WCAG).\n\nWhat it does:\n• Random and harmonious palette generator\n• Automatic contrast checking\n• Export to CSS / Tailwind\n\nTools: the color logic was written in pure JavaScript with the Canvas API.',
     E'ColorPal הוא כלי המייצר פלטות צבעים הרמוניות ובודק את הניגודיות שלהן לפי תקני נגישות (WCAG).\n\nמה הפרויקט עושה:\n• מחולל פלטות אקראיות והרמוניות\n• בדיקת ניגודיות אוטומטית\n• ייצוא ל-CSS / Tailwind\n\nכלים: לוגיקת הצבעים נכתבה ב-JavaScript טהור עם Canvas API.',
-    1
+    array['JavaScript','CSS','Canvas API'], 'https://example.com', 1
   ),
   (
-    'BudgetBee',
+    'BudgetBee', 'BudgetBee',
+    'Monthly expense tracker with charts and alerts',
     'מעקב הוצאות חודשי עם גרפים והתראות',
-    array['React','Firebase','Recharts'],
-    'https://example.com',
+    E'BudgetBee helps track monthly expenses, categorize them, and see where the money goes.\n\nWhat it does:\n• Enter expenses and categories\n• Monthly charts and over-budget alerts\n• Cloud storage with Firebase\n\nTools: React for the UI, Firebase for data, Recharts for visualization.',
     E'BudgetBee עוזרת לעקוב אחר הוצאות חודשיות, לקטלג אותן ולראות איפה הכסף הולך.\n\nמה הפרויקט עושה:\n• הזנת הוצאות וקטגוריות\n• גרפים חודשיים והתראות חריגה מתקציב\n• אחסון בענן עם Firebase\n\nכלים: React לממשק, Firebase לנתונים, Recharts לוויזואליזציה.',
-    2
+    array['React','Firebase','Recharts'], 'https://example.com', 2
   )
-) as v(name, short, tools, link, readme, position)
+) as v(name_en, name_he, short_en, short_he, readme_en, readme_he, tools, link, position)
 where not exists (select 1 from public.projects);

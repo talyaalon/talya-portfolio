@@ -2,11 +2,15 @@ import Modal from "./Modal";
 import { COLORS } from "../styles";
 import { letterLogo } from "../utils/logo";
 import { useI18n } from "../i18n";
+import { loc } from "../utils/localized";
 
 // Full-screen detail: logo, name, short line, all tool chips, README, link.
 export default function ProjectModal({ project, onClose, onLinkClick }) {
-  const { t } = useI18n();
-  const logo = project.logo || letterLogo((project.name || "?")[0], COLORS.accent);
+  const { t, lang } = useI18n();
+  const name = loc(project, "name", lang);
+  const short = loc(project, "short", lang);
+  const readme = loc(project, "readme", lang);
+  const logo = project.logo || letterLogo((name || "?")[0], COLORS.accent);
   return (
     <Modal onClose={onClose}>
       <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
@@ -14,11 +18,11 @@ export default function ProjectModal({ project, onClose, onLinkClick }) {
           <img src={logo} alt="" />
         </div>
         <div>
-          <h2 className="display" style={{ fontSize: 34, margin: 0 }}>
-            {project.name}
+          <h2 className="display" style={{ fontSize: 34, margin: 0 }} dir="auto">
+            {name}
           </h2>
           <p dir="auto" style={{ fontFamily: "'Assistant',sans-serif", color: COLORS.muted, margin: "4px 0 0" }}>
-            {project.short}
+            {short}
           </p>
         </div>
       </div>
@@ -54,7 +58,7 @@ export default function ProjectModal({ project, onClose, onLinkClick }) {
           color: COLORS.ink,
         }}
       >
-        {project.readme}
+        {readme}
       </p>
 
       {project.link && (
