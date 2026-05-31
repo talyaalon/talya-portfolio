@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+
+# secrets — never commit
+.env
+.env.local
+.env.*.local
+
+# netlify
+.netlify/
+
+# editor / OS / tooling
+.vscode/
+.claude/
+.DS_Store
+Thumbs.db
+
+# logs
+npm-debug.log*
+*.log
+
+# the original prototype (superseded by src/)
+talya-portfolio.jsx
