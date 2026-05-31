@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { COLORS } from "../styles";
 import { Banner } from "./Feedback";
+import { useI18n } from "../i18n";
 
 // Admin login via Supabase email + password.
 export default function Login({ signIn, onSuccess }) {
+  const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
@@ -16,7 +18,7 @@ export default function Login({ signIn, onSuccess }) {
     const error = await signIn(email.trim(), password);
     setBusy(false);
     if (error) {
-      setErr("אימייל או סיסמה שגויים");
+      setErr(t("loginWrong"));
     } else {
       onSuccess();
     }
@@ -25,14 +27,14 @@ export default function Login({ signIn, onSuccess }) {
   return (
     <div>
       <h2 className="display" style={{ fontSize: 28, marginTop: 0 }}>
-        כניסת מנהל
+        {t("loginTitle")}
       </h2>
       <p style={{ fontFamily: "'Assistant',sans-serif", color: COLORS.muted, fontSize: 14, marginTop: -4 }}>
-        רק את רואה כאן את כפתורי העריכה ואת נתוני הצפייה.
+        {t("loginSubtitle")}
       </p>
 
       <label className="lbl" htmlFor="login-email">
-        אימייל
+        {t("loginEmail")}
       </label>
       <input
         id="login-email"
@@ -45,12 +47,13 @@ export default function Login({ signIn, onSuccess }) {
       />
 
       <label className="lbl" htmlFor="login-pass">
-        סיסמה
+        {t("loginPassword")}
       </label>
       <input
         id="login-pass"
         className="inp"
         type="password"
+        dir="ltr"
         autoComplete="current-password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
@@ -69,7 +72,7 @@ export default function Login({ signIn, onSuccess }) {
         onClick={submit}
         disabled={busy}
       >
-        {busy ? "מתחבר…" : "כניסה"}
+        {busy ? t("loginSigningIn") : t("loginEnter")}
       </button>
     </div>
   );

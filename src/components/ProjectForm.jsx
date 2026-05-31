@@ -3,9 +3,11 @@ import { COLORS } from "../styles";
 import { letterLogo } from "../utils/logo";
 import { fileToSmallBlob } from "../utils/image";
 import { Banner } from "./Feedback";
+import { useI18n } from "../i18n";
 
 // Add / edit a project. Logo is uploaded to Supabase Storage on save.
 export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
+  const { t } = useI18n();
   const [form, setForm] = useState({ ...project, tools: project.tools || [] });
   const [toolInput, setToolInput] = useState("");
   const [pendingBlob, setPendingBlob] = useState(null); // chosen logo, not yet uploaded
@@ -29,7 +31,7 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
       setPendingBlob(blob);
       set("logo", URL.createObjectURL(blob)); // local preview only
     } catch {
-      setErr("לא הצלחתי לעבד את התמונה. נסי קובץ אחר.");
+      setErr(t("formImageError"));
     }
   };
 
@@ -47,7 +49,7 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
       }
       await onSave(proj);
     } catch (e) {
-      setErr("השמירה נכשלה: " + (e?.message || "שגיאה לא ידועה"));
+      setErr(t("formSaveFailed") + (e?.message || ""));
       setBusy(false);
     }
   };
@@ -57,7 +59,7 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
   return (
     <div>
       <h2 className="display" style={{ fontSize: 28, marginTop: 0 }}>
-        {project._isNew ? "פרויקט חדש" : "עריכת פרויקט"}
+        {project._isNew ? t("formNew") : t("formEdit")}
       </h2>
 
       <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 6 }}>
@@ -66,22 +68,22 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
         </div>
         <div>
           <button className="ghost-btn" type="button" onClick={() => fileRef.current.click()}>
-            העלאת לוגו
+            {t("formUploadLogo")}
           </button>
           <input ref={fileRef} type="file" accept="image/*" hidden onChange={onFile} />
           <p style={{ fontFamily: "'Assistant',sans-serif", fontSize: 12, color: COLORS.muted, margin: "6px 0 0" }}>
-            התמונה תוקטן אוטומטית ותישמר באחסון
+            {t("formLogoHint")}
           </p>
         </div>
       </div>
 
-      <label className="lbl">שם המוצר</label>
-      <input className="inp" value={form.name} onChange={(e) => set("name", e.target.value)} />
+      <label className="lbl">{t("formName")}</label>
+      <input className="inp" dir="auto" value={form.name} onChange={(e) => set("name", e.target.value)} />
 
-      <label className="lbl">תיאור קצר (שורה אחת)</label>
-      <input className="inp" value={form.short} onChange={(e) => set("short", e.target.value)} />
+      <label className="lbl">{t("formShort")}</label>
+      <input className="inp" dir="auto" value={form.short} onChange={(e) => set("short", e.target.value)} />
 
-      <label className="lbl">קישור לפרויקט</label>
+      <label className="lbl">{t("formLink")}</label>
       <input
         className="inp"
         dir="ltr"
@@ -90,39 +92,40 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
         onChange={(e) => set("link", e.target.value)}
       />
 
-      <label className="lbl">כלים טכנולוגיים</label>
+      <label className="lbl">{t("formTools")}</label>
       <div style={{ display: "flex", gap: 8 }}>
         <input
           className="inp"
           style={{ flex: 1 }}
-          placeholder="JavaScript, React…"
+          placeholder={t("formToolsPlaceholder")}
           value={toolInput}
           onChange={(e) => setToolInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTool())}
         />
         <button className="ghost-btn" type="button" onClick={addTool}>
-          הוסף
+          {t("formAdd")}
         </button>
       </div>
       <div className="chips" style={{ marginTop: 10 }}>
-        {form.tools.map((t) => (
+        {form.tools.map((tool) => (
           <span
             className="chip"
-            key={t}
+            key={tool}
             style={{ cursor: "pointer" }}
-            onClick={() => set("tools", form.tools.filter((x) => x !== t))}
+            onClick={() => set("tools", form.tools.filter((x) => x !== tool))}
           >
-            {t} ✕
+            {tool} ✕
           </span>
         ))}
       </div>
 
-      <label className="lbl">README — תיאור מפורט</label>
+      <label className="lbl">{t("formReadme")}</label>
       <textarea
         className="inp"
+        dir="auto"
         rows={7}
         style={{ resize: "vertical", fontFamily: "'Assistant',sans-serif" }}
-        placeholder="מה הפרויקט עושה, באילו כלים השתמשת, אילו אתגרים פתרת…"
+        placeholder={t("formReadmePlaceholder")}
         value={form.readme}
         onChange={(e) => set("readme", e.target.value)}
       />
@@ -140,10 +143,10 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
           style={{ opacity: valid && !busy ? 1 : 0.5 }}
           onClick={submit}
         >
-          {busy ? "שומר…" : "שמירה"}
+          {busy ? t("formSaving") : t("formSave")}
         </button>
         <button className="ghost-btn" type="button" onClick={onCancel} disabled={busy}>
-          ביטול
+          {t("formCancel")}
         </button>
       </div>
     </div>

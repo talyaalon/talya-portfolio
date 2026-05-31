@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { styles, COLORS } from "./styles";
 import { isConfigured } from "./lib/supabaseClient";
 import { track } from "./lib/analytics";
+import { useI18n } from "./i18n";
 import { useAuth } from "./hooks/useAuth";
 import { useProjects } from "./hooks/useProjects";
 
@@ -17,6 +18,7 @@ import Modal from "./components/Modal";
 import { Loader, ErrorState, Banner } from "./components/Feedback";
 
 export default function App() {
+  const { t } = useI18n();
   const { session, isAdmin, loading: authLoading, signIn, signOut } = useAuth();
   const { projects, error, reload, saveProject, deleteProject, uploadLogo } = useProjects();
 
@@ -45,11 +47,11 @@ export default function App() {
   };
 
   const onDelete = async (proj) => {
-    if (!window.confirm(`למחוק את הפרויקט "${proj.name}"?`)) return;
+    if (!window.confirm(t("deleteConfirm"))) return;
     try {
       await deleteProject(proj.id);
     } catch (e) {
-      window.alert("המחיקה נכשלה: " + (e?.message || "שגיאה"));
+      window.alert(t("deleteFailed") + (e?.message || ""));
     }
   };
 
@@ -63,10 +65,9 @@ export default function App() {
     return (
       <Shell isAdmin={false}>
         <div className="note" style={{ marginTop: 0 }}>
-          <strong>האתר עדיין לא מחובר ל-Supabase.</strong>
+          <strong>{t("notConnectedTitle")}</strong>
           <br />
-          צרי קובץ <code>.env</code> לפי <code>.env.example</code> עם הכתובת והמפתח הציבורי של הפרויקט,
-          ואז הפעילי מחדש את השרת. ההוראות המלאות נמצאות ב-README.
+          {t("notConnectedBody")}
         </div>
       </Shell>
     );
@@ -84,7 +85,7 @@ export default function App() {
       {authLoading || projects === null ? (
         <Loader />
       ) : error === "missing-config" ? null : error ? (
-        <ErrorState message={"טעינת הפרויקטים נכשלה: " + error} onRetry={reload} />
+        <ErrorState message={t("projLoadFailed") + error} onRetry={reload} />
       ) : showAdminBody && tab === "analytics" ? (
         <Analytics projects={projects} />
       ) : showAdminBody && tab === "settings" ? (
@@ -92,9 +93,7 @@ export default function App() {
       ) : (
         <>
           {projects.length === 0 && (
-            <Banner kind="info">
-              אין עדיין פרויקטים. {isAdmin ? "לחצי על ‘+ הוסף פרויקט’ כדי להתחיל." : "חזרו בקרוב!"}
-            </Banner>
+            <Banner kind="info">{isAdmin ? t("emptyAdmin") : t("emptyClient")}</Banner>
           )}
           <div className="grid">
             {projects.map((p, i) => (
@@ -149,9 +148,11 @@ export default function App() {
 }
 
 // Page shell: fonts, background, header, optional admin tabs, main slot.
+// dir follows the selected language (rtl for Hebrew, ltr for English).
 function Shell({ children, isAdmin, onLoginClick, onLogout, adminTabs }) {
+  const { dir } = useI18n();
   return (
-    <div dir="rtl" style={{ minHeight: "100vh", background: COLORS.bg, color: COLORS.ink }}>
+    <div dir={dir} style={{ minHeight: "100vh", background: COLORS.bg, color: COLORS.ink }}>
       <style>{styles}</style>
       <Header isAdmin={isAdmin} onLoginClick={onLoginClick} onLogout={onLogout} />
       {adminTabs}

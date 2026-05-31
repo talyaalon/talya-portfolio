@@ -1,11 +1,13 @@
 import { COLORS } from "../styles";
 import { letterLogo } from "../utils/logo";
 import { track } from "../lib/analytics";
+import { useI18n } from "../i18n";
 
 // A single project card in the grid. Clicking the card opens the full detail
 // view; the URL shown at the bottom is a direct link that opens the project
 // itself in a new tab.
 export default function ProjectCard({ project, index, isAdmin, onOpen, onEdit, onDelete }) {
+  const { t } = useI18n();
   const logo = project.logo || letterLogo((project.name || "?")[0], COLORS.accent);
   const open = () => onOpen(project);
 
@@ -17,7 +19,7 @@ export default function ProjectCard({ project, index, isAdmin, onOpen, onEdit, o
         tabIndex={0}
         onClick={open}
         onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), open())}
-        aria-label={`צפייה בפרויקט ${project.name}`}
+        aria-label={`${project.name} — ${t("cardView")}`}
       >
         <div className="card-logo">
           <img src={logo} alt="" />
@@ -25,13 +27,13 @@ export default function ProjectCard({ project, index, isAdmin, onOpen, onEdit, o
         <h3 className="display" style={{ fontSize: 25, margin: "16px 0 6px" }}>
           {project.name}
         </h3>
-        <p className="card-desc" title={project.short}>
+        <p className="card-desc" title={project.short} dir="auto">
           {project.short}
         </p>
         <div className="chips">
-          {(project.tools || []).slice(0, 3).map((t) => (
-            <span className="chip" key={t}>
-              {t}
+          {(project.tools || []).slice(0, 3).map((tool) => (
+            <span className="chip" key={tool}>
+              {tool}
             </span>
           ))}
         </div>
@@ -63,7 +65,7 @@ export default function ProjectCard({ project, index, isAdmin, onOpen, onEdit, o
               fontWeight: 600,
             }}
           >
-            צפייה בפרויקט ←
+            {t("cardView")}
           </span>
           {isAdmin && (
             <span style={{ display: "flex", gap: 8 }}>
@@ -79,7 +81,7 @@ export default function ProjectCard({ project, index, isAdmin, onOpen, onEdit, o
                   (e.key === "Enter" || e.key === " ") && (e.stopPropagation(), onEdit(project))
                 }
               >
-                עריכה
+                {t("edit")}
               </span>
               <span
                 className="mini danger"
@@ -93,7 +95,7 @@ export default function ProjectCard({ project, index, isAdmin, onOpen, onEdit, o
                   (e.key === "Enter" || e.key === " ") && (e.stopPropagation(), onDelete(project))
                 }
               >
-                מחיקה
+                {t("delete")}
               </span>
             </span>
           )}

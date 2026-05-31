@@ -1,9 +1,11 @@
 import Modal from "./Modal";
 import { COLORS } from "../styles";
 import { letterLogo } from "../utils/logo";
+import { useI18n } from "../i18n";
 
 // Full-screen detail: logo, name, short line, all tool chips, README, link.
 export default function ProjectModal({ project, onClose, onLinkClick }) {
+  const { t } = useI18n();
   const logo = project.logo || letterLogo((project.name || "?")[0], COLORS.accent);
   return (
     <Modal onClose={onClose}>
@@ -15,16 +17,16 @@ export default function ProjectModal({ project, onClose, onLinkClick }) {
           <h2 className="display" style={{ fontSize: 34, margin: 0 }}>
             {project.name}
           </h2>
-          <p style={{ fontFamily: "'Assistant',sans-serif", color: COLORS.muted, margin: "4px 0 0" }}>
+          <p dir="auto" style={{ fontFamily: "'Assistant',sans-serif", color: COLORS.muted, margin: "4px 0 0" }}>
             {project.short}
           </p>
         </div>
       </div>
 
       <div className="chips" style={{ marginTop: 18 }}>
-        {(project.tools || []).map((t) => (
-          <span className="chip" key={t}>
-            {t}
+        {(project.tools || []).map((tool) => (
+          <span className="chip" key={tool}>
+            {tool}
           </span>
         ))}
       </div>
@@ -41,9 +43,10 @@ export default function ProjectModal({ project, onClose, onLinkClick }) {
           fontWeight: 700,
         }}
       >
-        README — על הפרויקט
+        {t("modalReadme")}
       </h4>
       <p
+        dir="auto"
         style={{
           fontFamily: "'Assistant',sans-serif",
           whiteSpace: "pre-wrap",
@@ -56,7 +59,7 @@ export default function ProjectModal({ project, onClose, onLinkClick }) {
 
       {project.link && (
         <button className="primary-btn" style={{ marginTop: 24 }} onClick={() => onLinkClick(project)}>
-          פתיחת הפרויקט ↗
+          {t("modalOpen")}
         </button>
       )}
     </Modal>

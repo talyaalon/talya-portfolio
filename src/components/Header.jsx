@@ -1,7 +1,9 @@
 import { COLORS } from "../styles";
+import { useI18n } from "../i18n";
 
-// Top banner + masthead. Shows the admin login / logout control.
+// Top banner + masthead. Shows the language toggle and the admin login / logout.
 export default function Header({ isAdmin, onLoginClick, onLogout }) {
+  const { t, toggle, lang } = useI18n();
   return (
     <header style={{ position: "relative", overflow: "hidden" }}>
       <div className="grain" />
@@ -23,20 +25,29 @@ export default function Header({ isAdmin, onLoginClick, onLogout }) {
             color: COLORS.accentDeep,
           }}
         >
-          ● PORTFOLIO
+          ● {t("brand")}
         </div>
-        {!isAdmin ? (
-          <button className="ghost-btn" onClick={onLoginClick}>
-            כניסת מנהל
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <button
+            className="ghost-btn"
+            onClick={toggle}
+            aria-label={lang === "en" ? "Switch to Hebrew" : "החלפה לאנגלית"}
+          >
+            {t("langSwitch")}
           </button>
-        ) : (
-          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            <span className="admin-pill">מצב מנהל</span>
-            <button className="ghost-btn" onClick={onLogout}>
-              יציאה
+          {!isAdmin ? (
+            <button className="ghost-btn" onClick={onLoginClick}>
+              {t("adminLogin")}
             </button>
-          </div>
-        )}
+          ) : (
+            <>
+              <span className="admin-pill">{t("adminMode")}</span>
+              <button className="ghost-btn" onClick={onLogout}>
+                {t("logout")}
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <div style={{ maxWidth: 1180, margin: "0 auto", padding: "8px 28px 30px" }}>
@@ -57,8 +68,7 @@ export default function Header({ isAdmin, onLoginClick, onLogout }) {
             marginTop: 18,
           }}
         >
-          הבית הדיגיטלי שמרכז את כל הפרויקטים האמיתיים שיצרתי לאחרונה — לחיצה על כל כרטיסייה חושפת את
-          הסיפור המלא מאחורי הפרויקט.
+          {t("heroSubtitle")}
         </p>
         <div className="rule reveal" style={{ animationDelay: ".2s" }} />
       </div>

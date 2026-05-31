@@ -1,7 +1,9 @@
 import { COLORS } from "../styles";
+import { useI18n } from "../i18n";
 
 // Centered loading spinner.
-export function Loader({ label = "טוען…" }) {
+export function Loader({ label }) {
+  const { t } = useI18n();
   return (
     <div
       style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, padding: "60px 0" }}
@@ -9,7 +11,7 @@ export function Loader({ label = "טוען…" }) {
       aria-live="polite"
     >
       <div className="spinner" />
-      <span style={{ fontFamily: "'Assistant',sans-serif", color: COLORS.muted }}>{label}</span>
+      <span style={{ fontFamily: "'Assistant',sans-serif", color: COLORS.muted }}>{label || t("loading")}</span>
     </div>
   );
 }
@@ -25,12 +27,13 @@ export function Banner({ kind = "error", children }) {
 
 // Full error state with a retry action.
 export function ErrorState({ message, onRetry }) {
+  const { t } = useI18n();
   return (
     <div style={{ padding: "40px 0", textAlign: "center" }}>
       <Banner kind="error">{message}</Banner>
       {onRetry && (
         <button className="ghost-btn" style={{ marginTop: 14 }} onClick={onRetry}>
-          נסה שוב
+          {t("retry")}
         </button>
       )}
     </div>

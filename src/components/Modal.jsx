@@ -1,7 +1,9 @@
 import { useEffect } from "react";
+import { useI18n } from "../i18n";
 
 // Accessible modal: closes on overlay click and on Escape, locks body scroll.
 export default function Modal({ children, onClose, wide }) {
+  const { t } = useI18n();
   useEffect(() => {
     const onKey = (e) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
@@ -21,7 +23,7 @@ export default function Modal({ children, onClose, wide }) {
         style={{ maxWidth: wide ? 680 : 560 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="close" onClick={onClose} aria-label="סגירה">
+        <button className="close" onClick={onClose} aria-label={t("close")}>
           ✕
         </button>
         {children}

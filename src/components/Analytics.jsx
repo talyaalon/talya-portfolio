@@ -3,11 +3,13 @@ import { supabase } from "../lib/supabaseClient";
 import { COLORS } from "../styles";
 import { letterLogo } from "../utils/logo";
 import { Loader, ErrorState } from "./Feedback";
+import { useI18n } from "../i18n";
 
 // Reads this month's events from Supabase (authenticated/admin only) and
 // builds a monthly summary: site views, per-project opens & clicks, and
 // the referral sources + estimated countries that visitors came from.
 export default function Analytics({ projects }) {
+  const { t } = useI18n();
   const [events, setEvents] = useState(null);
   const [error, setError] = useState(null);
 
@@ -42,9 +44,9 @@ export default function Analytics({ projects }) {
       if (e.event_type === "view") views++;
       if (e.event_type === "open" && e.project_id) opens[e.project_id] = (opens[e.project_id] || 0) + 1;
       if (e.event_type === "click" && e.project_id) clicks[e.project_id] = (clicks[e.project_id] || 0) + 1;
-      const src = sourceLabel(e.referrer);
+      const src = sourceLabel(e.referrer, t("anDirect"));
       sources[src] = (sources[src] || 0) + 1;
-      const c = e.country || "לא ידוע";
+      const c = e.country || t("anUnknown");
       countries[c] = (countries[c] || 0) + 1;
     }
     return {
@@ -56,10 +58,10 @@ export default function Analytics({ projects }) {
       topSources: topN(sources, 6),
       topCountries: topN(countries, 6),
     };
-  }, [events]);
+  }, [events, t]);
 
-  if (error) return <ErrorState message={"טעינת הנתונים נכשלה: " + error} onRetry={load} />;
-  if (!summary) return <Loader label="טוען נתונים…" />;
+  if (error) return <ErrorState message={t("anLoadFailed") + error} onRetry={load} />;
+  if (!summary) return <Loader label={t("loadingData")} />;
 
   const stat = (label, value) => (
     <div className="stat">
@@ -71,23 +73,23 @@ export default function Analytics({ projects }) {
   return (
     <div>
       <p style={{ fontFamily: "'Assistant',sans-serif", color: COLORS.muted, fontSize: 14, margin: "0 0 16px" }}>
-        סיכום עבור החודש הנוכחי.
+        {t("anMonthSummary")}
       </p>
 
       <div className="stats">
-        {stat("צפיות באתר החודש", summary.views)}
-        {stat("פתיחות כרטיסיות", summary.totalOpens)}
-        {stat("קליקים על קישורים", summary.totalClicks)}
+        {stat(t("anViewsMonth"), summary.views)}
+        {stat(t("anOpens"), summary.totalOpens)}
+        {stat(t("anClicks"), summary.totalClicks)}
       </div>
 
       <h3 className="display" style={{ fontSize: 24, margin: "34px 0 12px" }}>
-        לפי פרויקט
+        {t("anByProject")}
       </h3>
       <div className="table">
         <div className="trow thead">
-          <span>פרויקט</span>
-          <span>פתיחות</span>
-          <span>קליקים לקישור</span>
+          <span>{t("anColProject")}</span>
+          <span>{t("anColOpens")}</span>
+          <span>{t("anColClicks")}</span>
         </div>
         {projects.map((p) => (
           <div className="trow" key={p.id}>
@@ -105,7 +107,7 @@ export default function Analytics({ projects }) {
         ))}
         {projects.length === 0 && (
           <div className="trow">
-            <span style={{ color: COLORS.muted }}>אין פרויקטים עדיין</span>
+            <span style={{ color: COLORS.muted }}>{t("anNoProjects")}</span>
             <span />
             <span />
           </div>
@@ -113,15 +115,11 @@ export default function Analytics({ projects }) {
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 20, marginTop: 34 }}>
-        <SourceList title="מאיפה הגיעו (Referrer)" rows={summary.topSources} empty="אין נתונים עדיין" />
-        <SourceList title="מדינות (משוער לפי IP)" rows={summary.topCountries} empty="אין נתונים עדיין" />
+        <SourceList title={t("anSources")} rows={summary.topSources} empty={t("anNoData")} />
+        <SourceList title={t("anCountries")} rows={summary.topCountries} empty={t("anNoData")} />
       </div>
 
-      <div className="note">
-        <strong>על איסוף הנתונים:</strong> הנתונים כאן אמיתיים ונאספים בצד-שרת. נאסף מה שאפשר באופן אנונימי —
-        מאיפה הגיע המבקר (referrer), מדינה/עיר משוערת לפי כתובת ה-IP, סוג המכשיר, והתאריך.
-        <u> כתובת המייל של מבקר אנונימי אינה חשופה לאף אתר בדפדפן — לכן היא לא נאספת ולא מוצגת.</u>
-      </div>
+      <div className="note">{t("anInfoNote")}</div>
     </div>
   );
 }
@@ -140,7 +138,7 @@ function SourceList({ title, rows, empty }) {
         )}
         {rows.map(([label, count]) => (
           <div className="trow" style={{ gridTemplateColumns: "2fr 1fr" }} key={label}>
-            <span>{label}</span>
+            <span dir="auto">{label}</span>
             <span>{count}</span>
           </div>
         ))}
@@ -149,13 +147,13 @@ function SourceList({ title, rows, empty }) {
   );
 }
 
-// "https://www.google.com/search?q=…" → "google.com"; empty referrer → the "direct" label.
-function sourceLabel(referrer) {
-  if (!referrer) return "כניסה ישירה";
+// "https://www.google.com/search?q=…" → "google.com"; empty referrer → the direct label.
+function sourceLabel(referrer, directLabel) {
+  if (!referrer) return directLabel;
   try {
     return new URL(referrer).hostname.replace(/^www\./, "");
   } catch {
-    return "אחר";
+    return referrer;
   }
 }
 

@@ -58,7 +58,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 .tabs { display:flex; gap:8px; align-items:center; border-bottom:1px solid ${COLORS.line}; padding-bottom:0; flex-wrap:wrap; }
 .tab { font-family:'Assistant',sans-serif; font-weight:600; font-size:15px; background:none; border:none;
-  color:${COLORS.muted}; padding:12px 4px; margin-left:16px; cursor:pointer; border-bottom:2px solid transparent; }
+  color:${COLORS.muted}; padding:12px 4px; margin-inline-end:16px; cursor:pointer; border-bottom:2px solid transparent; }
 .tab-active { color:${COLORS.ink}; border-bottom-color:${COLORS.accent}; }
 
 /* grid-auto-rows:1fr makes every row the same height, so all cards match the
@@ -100,7 +100,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .sheet { background:${COLORS.surface}; border-radius:22px; padding:34px; width:100%; position:relative;
   box-shadow:0 40px 90px -30px rgba(42,38,34,.55); animation: pop .28s cubic-bezier(.2,.8,.2,1); }
 @keyframes pop { from { opacity:0; transform: translateY(20px) scale(.98); } }
-.close { position:absolute; top:18px; left:18px; background:none; border:none; font-size:18px;
+.close { position:absolute; top:18px; inset-inline-end:18px; background:none; border:none; font-size:18px;
   color:${COLORS.muted}; cursor:pointer; }
 
 .lbl { display:block; font-family:'Assistant',sans-serif; font-weight:600; font-size:13px;
