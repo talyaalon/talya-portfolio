@@ -49,8 +49,10 @@ body { margin: 0; }
 }
 .primary-btn:hover { background:${COLORS.accentDeep}; }
 .primary-btn:disabled { cursor:not-allowed; }
-.admin-pill { font-family:'Assistant',sans-serif; font-size:13px; font-weight:700; color:#fffdf8;
-  background:${COLORS.accent}; padding:5px 12px; border-radius:999px; }
+/* matches .ghost-btn box metrics so all three header pills are the same size */
+.admin-pill { display:inline-flex; align-items:center; font-family:'Assistant',sans-serif; font-size:15px;
+  font-weight:700; color:#fffdf8; background:${COLORS.accent}; padding:9px 18px; border-radius:999px;
+  border:1px solid transparent; line-height:1; }
 
 button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
   outline: 2px solid ${COLORS.accent}; outline-offset: 2px;
@@ -85,10 +87,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .chip { font-family:'Assistant',sans-serif; font-size:13px; font-weight:600; color:${COLORS.accentDeep};
   background:rgba(181,86,58,.1); padding:5px 11px; border-radius:999px; }
 .card-link { display:inline-flex; align-items:center; gap:4px; align-self:flex-start; max-width:100%;
-  margin-top:16px; padding:6px 13px; border-radius:999px; border:1px solid ${COLORS.line};
+  margin-top:16px; padding:6px 13px; border-radius:999px; border:1px solid rgba(181,86,58,.22);
+  background:rgba(181,86,58,.09);
   font-family:'Assistant',sans-serif; font-size:14px; font-weight:600; color:${COLORS.accentDeep};
   text-decoration:none; transition:.15s; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.card-link:hover { border-color:${COLORS.accent}; background:rgba(181,86,58,.08); }
+.card-link:hover { border-color:${COLORS.accent}; background:rgba(181,86,58,.16); }
 .card-foot { margin-top:auto; padding-top:16px; display:flex; justify-content:space-between; align-items:center; }
 .mini { font-family:'Assistant',sans-serif; font-size:13px; font-weight:600; background:none;
   border:1px solid ${COLORS.line}; border-radius:8px; padding:5px 11px; cursor:pointer; color:${COLORS.ink}; }

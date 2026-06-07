@@ -13,6 +13,7 @@ export const TRANSLATIONS = {
   en: {
     // header
     brand: "PORTFOLIO",
+    siteName: "Talya Israel",
     langSwitch: "עברית", // label shows the OTHER language
     adminLogin: "Admin login",
     adminMode: "Admin mode",
@@ -105,6 +106,7 @@ export const TRANSLATIONS = {
   },
   he: {
     brand: "PORTFOLIO",
+    siteName: "טליה ישראל",
     langSwitch: "English",
     adminLogin: "כניסת מנהל",
     adminMode: "מצב מנהל",

@@ -53,9 +53,10 @@ export default function Header({ isAdmin, onLoginClick, onLogout }) {
       <div style={{ maxWidth: 1500, margin: "0 auto", padding: "8px clamp(18px,4vw,40px) 34px" }}>
         <h1
           className="display reveal"
+          dir="auto"
           style={{ fontSize: "clamp(54px,8.5vw,128px)", lineHeight: 1, margin: "10px 0 0" }}
         >
-          Talya Israel
+          {t("siteName")}
         </h1>
         <p
           className="reveal"
