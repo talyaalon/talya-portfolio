@@ -27,7 +27,7 @@ export default function ProjectCard({ project, index, isAdmin, onOpen, onEdit, o
         <div className="card-logo">
           <img src={logo} alt="" />
         </div>
-        <h3 className="display" style={{ fontSize: 25, margin: "16px 0 6px" }} dir="auto">
+        <h3 className="display" style={{ fontSize: 28, margin: "18px 0 7px" }} dir="auto">
           {name}
         </h3>
         <p className="card-desc" title={short} dir="auto">
@@ -63,7 +63,7 @@ export default function ProjectCard({ project, index, isAdmin, onOpen, onEdit, o
           <span
             style={{
               fontFamily: "'Assistant',sans-serif",
-              fontSize: 13,
+              fontSize: 14,
               color: COLORS.accentDeep,
               fontWeight: 600,
             }}

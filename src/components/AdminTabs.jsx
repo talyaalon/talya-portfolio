@@ -9,7 +9,7 @@ export default function AdminTabs({ tab, onTab, onAdd }) {
     ["settings", t("tabSettings")],
   ];
   return (
-    <div style={{ maxWidth: 1180, margin: "0 auto", padding: "0 28px" }}>
+    <div style={{ maxWidth: 1500, margin: "0 auto", padding: "0 clamp(18px,4vw,40px)" }}>
       <div className="tabs">
         {tabs.map(([k, label]) => (
           <button key={k} className={"tab" + (tab === k ? " tab-active" : "")} onClick={() => onTab(k)}>

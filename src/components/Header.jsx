@@ -9,9 +9,9 @@ export default function Header({ isAdmin, onLoginClick, onLogout }) {
       <div className="grain" />
       <div
         style={{
-          maxWidth: 1180,
+          maxWidth: 1500,
           margin: "0 auto",
-          padding: "34px 28px 8px",
+          padding: "40px clamp(18px,4vw,40px) 8px",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -50,10 +50,10 @@ export default function Header({ isAdmin, onLoginClick, onLogout }) {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1180, margin: "0 auto", padding: "8px 28px 30px" }}>
+      <div style={{ maxWidth: 1500, margin: "0 auto", padding: "8px clamp(18px,4vw,40px) 34px" }}>
         <h1
           className="display reveal"
-          style={{ fontSize: "clamp(48px,8vw,104px)", lineHeight: 1, margin: "10px 0 0" }}
+          style={{ fontSize: "clamp(54px,8.5vw,128px)", lineHeight: 1, margin: "10px 0 0" }}
         >
           Talya Israel
         </h1>
@@ -62,10 +62,10 @@ export default function Header({ isAdmin, onLoginClick, onLogout }) {
           style={{
             animationDelay: ".12s",
             fontFamily: "'Assistant',sans-serif",
-            fontSize: "clamp(16px,2.2vw,21px)",
+            fontSize: "clamp(18px,2.4vw,25px)",
             color: COLORS.muted,
-            maxWidth: 620,
-            marginTop: 18,
+            maxWidth: 720,
+            marginTop: 20,
           }}
         >
           {t("heroSubtitle")}

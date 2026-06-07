@@ -156,7 +156,7 @@ function Shell({ children, isAdmin, onLoginClick, onLogout, adminTabs }) {
       <style>{styles}</style>
       <Header isAdmin={isAdmin} onLoginClick={onLoginClick} onLogout={onLogout} />
       {adminTabs}
-      <main style={{ maxWidth: 1180, margin: "0 auto", padding: "26px 28px 80px" }}>{children}</main>
+      <main style={{ maxWidth: 1500, margin: "0 auto", padding: "30px clamp(18px,4vw,40px) 90px" }}>{children}</main>
     </div>
   );
 }

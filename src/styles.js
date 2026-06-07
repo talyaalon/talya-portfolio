@@ -36,16 +36,16 @@ body { margin: 0; }
 }
 
 .ghost-btn {
-  font-family:'Assistant',sans-serif; font-weight:600; font-size:14px;
+  font-family:'Assistant',sans-serif; font-weight:600; font-size:15px;
   background:transparent; color:${COLORS.ink}; border:1px solid ${COLORS.line};
-  padding:8px 16px; border-radius:999px; cursor:pointer; transition:.18s;
+  padding:9px 18px; border-radius:999px; cursor:pointer; transition:.18s;
 }
 .ghost-btn:hover { border-color:${COLORS.ink}; }
 .ghost-btn:disabled { opacity:.5; cursor:not-allowed; }
 .primary-btn {
-  font-family:'Assistant',sans-serif; font-weight:700; font-size:14px;
+  font-family:'Assistant',sans-serif; font-weight:700; font-size:15px;
   background:${COLORS.accent}; color:#fffdf8; border:none;
-  padding:11px 22px; border-radius:999px; cursor:pointer; transition:.18s;
+  padding:12px 24px; border-radius:999px; cursor:pointer; transition:.18s;
 }
 .primary-btn:hover { background:${COLORS.accentDeep}; }
 .primary-btn:disabled { cursor:not-allowed; }
@@ -57,39 +57,41 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .tabs { display:flex; gap:8px; align-items:center; border-bottom:1px solid ${COLORS.line}; padding-bottom:0; flex-wrap:wrap; }
-.tab { font-family:'Assistant',sans-serif; font-weight:600; font-size:15px; background:none; border:none;
-  color:${COLORS.muted}; padding:12px 4px; margin-inline-end:16px; cursor:pointer; border-bottom:2px solid transparent; }
+.tab { font-family:'Assistant',sans-serif; font-weight:600; font-size:17px; background:none; border:none;
+  color:${COLORS.muted}; padding:14px 4px; margin-inline-end:18px; cursor:pointer; border-bottom:2px solid transparent; }
 .tab-active { color:${COLORS.ink}; border-bottom-color:${COLORS.accent}; }
 
 /* grid-auto-rows:1fr makes every row the same height, so all cards match the
-   tallest one regardless of how much content each project has. */
-.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:22px; grid-auto-rows:1fr; }
+   tallest one regardless of how much content each project has.
+   minmax(min(100%,320px),1fr) keeps a roomy card on desktop but never overflows
+   a narrow phone (the min collapses to 100% when the screen is < 320px). */
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr)); gap:26px; grid-auto-rows:1fr; }
 .card {
-  background:${COLORS.surface}; border:1px solid ${COLORS.line}; border-radius:18px;
-  padding:24px; cursor:pointer; transition:transform .22s, box-shadow .22s, border-color .22s;
+  background:${COLORS.surface}; border:1px solid ${COLORS.line}; border-radius:20px;
+  padding:28px; cursor:pointer; transition:transform .22s, box-shadow .22s, border-color .22s;
   display:flex; flex-direction:column; text-align:right; width:100%; height:100%;
 }
 /* Description clamped to a fixed 2 lines so one long line can't stretch a card. */
 .card-desc {
-  font-family:'Assistant',sans-serif; color:${COLORS.muted}; font-size:15px; line-height:1.5;
-  min-height:44px; margin:0;
+  font-family:'Assistant',sans-serif; color:${COLORS.muted}; font-size:16px; line-height:1.55;
+  min-height:50px; margin:0;
   display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
 }
 .card:hover { transform:translateY(-4px); box-shadow:0 18px 40px -22px rgba(42,38,34,.35); border-color:${COLORS.accent}; }
-.card-logo { width:54px; height:54px; border-radius:14px; overflow:hidden; margin-bottom:2px;
+.card-logo { width:60px; height:60px; border-radius:16px; overflow:hidden; margin-bottom:2px;
   box-shadow:0 6px 16px -8px rgba(42,38,34,.4); }
 .card-logo img { width:100%; height:100%; object-fit:cover; display:block; }
-.chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
-.chip { font-family:'Assistant',sans-serif; font-size:12px; font-weight:600; color:${COLORS.accentDeep};
-  background:rgba(181,86,58,.1); padding:4px 10px; border-radius:999px; }
+.chips { display:flex; flex-wrap:wrap; gap:7px; margin-top:16px; }
+.chip { font-family:'Assistant',sans-serif; font-size:13px; font-weight:600; color:${COLORS.accentDeep};
+  background:rgba(181,86,58,.1); padding:5px 11px; border-radius:999px; }
 .card-link { display:inline-flex; align-items:center; gap:4px; align-self:flex-start; max-width:100%;
-  margin-top:14px; padding:5px 11px; border-radius:999px; border:1px solid ${COLORS.line};
-  font-family:'Assistant',sans-serif; font-size:13px; font-weight:600; color:${COLORS.accentDeep};
+  margin-top:16px; padding:6px 13px; border-radius:999px; border:1px solid ${COLORS.line};
+  font-family:'Assistant',sans-serif; font-size:14px; font-weight:600; color:${COLORS.accentDeep};
   text-decoration:none; transition:.15s; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .card-link:hover { border-color:${COLORS.accent}; background:rgba(181,86,58,.08); }
 .card-foot { margin-top:auto; padding-top:16px; display:flex; justify-content:space-between; align-items:center; }
-.mini { font-family:'Assistant',sans-serif; font-size:12px; font-weight:600; background:none;
-  border:1px solid ${COLORS.line}; border-radius:8px; padding:4px 9px; cursor:pointer; color:${COLORS.ink}; }
+.mini { font-family:'Assistant',sans-serif; font-size:13px; font-weight:600; background:none;
+  border:1px solid ${COLORS.line}; border-radius:8px; padding:5px 11px; cursor:pointer; color:${COLORS.ink}; }
 .mini.danger { color:${COLORS.accentDeep}; }
 .mini:hover { border-color:${COLORS.ink}; }
 
@@ -103,26 +105,26 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .close { position:absolute; top:18px; inset-inline-end:18px; background:none; border:none; font-size:18px;
   color:${COLORS.muted}; cursor:pointer; }
 
-.lbl { display:block; font-family:'Assistant',sans-serif; font-weight:600; font-size:13px;
+.lbl { display:block; font-family:'Assistant',sans-serif; font-weight:600; font-size:14px;
   color:${COLORS.muted}; margin:16px 0 6px; }
-.inp { width:100%; font-family:'Assistant',sans-serif; font-size:15px; color:${COLORS.ink};
-  background:#fff; border:1px solid ${COLORS.line}; border-radius:12px; padding:11px 14px; outline:none; transition:.15s; }
+.inp { width:100%; font-family:'Assistant',sans-serif; font-size:16px; color:${COLORS.ink};
+  background:#fff; border:1px solid ${COLORS.line}; border-radius:12px; padding:12px 15px; outline:none; transition:.15s; }
 .inp:focus { border-color:${COLORS.accent}; }
 
-.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:16px; }
-.stat { background:${COLORS.surface}; border:1px solid ${COLORS.line}; border-radius:16px; padding:22px; }
-.stat-num { font-size:40px; line-height:1; color:${COLORS.accentDeep}; }
-.stat-lbl { font-family:'Assistant',sans-serif; font-size:14px; color:${COLORS.muted}; margin-top:8px; }
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:18px; }
+.stat { background:${COLORS.surface}; border:1px solid ${COLORS.line}; border-radius:18px; padding:26px; }
+.stat-num { font-size:48px; line-height:1; color:${COLORS.accentDeep}; }
+.stat-lbl { font-family:'Assistant',sans-serif; font-size:15px; color:${COLORS.muted}; margin-top:8px; }
 
 .table { border:1px solid ${COLORS.line}; border-radius:14px; overflow:hidden; background:${COLORS.surface}; }
-.trow { display:grid; grid-template-columns:2fr 1fr 1fr; padding:13px 18px;
-  font-family:'Assistant',sans-serif; font-size:14px; border-bottom:1px solid ${COLORS.line}; }
+.trow { display:grid; grid-template-columns:2fr 1fr 1fr; padding:15px 20px;
+  font-family:'Assistant',sans-serif; font-size:15px; border-bottom:1px solid ${COLORS.line}; }
 .trow:last-child { border-bottom:none; }
 .thead { font-weight:700; color:${COLORS.muted}; background:rgba(227,217,200,.3); }
 
 .note { margin-top:22px; background:rgba(181,86,58,.07); border:1px solid rgba(181,86,58,.2);
-  border-radius:14px; padding:16px 18px; font-family:'Assistant',sans-serif; font-size:14px;
-  line-height:1.6; color:${COLORS.ink}; }
+  border-radius:14px; padding:18px 20px; font-family:'Assistant',sans-serif; font-size:15px;
+  line-height:1.65; color:${COLORS.ink}; }
 
 .banner { font-family:'Assistant',sans-serif; font-size:14px; padding:12px 18px; border-radius:12px;
   margin-bottom:18px; line-height:1.5; }
