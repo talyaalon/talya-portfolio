@@ -19,6 +19,10 @@ export const styles = `
 * { box-sizing: border-box; }
 body { margin: 0; }
 .display { font-family: 'Frank Ruhl Libre', Georgia, serif; font-weight: 800; color: ${COLORS.ink}; }
+/* Per request: Hebrew headings use the Assistant sans-serif (like the rest of
+   the UI). :dir(rtl) targets text that resolves right-to-left, so English
+   headings keep the Frank Ruhl Libre serif and only Hebrew switches. */
+.display:dir(rtl) { font-family: 'Assistant', sans-serif; font-weight: 700; letter-spacing: 0; }
 
 .grain {
   position:absolute; inset:0; pointer-events:none; opacity:.5;
