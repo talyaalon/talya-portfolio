@@ -9,18 +9,25 @@
 -- ---------- Tables ----------
 
 create table if not exists public.projects (
-  id          uuid primary key default gen_random_uuid(),
-  name_en     text,
-  name_he     text,
-  short_en    text,
-  short_he    text,
-  readme_en   text,
-  readme_he   text,
-  tools       text[] not null default '{}',
-  link        text,
-  logo_url    text,
-  position    int  not null default 0,
-  created_at  timestamptz not null default now()
+  id            uuid primary key default gen_random_uuid(),
+  name_en       text,
+  name_he       text,
+  meta_en       text,   -- context line, e.g. "Company · 2025"
+  meta_he       text,
+  short_en      text,
+  short_he      text,
+  readme_en     text,
+  readme_he     text,
+  result_en     text,   -- highlight line, e.g. "Live in production"
+  result_he     text,
+  tools         text[] not null default '{}',
+  link          text,   -- live site URL
+  repo_url      text,   -- GitHub / repository URL
+  demo_url      text,   -- demo / video URL
+  screenshot_url text,  -- optional screenshot
+  logo_url      text,
+  position      int  not null default 0,
+  created_at    timestamptz not null default now()
 );
 
 create table if not exists public.analytics_events (
