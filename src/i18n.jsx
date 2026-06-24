@@ -49,7 +49,7 @@ export const TRANSLATIONS = {
     // contact
     secContact: "Let's talk",
     contactText:
-      "Looking for my next opportunity to build real products. Happy to hear about roles, collaborations or any interesting idea.",
+      "Looking for my next opportunity to build top-tier projects and systems. Happy to hear about roles, collaborations or any interesting idea.",
     contactLocation: "Bangkok, Thailand",
     // states / admin
     loading: "Loading…",
@@ -170,7 +170,7 @@ export const TRANSLATIONS = {
     skillAIChip: "פיתוח מבוסס פרומפטים",
     secContact: "בואו נדבר",
     contactText:
-      "מחפשת את ההזדמנות הבאה שלי לבנות מוצרים אמיתיים. אשמח לשמוע על משרות, שיתופי פעולה או כל רעיון מעניין.",
+      "מחפשת את ההזדמנות הבאה שלי לבנות פרויקטים ומערכות מהטובות ביותר. אשמח לשמוע על משרות, שיתופי פעולה או כל רעיון מעניין.",
     contactLocation: "בנגקוק, תאילנד",
     loading: "טוען…",
     loadingData: "טוען נתונים…",
