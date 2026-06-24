@@ -98,7 +98,7 @@ button{font-family:inherit}
 @media(max-width:780px){.proj .dot{display:none}}
 .card{background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;
   box-shadow:var(--shadow);transition:transform .25s,box-shadow .25s;display:grid;
-  grid-template-columns:1.15fr 1fr}
+  grid-template-columns:1fr 1.05fr}
 .card:hover{transform:translateY(-3px);box-shadow:0 18px 40px -14px rgba(38,42,42,.22)}
 @media(max-width:660px){.card{grid-template-columns:1fr}}
 .card-body{padding:26px 28px;text-align:start}
@@ -116,13 +116,16 @@ button{font-family:inherit}
 .plink svg{width:15px;height:15px}
 .plink:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
 .plink.soft{color:var(--ink-soft);border-style:dashed}
+/* the whole screenshot is shown (object-fit:contain) inside a roomy rectangular
+   frame with a soft cream mat, so nothing gets cropped on any side */
 .shot{background:linear-gradient(135deg,#efe9e1,#e4ddd3);display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:10px;min-height:210px;color:#9a8f81;
+  align-items:center;justify-content:center;gap:10px;min-height:250px;color:#9a8f81;padding:14px;
   border-inline-start:1px solid var(--line);cursor:pointer;overflow:hidden}
-@media(max-width:660px){.shot{min-height:150px;border-inline-start:none;border-top:1px solid var(--line)}}
+@media(max-width:660px){.shot{min-height:200px;border-inline-start:none;border-top:1px solid var(--line)}}
 .shot svg{width:34px;height:34px;opacity:.6}
 .shot span{font-size:12.5px;font-weight:600;letter-spacing:.02em}
-.shot img{width:100%;height:100%;object-fit:cover;display:block}
+.shot img{width:100%;height:100%;object-fit:contain;display:block;border-radius:8px;
+  box-shadow:0 4px 14px -8px rgba(38,42,42,.4)}
 .mini-actions{display:flex;gap:8px;margin-top:16px}
 .mini{font-size:12.5px;font-weight:600;background:none;border:1px solid var(--line);
   border-radius:8px;padding:5px 11px;cursor:pointer;color:var(--ink)}
