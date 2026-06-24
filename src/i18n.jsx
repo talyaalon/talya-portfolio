@@ -258,7 +258,7 @@ export const CONTACT = {
   email: "Talyaisrael12@gmail.com",
   whatsapp: "972505154143",
   phone: "+66 65 850 6606",
-  linkedin: "https://www.linkedin.com/",
+  linkedin: "https://www.linkedin.com/in/talya-israel12",
   github: "https://github.com/talyaalon",
 };
 
