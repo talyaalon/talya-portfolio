@@ -6,16 +6,20 @@ import { useI18n } from "./i18n";
 import { useAuth } from "./hooks/useAuth";
 import { useProjects } from "./hooks/useProjects";
 
-import Header from "./components/Header";
+import Nav from "./components/Nav";
+import Hero from "./components/Hero";
+import About from "./components/About";
+import Projects from "./components/Projects";
+import Skills from "./components/Skills";
+import Contact from "./components/Contact";
 import AdminTabs from "./components/AdminTabs";
-import ProjectCard from "./components/ProjectCard";
+import Analytics from "./components/Analytics";
+import Settings from "./components/Settings";
 import ProjectModal from "./components/ProjectModal";
 import ProjectForm from "./components/ProjectForm";
 import Login from "./components/Login";
-import Settings from "./components/Settings";
-import Analytics from "./components/Analytics";
 import Modal from "./components/Modal";
-import { Loader, ErrorState, Banner } from "./components/Feedback";
+import { Loader, ErrorState } from "./components/Feedback";
 
 export default function App() {
   const { t } = useI18n();
@@ -27,7 +31,6 @@ export default function App() {
   const [editing, setEditing] = useState(null);
   const [loginOpen, setLoginOpen] = useState(false);
 
-  // Count one site view per load (server-side records the details).
   const viewSent = useRef(false);
   useEffect(() => {
     if (!viewSent.current) {
@@ -39,11 +42,6 @@ export default function App() {
   const openProject = (proj) => {
     setSelected(proj);
     track("open", proj.id);
-  };
-
-  const clickLink = (proj) => {
-    track("click", proj.id);
-    if (proj.link) window.open(proj.link, "_blank", "noopener");
   };
 
   const onDelete = async (proj) => {
@@ -60,63 +58,69 @@ export default function App() {
     setTab("projects");
   };
 
-  // ---- not configured yet (missing .env) ----
+  // ---- not configured (missing .env) ----
   if (!isConfigured) {
     return (
       <Shell isAdmin={false}>
-        <div className="note" style={{ marginTop: 0 }}>
-          <strong>{t("notConnectedTitle")}</strong>
-          <br />
-          {t("notConnectedBody")}
-        </div>
+        <Hero />
+        <section className="section">
+          <div className="wrap">
+            <div className="note">
+              <strong>{t("notConnectedTitle")}</strong>
+              <br />
+              {t("notConnectedBody")}
+            </div>
+          </div>
+        </section>
       </Shell>
     );
   }
 
-  const showAdminBody = isAdmin && (tab === "analytics" || tab === "settings");
+  const loading = authLoading || projects === null;
+  const showAdminPane = isAdmin && (tab === "analytics" || tab === "settings");
 
   return (
-    <Shell
-      isAdmin={isAdmin}
-      onLoginClick={() => setLoginOpen(true)}
-      onLogout={onLogout}
-      adminTabs={isAdmin && <AdminTabs tab={tab} onTab={setTab} onAdd={() => setEditing(blankProject())} />}
-    >
-      {authLoading || projects === null ? (
-        <Loader />
-      ) : error === "missing-config" ? null : error ? (
-        <ErrorState message={t("projLoadFailed") + error} onRetry={reload} />
-      ) : showAdminBody && tab === "analytics" ? (
-        <Analytics projects={projects} />
-      ) : showAdminBody && tab === "settings" ? (
-        <Settings email={session?.user?.email} />
+    <Shell isAdmin={isAdmin} onLoginClick={() => setLoginOpen(true)} onLogout={onLogout}>
+      <Hero />
+
+      {isAdmin && <AdminTabs tab={tab} onTab={setTab} />}
+
+      {loading ? (
+        <section className="section">
+          <div className="wrap">
+            <Loader />
+          </div>
+        </section>
+      ) : error && error !== "missing-config" ? (
+        <section className="section">
+          <div className="wrap">
+            <ErrorState message={t("projLoadFailed") + error} onRetry={reload} />
+          </div>
+        </section>
+      ) : showAdminPane ? (
+        <section className="section">
+          <div className="wrap">
+            {tab === "analytics" ? <Analytics projects={projects} /> : <Settings email={session?.user?.email} />}
+          </div>
+        </section>
       ) : (
         <>
-          {projects.length === 0 && (
-            <Banner kind="info">{isAdmin ? t("emptyAdmin") : t("emptyClient")}</Banner>
-          )}
-          <div className="grid">
-            {projects.map((p, i) => (
-              <ProjectCard
-                key={p.id}
-                project={p}
-                index={i}
-                isAdmin={isAdmin}
-                onOpen={openProject}
-                onEdit={setEditing}
-                onDelete={onDelete}
-              />
-            ))}
-          </div>
+          <About />
+          <Projects
+            projects={projects}
+            isAdmin={isAdmin}
+            onOpen={openProject}
+            onEdit={setEditing}
+            onDelete={onDelete}
+            onAdd={() => setEditing(blankProject())}
+          />
+          <Skills />
+          <Contact />
         </>
       )}
 
-      {/* project detail */}
-      {selected && (
-        <ProjectModal project={selected} onClose={() => setSelected(null)} onLinkClick={clickLink} />
-      )}
+      {selected && <ProjectModal project={selected} onClose={() => setSelected(null)} />}
 
-      {/* add / edit */}
       {editing && (
         <Modal onClose={() => setEditing(null)} wide>
           <ProjectForm
@@ -131,7 +135,6 @@ export default function App() {
         </Modal>
       )}
 
-      {/* login */}
       {loginOpen && (
         <Modal onClose={() => setLoginOpen(false)}>
           <Login
@@ -147,16 +150,14 @@ export default function App() {
   );
 }
 
-// Page shell: fonts, background, header, optional admin tabs, main slot.
-// dir follows the selected language (rtl for Hebrew, ltr for English).
-function Shell({ children, isAdmin, onLoginClick, onLogout, adminTabs }) {
+// Page shell: injects fonts/CSS, sets dir from language, renders the nav.
+function Shell({ children, isAdmin, onLoginClick, onLogout }) {
   const { dir } = useI18n();
   return (
-    <div dir={dir} style={{ minHeight: "100vh", background: COLORS.bg, color: COLORS.ink }}>
+    <div dir={dir} style={{ minHeight: "100vh", background: COLORS.cream, color: COLORS.inkSoft }}>
       <style>{styles}</style>
-      <Header isAdmin={isAdmin} onLoginClick={onLoginClick} onLogout={onLogout} />
-      {adminTabs}
-      <main style={{ maxWidth: 1500, margin: "0 auto", padding: "30px clamp(18px,4vw,40px) 90px" }}>{children}</main>
+      <Nav isAdmin={isAdmin} onLoginClick={onLoginClick} onLogout={onLogout} />
+      <main>{children}</main>
     </div>
   );
 }
@@ -165,14 +166,13 @@ function blankProject() {
   return {
     _isNew: true,
     id: null,
-    nameEn: "",
-    nameHe: "",
-    shortEn: "",
-    shortHe: "",
-    readmeEn: "",
-    readmeHe: "",
+    nameEn: "", nameHe: "",
+    metaEn: "", metaHe: "",
+    shortEn: "", shortHe: "",
+    readmeEn: "", readmeHe: "",
+    resultEn: "", resultHe: "",
     tools: [],
-    link: "",
-    logo: "",
+    link: "", repo: "", demo: "",
+    logo: "", screenshot: "",
   };
 }

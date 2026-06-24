@@ -73,7 +73,7 @@ export default function Analytics({ projects }) {
 
   return (
     <div>
-      <p style={{ fontFamily: "'Assistant',sans-serif", color: COLORS.muted, fontSize: 14, margin: "0 0 16px" }}>
+      <p style={{ fontFamily: "'Assistant',sans-serif", color: COLORS.inkSoft, fontSize: 14, margin: "0 0 16px" }}>
         {t("anMonthSummary")}
       </p>
 
@@ -96,7 +96,7 @@ export default function Analytics({ projects }) {
           <div className="trow" key={p.id}>
             <span style={{ display: "flex", alignItems: "center", gap: 10 }} dir="auto">
               <img
-                src={p.logo || letterLogo((loc(p, "name", lang) || "?")[0], COLORS.accent)}
+                src={p.logo || letterLogo((loc(p, "name", lang) || "?")[0], COLORS.tan)}
                 alt=""
                 style={{ width: 26, height: 26, borderRadius: 7 }}
               />
@@ -108,7 +108,7 @@ export default function Analytics({ projects }) {
         ))}
         {projects.length === 0 && (
           <div className="trow">
-            <span style={{ color: COLORS.muted }}>{t("anNoProjects")}</span>
+            <span style={{ color: COLORS.inkSoft }}>{t("anNoProjects")}</span>
             <span />
             <span />
           </div>
@@ -134,7 +134,7 @@ function SourceList({ title, rows, empty }) {
       <div className="table">
         {rows.length === 0 && (
           <div className="trow" style={{ gridTemplateColumns: "1fr" }}>
-            <span style={{ color: COLORS.muted }}>{empty}</span>
+            <span style={{ color: COLORS.inkSoft }}>{empty}</span>
           </div>
         )}
         {rows.map(([label, count]) => (

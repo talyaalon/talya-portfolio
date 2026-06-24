@@ -33,7 +33,7 @@ export default function Settings({ email }) {
       <h2 className="display" style={{ fontSize: 30, marginTop: 0 }}>
         {t("setTitle")}
       </h2>
-      <p style={{ fontFamily: "'Assistant',sans-serif", color: COLORS.muted, fontSize: 14 }}>
+      <p style={{ fontFamily: "'Assistant',sans-serif", color: COLORS.inkSoft, fontSize: 14 }}>
         {t("setLoggedInAs")}
         <span dir="ltr">{email}</span>
       </p>

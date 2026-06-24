@@ -1,7 +1,7 @@
 import { useI18n } from "../i18n";
 
-// Admin navigation tabs + "add project" button.
-export default function AdminTabs({ tab, onTab, onAdd }) {
+// Admin navigation tabs (Projects / Analytics / Settings).
+export default function AdminTabs({ tab, onTab }) {
   const { t } = useI18n();
   const tabs = [
     ["projects", t("tabProjects")],
@@ -9,18 +9,13 @@ export default function AdminTabs({ tab, onTab, onAdd }) {
     ["settings", t("tabSettings")],
   ];
   return (
-    <div style={{ maxWidth: 1500, margin: "0 auto", padding: "0 clamp(18px,4vw,40px)" }}>
+    <div className="wrap" style={{ paddingTop: 8 }}>
       <div className="tabs">
         {tabs.map(([k, label]) => (
           <button key={k} className={"tab" + (tab === k ? " tab-active" : "")} onClick={() => onTab(k)}>
             {label}
           </button>
         ))}
-        {tab === "projects" && (
-          <button className="primary-btn" style={{ marginInlineStart: "auto" }} onClick={onAdd}>
-            {t("addProject")}
-          </button>
-        )}
       </div>
     </div>
   );

@@ -29,7 +29,7 @@ export default function Login({ signIn, onSuccess }) {
       <h2 className="display" style={{ fontSize: 28, marginTop: 0 }}>
         {t("loginTitle")}
       </h2>
-      <p style={{ fontFamily: "'Assistant',sans-serif", color: COLORS.muted, fontSize: 14, marginTop: -4 }}>
+      <p style={{ fontFamily: "'Assistant',sans-serif", color: COLORS.inkSoft, fontSize: 14, marginTop: -4 }}>
         {t("loginSubtitle")}
       </p>
 

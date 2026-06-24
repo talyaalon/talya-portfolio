@@ -1,120 +1,93 @@
-import { COLORS } from "../styles";
-import { letterLogo } from "../utils/logo";
-import { track } from "../lib/analytics";
 import { useI18n } from "../i18n";
 import { loc } from "../utils/localized";
+import { track } from "../lib/analytics";
+import { Check, Star, Link, Play, GitHub, Image } from "./Icons";
 
-// A single project card in the grid. Clicking the card opens the full detail
-// view; the URL shown at the bottom is a direct link that opens the project
-// itself in a new tab.
-export default function ProjectCard({ project, index, isAdmin, onOpen, onEdit, onDelete }) {
+// One project, rendered in the editorial "CV card" style: a text body on one
+// side and a screenshot panel on the other, hung off the timeline spine.
+export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete }) {
   const { t, lang } = useI18n();
   const name = loc(project, "name", lang);
+  const meta = loc(project, "meta", lang);
   const short = loc(project, "short", lang);
-  const logo = project.logo || letterLogo((name || "?")[0], COLORS.accent);
+  const result = loc(project, "result", lang);
+
   const open = () => onOpen(project);
+  const clickLink = (e) => {
+    e.stopPropagation();
+    track("click", project.id);
+  };
+
+  const isAward = /place|מקום|award|פרס/i.test(result);
+  const hasAnyLink = project.link || project.demo || project.repo;
 
   return (
-    <article className="reveal" style={{ animationDelay: `${0.05 * index}s` }}>
-      <div
-        className="card"
-        role="button"
-        tabIndex={0}
-        onClick={open}
-        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), open())}
-        aria-label={`${name} — ${t("cardView")}`}
-      >
-        <div className="card-logo">
-          <img src={logo} alt="" />
-        </div>
-        <h3 className="display" style={{ fontSize: 28, margin: "18px 0 7px" }} dir="auto">
-          {name}
-        </h3>
-        <p className="card-desc" title={short} dir="auto">
-          {short}
-        </p>
-        <div className="chips">
-          {(project.tools || []).slice(0, 3).map((tool) => (
-            <span className="chip" key={tool}>
-              {tool}
-            </span>
-          ))}
-        </div>
+    <div className="proj">
+      <div className="dot" />
+      <div className="card">
+        <div className="card-body">
+          {meta && <div className="proj-meta" dir="auto">{meta}</div>}
+          <h3 dir="auto" style={{ cursor: "pointer" }} onClick={open}>{name}</h3>
+          <p dir="auto">{short}</p>
 
-        {/* Direct link to the live project/app — clickable straight from the card */}
-        {project.link && (
-          <a
-            className="card-link"
-            href={project.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            dir="ltr"
-            title={project.link}
-            onClick={(e) => {
-              e.stopPropagation(); // don't also open the detail view
-              track("click", project.id);
-            }}
-          >
-            ↗ {prettyUrl(project.link)}
-          </a>
-        )}
+          {(project.tools || []).length > 0 && (
+            <div className="chips">
+              {project.tools.map((tool) => (
+                <span className="chip" key={tool}>{tool}</span>
+              ))}
+            </div>
+          )}
 
-        <div className="card-foot">
-          <span
-            style={{
-              fontFamily: "'Assistant',sans-serif",
-              fontSize: 14,
-              color: COLORS.accentDeep,
-              fontWeight: 600,
-            }}
-          >
-            {t("cardView")}
-          </span>
+          {result && (
+            <div className="result" dir="auto">
+              {isAward ? <Star /> : <Check />}
+              <span>{result}</span>
+            </div>
+          )}
+
+          <div className="plinks">
+            {project.link && (
+              <a className="plink" href={project.link} target="_blank" rel="noopener noreferrer" onClick={clickLink}>
+                <Link /> <span>{t("cardViewLive")}</span>
+              </a>
+            )}
+            {project.demo && (
+              <a className="plink soft" href={project.demo} target="_blank" rel="noopener noreferrer" onClick={clickLink}>
+                <Play /> <span>{t("cardWatchDemo")}</span>
+              </a>
+            )}
+            {project.repo && (
+              <a className="plink soft" href={project.repo} target="_blank" rel="noopener noreferrer" onClick={clickLink}>
+                <GitHub /> GitHub
+              </a>
+            )}
+            <button className="plink" onClick={open}>{t("cardReadme")}</button>
+            {!hasAnyLink && (
+              <span className="plink soft" style={{ cursor: "default" }}>{t("cardInternal")}</span>
+            )}
+          </div>
+
           {isAdmin && (
-            <span style={{ display: "flex", gap: 8 }}>
-              <span
-                className="mini"
-                role="button"
-                tabIndex={0}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(project);
-                }}
-                onKeyDown={(e) =>
-                  (e.key === "Enter" || e.key === " ") && (e.stopPropagation(), onEdit(project))
-                }
-              >
-                {t("edit")}
-              </span>
-              <span
-                className="mini danger"
-                role="button"
-                tabIndex={0}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(project);
-                }}
-                onKeyDown={(e) =>
-                  (e.key === "Enter" || e.key === " ") && (e.stopPropagation(), onDelete(project))
-                }
-              >
-                {t("delete")}
-              </span>
-            </span>
+            <div className="mini-actions">
+              <button className="mini" onClick={() => onEdit(project)}>{t("edit")}</button>
+              <button className="mini danger" onClick={() => onDelete(project)}>{t("delete")}</button>
+            </div>
+          )}
+        </div>
+
+        <div className="shot" onClick={open} title={name}>
+          {project.screenshot ? (
+            <img src={project.screenshot} alt={name} />
+          ) : project.logo ? (
+            <img src={project.logo} alt={name} />
+          ) : (
+            <>
+              <Image />
+              <span>{t("cardScreenshot")}</span>
+            </>
           )}
         </div>
       </div>
-    </article>
+    </div>
   );
-}
-
-// "https://www.example.com/app" → "example.com/app" (tidy, still a real link).
-function prettyUrl(link) {
-  try {
-    const u = new URL(link);
-    const path = u.pathname === "/" ? "" : u.pathname;
-    return u.hostname.replace(/^www\./, "") + path;
-  } catch {
-    return link;
-  }
 }
