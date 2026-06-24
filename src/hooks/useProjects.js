@@ -18,7 +18,8 @@ const fromRow = (r) => ({
   tools: r.tools || [],
   link: r.link || "",
   repo: r.repo_url || "",
-  demo: r.demo_url || "",
+  demoEn: r.demo_url_en || "",
+  demoHe: r.demo_url_he || "",
   screenshot: r.screenshot_url || "",
   logo: r.logo_url || "",
   position: r.position ?? 0,
@@ -82,7 +83,8 @@ export function useProjects() {
         tools: proj.tools,
         link: clean(proj.link) || null,
         repo_url: clean(proj.repo) || null,
-        demo_url: clean(proj.demo) || null,
+        demo_url_en: clean(proj.demoEn) || null,
+        demo_url_he: clean(proj.demoHe) || null,
         logo_url: proj.logo || null,
       };
       if (proj.id && !proj._isNew) {

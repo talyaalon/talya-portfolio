@@ -172,7 +172,7 @@ function blankProject() {
     readmeEn: "", readmeHe: "",
     resultEn: "", resultHe: "",
     tools: [],
-    link: "", repo: "", demo: "",
+    link: "", repo: "", demoEn: "", demoHe: "",
     logo: "", screenshot: "",
   };
 }

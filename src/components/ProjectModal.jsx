@@ -13,6 +13,7 @@ export default function ProjectModal({ project, onClose }) {
   const short = loc(project, "short", lang);
   const result = loc(project, "result", lang);
   const readme = loc(project, "readme", lang);
+  const demo = loc(project, "demo", lang);
 
   const onLink = () => track("click", project.id);
 
@@ -49,15 +50,15 @@ export default function ProjectModal({ project, onClose }) {
         </>
       )}
 
-      {(project.link || project.repo || project.demo) && (
+      {(project.link || project.repo || demo) && (
         <div className="plinks" style={{ marginTop: 22 }}>
           {project.link && (
             <a className="plink" href={project.link} target="_blank" rel="noopener noreferrer" onClick={onLink}>
               <Link /> <span>{t("cardViewLive")}</span>
             </a>
           )}
-          {project.demo && (
-            <a className="plink soft" href={project.demo} target="_blank" rel="noopener noreferrer" onClick={onLink}>
+          {demo && (
+            <a className="plink soft" href={demo} target="_blank" rel="noopener noreferrer" onClick={onLink}>
               <Play /> <span>{t("cardWatchDemo")}</span>
             </a>
           )}

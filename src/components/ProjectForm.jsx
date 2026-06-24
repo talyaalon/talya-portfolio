@@ -92,7 +92,8 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
 
       {single(t("formLink"), "link", "https://…")}
       {single(t("formRepo"), "repo", "https://github.com/…")}
-      {single(t("formDemo"), "demo", "https://…")}
+      {single(`${t("formDemo")} ${t("suffixEn")}`, "demoEn", "https://…")}
+      {single(`${t("formDemo")} ${t("suffixHe")}`, "demoHe", "https://…")}
 
       <label className="lbl">{t("formTools")}</label>
       <div style={{ display: "flex", gap: 8 }}>

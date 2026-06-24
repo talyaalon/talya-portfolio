@@ -11,6 +11,7 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
   const meta = loc(project, "meta", lang);
   const short = loc(project, "short", lang);
   const result = loc(project, "result", lang);
+  const demo = loc(project, "demo", lang);
 
   const open = () => onOpen(project);
   const clickLink = (e) => {
@@ -19,7 +20,7 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
   };
 
   const isAward = /place|מקום|award|פרס/i.test(result);
-  const hasAnyLink = project.link || project.demo || project.repo;
+  const hasAnyLink = project.link || demo || project.repo;
 
   return (
     <div className="proj">
@@ -51,8 +52,8 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
                 <Link /> <span>{t("cardViewLive")}</span>
               </a>
             )}
-            {project.demo && (
-              <a className="plink soft" href={project.demo} target="_blank" rel="noopener noreferrer" onClick={clickLink}>
+            {demo && (
+              <a className="plink soft" href={demo} target="_blank" rel="noopener noreferrer" onClick={clickLink}>
                 <Play /> <span>{t("cardWatchDemo")}</span>
               </a>
             )}
