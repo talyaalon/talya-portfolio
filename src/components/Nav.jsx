@@ -14,9 +14,9 @@ export default function Nav({ isAdmin, onLoginClick, onLogout }) {
           <a className="nl" href="#skills">{t("navSkills")}</a>
           <a className="nl" href="#contact">{t("navContact")}</a>
           <button className="pill" onClick={toggle}>{t("langSwitch")}</button>
-          {!isAdmin ? (
-            <button className="pill" onClick={onLoginClick}>{t("adminLogin")}</button>
-          ) : (
+          {/* Admin login button removed on purpose — admins enter via the
+              secret "#admin" link, which opens the login dialog. */}
+          {isAdmin && (
             <>
               <span className="pill solid">{t("adminMode")}</span>
               <button className="pill" onClick={onLogout}>{t("logout")}</button>

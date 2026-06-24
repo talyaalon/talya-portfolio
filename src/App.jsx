@@ -39,6 +39,17 @@ export default function App() {
     }
   }, []);
 
+  // Secret admin entry: visiting the site with "#admin" opens the login dialog.
+  // (There is no visible admin button — only this link reveals it.)
+  useEffect(() => {
+    const check = () => {
+      if (window.location.hash.toLowerCase() === "#admin") setLoginOpen(true);
+    };
+    check();
+    window.addEventListener("hashchange", check);
+    return () => window.removeEventListener("hashchange", check);
+  }, []);
+
   const openProject = (proj) => {
     setSelected(proj);
     track("open", proj.id);
@@ -142,6 +153,7 @@ export default function App() {
             onSuccess={() => {
               setLoginOpen(false);
               setTab("projects");
+              if (window.location.hash) history.replaceState(null, "", window.location.pathname);
             }}
           />
         </Modal>
