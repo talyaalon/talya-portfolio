@@ -153,8 +153,8 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
                     alt=""
                     loading="lazy"
                     decoding="async"
-                    width="390"
-                    height="844"
+                    width="478"
+                    height="1030"
                   />
                 </span>
               </span>
