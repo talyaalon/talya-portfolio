@@ -7,6 +7,8 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test/setup.js"],
-    include: ["src/**/*.test.{js,jsx}", "netlify/**/*.test.js"],
+    // Note: no netlify/** glob. Test files must not live in netlify/functions/,
+    // because Netlify tries to deploy every file there as a function.
+    include: ["src/**/*.test.{js,jsx}"],
   },
 });

@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { deviceFromUA, cleanReferrer } from "./track.js";
+// Lives here, NOT in netlify/functions/: Netlify treats every file in the
+// functions directory as a function, and "track.test" is not a valid function
+// name — it fails the whole deploy with "Incorrect function names".
+import { deviceFromUA, cleanReferrer } from "../../netlify/functions/track.js";
 
 describe("deviceFromUA", () => {
   it("returns language-neutral tokens, not Hebrew words", () => {
