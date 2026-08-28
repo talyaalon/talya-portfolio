@@ -91,33 +91,17 @@ create policy "logos_admin_update" on storage.objects
 create policy "logos_admin_delete" on storage.objects
   for delete to authenticated using (bucket_id = 'logos');
 
--- ---------- Seed: the 3 demo projects (only if the table is empty) ----------
+-- ---------- Seed ----------
+--
+--  Deliberately none. This file used to insert three placeholder projects
+--  ("TaskFlow", "ColorPal", "BudgetBee") pointing at https://example.com,
+--  guarded by `where not exists (select 1 from public.projects)`. That guard
+--  only protects a table that is already populated, so re-creating the
+--  database put fake demo content back onto a live portfolio.
+--
+--  Real projects are added through the admin UI at /admin.
 
-insert into public.projects (name_en, name_he, short_en, short_he, readme_en, readme_he, tools, link, position)
-select * from (values
-  (
-    'TaskFlow', 'TaskFlow',
-    'A task-management app with smart drag-and-drop and team boards',
-    'אפליקציית ניהול משימות עם גרירה חכמה ולוחות צוות',
-    E'TaskFlow is a Kanban-based task management app that lets you organize tasks into columns, drag them between stages, and share boards with teammates in real time.\n\nWhat it does:\n• Create boards and tasks with tags and due dates\n• Drag and drop between columns\n• Team permissions and real-time sync\n\nChallenges I solved:\nBuilding live sync between multiple users, and managing complex client-side state.',
-    E'TaskFlow היא אפליקציית ניהול משימות מבוססת לוחות (Kanban) המאפשרת לארגן משימות בעמודות, לגרור אותן בין שלבים, ולשתף לוחות עם חברי צוות בזמן אמת.\n\nמה הפרויקט עושה:\n• יצירת לוחות ומשימות עם תיוג ותאריכי יעד\n• גרירה ושחרור בין עמודות\n• הרשאות צוות וסנכרון בזמן אמת\n\nאתגרים שפתרתי:\nבניית סנכרון חי בין מספר משתמשים, וניהול state מורכב בצד הלקוח.',
-    array['React','Node.js','MongoDB'], 'https://example.com', 0
-  ),
-  (
-    'ColorPal', 'ColorPal',
-    'Accessible color-palette generator for designers',
-    'מחולל פלטות צבעים נגישות למעצבים',
-    E'ColorPal is a tool that generates harmonious color palettes and checks their contrast against accessibility standards (WCAG).\n\nWhat it does:\n• Random and harmonious palette generator\n• Automatic contrast checking\n• Export to CSS / Tailwind\n\nTools: the color logic was written in pure JavaScript with the Canvas API.',
-    E'ColorPal הוא כלי המייצר פלטות צבעים הרמוניות ובודק את הניגודיות שלהן לפי תקני נגישות (WCAG).\n\nמה הפרויקט עושה:\n• מחולל פלטות אקראיות והרמוניות\n• בדיקת ניגודיות אוטומטית\n• ייצוא ל-CSS / Tailwind\n\nכלים: לוגיקת הצבעים נכתבה ב-JavaScript טהור עם Canvas API.',
-    array['JavaScript','CSS','Canvas API'], 'https://example.com', 1
-  ),
-  (
-    'BudgetBee', 'BudgetBee',
-    'Monthly expense tracker with charts and alerts',
-    'מעקב הוצאות חודשי עם גרפים והתראות',
-    E'BudgetBee helps track monthly expenses, categorize them, and see where the money goes.\n\nWhat it does:\n• Enter expenses and categories\n• Monthly charts and over-budget alerts\n• Cloud storage with Firebase\n\nTools: React for the UI, Firebase for data, Recharts for visualization.',
-    E'BudgetBee עוזרת לעקוב אחר הוצאות חודשיות, לקטלג אותן ולראות איפה הכסף הולך.\n\nמה הפרויקט עושה:\n• הזנת הוצאות וקטגוריות\n• גרפים חודשיים והתראות חריגה מתקציב\n• אחסון בענן עם Firebase\n\nכלים: React לממשק, Firebase לנתונים, Recharts לוויזואליזציה.',
-    array['React','Firebase','Recharts'], 'https://example.com', 2
-  )
-) as v(name_en, name_he, short_en, short_he, readme_en, readme_he, tools, link, position)
-where not exists (select 1 from public.projects);
+-- ---------- Security ----------
+--
+--  The write policies above are superseded by policies-owner-only.sql, which
+--  restricts every write to the site owner. Run that file after this one.
