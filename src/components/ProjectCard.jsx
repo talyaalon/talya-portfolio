@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useI18n } from "../i18n";
 import { loc } from "../utils/localized";
 import { track } from "../lib/analytics";
@@ -192,7 +193,7 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
             <span>{t("cardScreenshot")}</span>
           </div>
         )}
-        {lightbox && (
+        {lightbox && createPortal(
           <div className="shot-lightbox" role="dialog" aria-modal="true" onClick={() => setLightbox(null)}>
             <button type="button" className="lightbox-close" aria-label="Close" onClick={() => setLightbox(null)}>✕</button>
             <img
@@ -201,7 +202,8 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
               className={lightbox.mobile ? "lb-mobile" : "lb-desktop"}
               onClick={(e) => e.stopPropagation()}
             />
-          </div>
+          </div>,
+          document.body
         )}
       </div>
     </article>
