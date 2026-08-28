@@ -6,7 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.{js,jsx,json,css,md}\"",
+    "verify:bundle": "node scripts/verify-bundle.mjs",
+    "verify": "npm run lint && npm run test && npm run build && npm run verify:bundle"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2",
@@ -14,8 +20,19 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.6",
     "@vitejs/plugin-react": "^6.0.2",
-    "vite": "^8.0.14"
+    "eslint": "^9.39.5",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.11.0",
+    "jsdom": "^25.0.1",
+    "prettier": "^3.9.6",
+    "vite": "^8.0.14",
+    "vitest": "^3.2.7"
   },
   "engines": {
     "node": ">=20.19.0"

@@ -7,9 +7,9 @@ export default function About() {
     <section className="section" id="about">
       <Reveal className="wrap">
         <div className="sec-label">
-          <span className="num">01</span>
+          <span className="num" aria-hidden="true">01</span>
           <h2>{t("secAbout")}</h2>
-          <span className="rule" />
+          <span className="rule" aria-hidden="true" />
         </div>
         <p className="about-text" dir="auto">{t("aboutText")}</p>
       </Reveal>

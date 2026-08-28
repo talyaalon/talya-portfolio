@@ -4,6 +4,7 @@ import ProjectCard from "./ProjectCard";
 import { Banner } from "./Feedback";
 
 // The "Selected Projects" section: a vertical timeline of project cards.
+// Shared by the public site (read-only) and the admin app (isAdmin).
 export default function Projects({ projects, isAdmin, onOpen, onEdit, onDelete, onAdd }) {
   const { t } = useI18n();
   return (
@@ -11,21 +12,23 @@ export default function Projects({ projects, isAdmin, onOpen, onEdit, onDelete, 
       <div className="wrap">
         <Reveal>
           <div className="sec-label">
-            <span className="num">02</span>
+            <span className="num" aria-hidden="true">
+              02
+            </span>
             <h2>{t("secProjects")}</h2>
-            <span className="rule" />
+            <span className="rule" aria-hidden="true" />
             {isAdmin && (
-              <button className="primary-btn" onClick={onAdd}>{t("addProject")}</button>
+              <button className="primary-btn" onClick={onAdd}>
+                {t("addProject")}
+              </button>
             )}
           </div>
         </Reveal>
 
-        {projects.length === 0 && (
-          <Banner kind="info">{isAdmin ? t("emptyAdmin") : t("emptyClient")}</Banner>
-        )}
+        {projects.length === 0 && <Banner kind="info">{isAdmin ? t("emptyAdmin") : t("emptyClient")}</Banner>}
 
         <div className="projects">
-          <div className="spine" />
+          <div className="spine" aria-hidden="true" />
           {projects.map((p, i) => (
             <Reveal key={p.id} delay={Math.min(i * 0.05, 0.3)}>
               <ProjectCard

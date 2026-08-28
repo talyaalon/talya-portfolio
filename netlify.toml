@@ -8,8 +8,22 @@
   # Pin Node so Vite 8 builds the same locally and on Netlify.
   NODE_VERSION = "22"
 
+# The admin app is a second Vite entry with its own bundle. This rule must stay
+# ABOVE the SPA fallback below: rules are evaluated in order, and the catch-all
+# would otherwise swallow /admin and serve the public site instead.
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/admin.html"
+  status = 200
+
 # SPA fallback: serve index.html for client-side routes.
 # (Function routes like /api/* are handled before this by Functions v2 `config.path`.)
+# KEEP LAST.
 [[redirects]]
   from = "/*"
   to = "/index.html"

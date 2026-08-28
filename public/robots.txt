@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# The admin app is a separate entry point; there is nothing there for a crawler.
+Disallow: /admin
+
+Sitemap: https://talya-portfolio.netlify.app/sitemap.xml

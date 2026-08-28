@@ -11,7 +11,7 @@ export function Loader({ label }) {
       aria-live="polite"
     >
       <div className="spinner" />
-      <span style={{ fontFamily: "'Assistant',sans-serif", color: COLORS.inkSoft }}>{label || t("loading")}</span>
+      <span style={{ color: COLORS.inkSoft }}>{label || t("loading")}</span>
     </div>
   );
 }

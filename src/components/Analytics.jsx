@@ -2,13 +2,15 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { COLORS } from "../styles";
 import { letterLogo } from "../utils/logo";
-import { Loader, ErrorState } from "./Feedback";
+import { Loader, ErrorState, Banner } from "./Feedback";
 import { useI18n } from "../i18n";
 import { loc } from "../utils/localized";
 
-// Reads this month's events from Supabase (authenticated/admin only) and
-// builds a monthly summary: site views, per-project opens & clicks, and
-// the referral sources + estimated countries that visitors came from.
+const EVENT_LIMIT = 5000;
+
+// Reads this month's events from Supabase (owner only, enforced by RLS) and
+// builds a monthly summary: site views, per-project opens & clicks, and where
+// visitors came from.
 export default function Analytics({ projects }) {
   const { t, lang } = useI18n();
   const [events, setEvents] = useState(null);
@@ -20,17 +22,19 @@ export default function Analytics({ projects }) {
     const start = new Date();
     start.setDate(1);
     start.setHours(0, 0, 0, 0);
-    const { data, error } = await supabase
+    const { data, error: err } = await supabase
       .from("analytics_events")
       .select("event_type, project_id, referrer, country, city, device, created_at")
       .gte("created_at", start.toISOString())
       .order("created_at", { ascending: false })
-      .limit(5000);
-    if (error) setError(error.message);
+      .limit(EVENT_LIMIT);
+    if (err) setError(err.message);
     else setEvents(data);
   };
 
   useEffect(() => {
+    // Fetching from Supabase on mount; `load` owns its own state transitions.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, []);
 
@@ -40,16 +44,29 @@ export default function Analytics({ projects }) {
     const clicks = {};
     const sources = {};
     const countries = {};
+    const devices = {};
     let views = 0;
+
     for (const e of events) {
       if (e.event_type === "view") views++;
       if (e.event_type === "open" && e.project_id) opens[e.project_id] = (opens[e.project_id] || 0) + 1;
       if (e.event_type === "click" && e.project_id) clicks[e.project_id] = (clicks[e.project_id] || 0) + 1;
+
+      // Sources, countries and devices describe VISITS, so they are counted on
+      // 'view' events only. Counting every event triple-counted anyone who
+      // opened a card and clicked a link, making these panels disagree with
+      // the "views" headline by 3-7x.
+      if (e.event_type !== "view") continue;
+
       const src = sourceLabel(e.referrer, t("anDirect"));
       sources[src] = (sources[src] || 0) + 1;
+
       const c = e.country || t("anUnknown");
       countries[c] = (countries[c] || 0) + 1;
+
+      devices[deviceLabel(e.device, t)] = (devices[deviceLabel(e.device, t)] || 0) + 1;
     }
+
     return {
       views,
       opens,
@@ -58,6 +75,8 @@ export default function Analytics({ projects }) {
       totalClicks: Object.values(clicks).reduce((a, b) => a + b, 0),
       topSources: topN(sources, 6),
       topCountries: topN(countries, 6),
+      topDevices: topN(devices, 4),
+      truncated: events.length >= EVENT_LIMIT,
     };
   }, [events, t]);
 
@@ -66,16 +85,18 @@ export default function Analytics({ projects }) {
 
   const stat = (label, value) => (
     <div className="stat">
-      <div className="stat-num display">{value}</div>
+      <div className="stat-num h-display">{value}</div>
       <div className="stat-lbl">{label}</div>
     </div>
   );
 
   return (
     <div>
-      <p style={{ fontFamily: "'Assistant',sans-serif", color: COLORS.inkSoft, fontSize: 14, margin: "0 0 16px" }}>
-        {t("anMonthSummary")}
-      </p>
+      <p style={{ color: COLORS.inkSoft, fontSize: 14, margin: "0 0 16px" }}>{t("anMonthSummary")}</p>
+
+      {/* The query caps at 5,000 rows; saying so beats silently dropping the
+          oldest events of a busy month. */}
+      {summary.truncated && <Banner kind="info">{t("anTruncated")}</Banner>}
 
       <div className="stats">
         {stat(t("anViewsMonth"), summary.views)}
@@ -83,41 +104,53 @@ export default function Analytics({ projects }) {
         {stat(t("anClicks"), summary.totalClicks)}
       </div>
 
-      <h3 className="display" style={{ fontSize: 24, margin: "34px 0 12px" }}>
+      <h3 className="h-display" style={{ fontSize: 24, margin: "34px 0 12px" }}>
         {t("anByProject")}
       </h3>
-      <div className="table">
-        <div className="trow thead">
-          <span>{t("anColProject")}</span>
-          <span>{t("anColOpens")}</span>
-          <span>{t("anColClicks")}</span>
+      <div className="table-scroll">
+        <div className="table">
+          <div className="trow thead">
+            <span>{t("anColProject")}</span>
+            <span>{t("anColOpens")}</span>
+            <span>{t("anColClicks")}</span>
+          </div>
+          {projects.map((p) => (
+            <div className="trow" key={p.id}>
+              <span style={{ display: "flex", alignItems: "center", gap: 10 }} dir="auto">
+                <img
+                  src={p.logo || letterLogo((loc(p, "name", lang) || "?")[0], COLORS.tan)}
+                  alt=""
+                  width="26"
+                  height="26"
+                  style={{ width: 26, height: 26, borderRadius: 7 }}
+                />
+                {loc(p, "name", lang)}
+              </span>
+              <span>{summary.opens[p.id] || 0}</span>
+              <span>{summary.clicks[p.id] || 0}</span>
+            </div>
+          ))}
+          {projects.length === 0 && (
+            <div className="trow">
+              <span style={{ color: COLORS.inkSoft }}>{t("anNoProjects")}</span>
+              <span />
+              <span />
+            </div>
+          )}
         </div>
-        {projects.map((p) => (
-          <div className="trow" key={p.id}>
-            <span style={{ display: "flex", alignItems: "center", gap: 10 }} dir="auto">
-              <img
-                src={p.logo || letterLogo((loc(p, "name", lang) || "?")[0], COLORS.tan)}
-                alt=""
-                style={{ width: 26, height: 26, borderRadius: 7 }}
-              />
-              {loc(p, "name", lang)}
-            </span>
-            <span>{summary.opens[p.id] || 0}</span>
-            <span>{summary.clicks[p.id] || 0}</span>
-          </div>
-        ))}
-        {projects.length === 0 && (
-          <div className="trow">
-            <span style={{ color: COLORS.inkSoft }}>{t("anNoProjects")}</span>
-            <span />
-            <span />
-          </div>
-        )}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 20, marginTop: 34 }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))",
+          gap: 20,
+          marginTop: 34,
+        }}
+      >
         <SourceList title={t("anSources")} rows={summary.topSources} empty={t("anNoData")} />
         <SourceList title={t("anCountries")} rows={summary.topCountries} empty={t("anNoData")} />
+        <SourceList title={t("anDevices")} rows={summary.topDevices} empty={t("anNoData")} />
       </div>
 
       <div className="note">{t("anInfoNote")}</div>
@@ -128,7 +161,7 @@ export default function Analytics({ projects }) {
 function SourceList({ title, rows, empty }) {
   return (
     <div>
-      <h3 className="display" style={{ fontSize: 20, margin: "0 0 12px" }}>
+      <h3 className="h-display" style={{ fontSize: 20, margin: "0 0 12px" }}>
         {title}
       </h3>
       <div className="table">
@@ -156,6 +189,15 @@ function sourceLabel(referrer, directLabel) {
   } catch {
     return referrer;
   }
+}
+
+// The Netlify function stores a language-neutral token. Rows written before
+// that change hold a literal Hebrew word, so those are passed through as-is.
+function deviceLabel(device, t) {
+  if (device === "mobile") return t("anDeviceMobile");
+  if (device === "tablet") return t("anDeviceTablet");
+  if (device === "desktop") return t("anDeviceDesktop");
+  return device || t("anUnknown");
 }
 
 function topN(obj, n) {

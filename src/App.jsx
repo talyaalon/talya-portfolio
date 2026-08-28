@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { styles, COLORS } from "./styles";
-import { isConfigured } from "./lib/supabaseClient";
+import { isConfigured } from "./lib/publicApi";
 import { track } from "./lib/analytics";
 import { useI18n } from "./i18n";
-import { useAuth } from "./hooks/useAuth";
-import { useProjects } from "./hooks/useProjects";
+import { useProjectsRead } from "./hooks/useProjectsRead";
 
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
@@ -12,24 +11,20 @@ import About from "./components/About";
 import Projects from "./components/Projects";
 import Skills from "./components/Skills";
 import Contact from "./components/Contact";
-import AdminTabs from "./components/AdminTabs";
-import Analytics from "./components/Analytics";
-import Settings from "./components/Settings";
 import ProjectModal from "./components/ProjectModal";
-import ProjectForm from "./components/ProjectForm";
-import Login from "./components/Login";
-import Modal from "./components/Modal";
+import BackToTop from "./components/BackToTop";
 import { Loader, ErrorState } from "./components/Feedback";
 
+// The PUBLIC site. Read-only by construction: it never imports useAuth, the
+// project editor, the analytics screen, or any admin string. The admin app is
+// a separate entry (src/AdminApp.jsx) served at /admin.
+//
+// Do not import anything admin-related here — `npm run verify:bundle` fails
+// the build if admin vocabulary appears in the visitor bundle.
 export default function App() {
   const { t } = useI18n();
-  const { session, isAdmin, loading: authLoading, signIn, signOut } = useAuth();
-  const { projects, error, reload, saveProject, deleteProject, uploadLogo } = useProjects();
-
-  const [tab, setTab] = useState("projects"); // projects | analytics | settings
+  const { projects, error, reload } = useProjectsRead();
   const [selected, setSelected] = useState(null);
-  const [editing, setEditing] = useState(null);
-  const [loginOpen, setLoginOpen] = useState(false);
 
   const viewSent = useRef(false);
   useEffect(() => {
@@ -39,62 +34,22 @@ export default function App() {
     }
   }, []);
 
-  // Secret admin entry: visiting the site with "#admin" opens the login dialog.
-  // (There is no visible admin button — only this link reveals it.)
-  useEffect(() => {
-    const check = () => {
-      if (window.location.hash.toLowerCase() === "#admin") setLoginOpen(true);
-    };
-    check();
-    window.addEventListener("hashchange", check);
-    return () => window.removeEventListener("hashchange", check);
-  }, []);
-
   const openProject = (proj) => {
     setSelected(proj);
     track("open", proj.id);
   };
 
-  const onDelete = async (proj) => {
-    if (!window.confirm(t("deleteConfirm"))) return;
-    try {
-      await deleteProject(proj.id);
-    } catch (e) {
-      window.alert(t("deleteFailed") + (e?.message || ""));
-    }
-  };
+  const loading = projects === null;
 
-  const onLogout = async () => {
-    await signOut();
-    setTab("projects");
-  };
-
-  // ---- not configured (missing .env) ----
-  if (!isConfigured) {
-    return (
-      <Shell isAdmin={false}>
-        <Hero />
-        <section className="section">
-          <div className="wrap">
-            <div className="note">
-              <strong>{t("notConnectedTitle")}</strong>
-              <br />
-              {t("notConnectedBody")}
-            </div>
-          </div>
-        </section>
-      </Shell>
-    );
-  }
-
-  const loading = authLoading || projects === null;
-  const showAdminPane = isAdmin && (tab === "analytics" || tab === "settings");
+  // A misconfigured deploy used to show visitors "create a .env file from
+  // .env.example" — developer instructions on a portfolio. Now it degrades to
+  // the rest of the page with one neutral line where the projects would be.
+  const unavailable = !isConfigured || (error && error !== "missing-config");
 
   return (
-    <Shell isAdmin={isAdmin} onLoginClick={() => setLoginOpen(true)} onLogout={onLogout}>
+    <Shell>
       <Hero />
-
-      {isAdmin && <AdminTabs tab={tab} onTab={setTab} />}
+      <About />
 
       {loading ? (
         <section className="section">
@@ -102,89 +57,36 @@ export default function App() {
             <Loader />
           </div>
         </section>
-      ) : error && error !== "missing-config" ? (
-        <section className="section">
+      ) : unavailable ? (
+        <section className="section" id="work">
           <div className="wrap">
-            <ErrorState message={t("projLoadFailed") + error} onRetry={reload} />
-          </div>
-        </section>
-      ) : showAdminPane ? (
-        <section className="section">
-          <div className="wrap">
-            {tab === "analytics" ? <Analytics projects={projects} /> : <Settings email={session?.user?.email} />}
+            <ErrorState message={t("projLoadFailed")} onRetry={isConfigured ? reload : null} />
           </div>
         </section>
       ) : (
-        <>
-          <About />
-          <Projects
-            projects={projects}
-            isAdmin={isAdmin}
-            onOpen={openProject}
-            onEdit={setEditing}
-            onDelete={onDelete}
-            onAdd={() => setEditing(blankProject())}
-          />
-          <Skills />
-          <Contact />
-        </>
+        <Projects projects={projects} onOpen={openProject} />
       )}
+
+      <Skills />
+      <Contact />
 
       {selected && <ProjectModal project={selected} onClose={() => setSelected(null)} />}
-
-      {editing && (
-        <Modal onClose={() => setEditing(null)} wide>
-          <ProjectForm
-            project={editing}
-            uploadLogo={uploadLogo}
-            onCancel={() => setEditing(null)}
-            onSave={async (proj) => {
-              await saveProject(proj);
-              setEditing(null);
-            }}
-          />
-        </Modal>
-      )}
-
-      {loginOpen && (
-        <Modal onClose={() => setLoginOpen(false)}>
-          <Login
-            signIn={signIn}
-            onSuccess={() => {
-              setLoginOpen(false);
-              setTab("projects");
-              if (window.location.hash) history.replaceState(null, "", window.location.pathname);
-            }}
-          />
-        </Modal>
-      )}
+      <BackToTop />
     </Shell>
   );
 }
 
-// Page shell: injects fonts/CSS, sets dir from language, renders the nav.
-function Shell({ children, isAdmin, onLoginClick, onLogout }) {
-  const { dir } = useI18n();
+// Page shell: injects CSS, sets dir from language, renders the nav.
+function Shell({ children }) {
+  const { dir, t } = useI18n();
   return (
     <div dir={dir} style={{ minHeight: "100vh", background: COLORS.cream, color: COLORS.inkSoft }}>
       <style>{styles}</style>
-      <Nav isAdmin={isAdmin} onLoginClick={onLoginClick} onLogout={onLogout} />
-      <main>{children}</main>
+      <a className="skip-link" href="#main">
+        {t("skipToContent")}
+      </a>
+      <Nav />
+      <main id="main">{children}</main>
     </div>
   );
-}
-
-function blankProject() {
-  return {
-    _isNew: true,
-    id: null,
-    nameEn: "", nameHe: "",
-    metaEn: "", metaHe: "",
-    shortEn: "", shortHe: "",
-    readmeEn: "", readmeHe: "",
-    resultEn: "", resultHe: "",
-    tools: [],
-    link: "", repo: "", demoEn: "", demoHe: "",
-    logo: "", screenshot: "",
-  };
 }

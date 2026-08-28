@@ -1,0 +1,11 @@
+{
+  "name": "Talya Israel — Portfolio",
+  "short_name": "Talya Israel",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#f7f3ec",
+  "theme_color": "#b07a4e",
+  "icons": [
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

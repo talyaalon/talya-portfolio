@@ -12,8 +12,37 @@
 //  collected. We only persist anonymous, aggregate-friendly fields.
 //
 //  Writes use the SECRET service_role key, which exists ONLY in Netlify's
-//  environment — never in the client bundle or the git repo.
+//  environment — never in the client bundle or the git repo. Because that key
+//  bypasses RLS, this endpoint is the one place where an unauthenticated
+//  caller can cause a database write, so it validates aggressively.
 // ============================================================
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Very small in-memory limiter. Function instances are short-lived and not
+// shared, so this is a speed bump against casual flooding, not a guarantee.
+const HITS = new Map();
+const WINDOW_MS = 60_000;
+const MAX_PER_WINDOW = 60;
+
+function rateLimited(key) {
+  const now = Date.now();
+  const rec = HITS.get(key);
+  if (!rec || now - rec.start > WINDOW_MS) {
+    HITS.set(key, { start: now, count: 1 });
+    if (HITS.size > 5000) HITS.clear(); // bound memory
+    return false;
+  }
+  rec.count += 1;
+  return rec.count > MAX_PER_WINDOW;
+}
+
+function allowedOrigins() {
+  return (process.env.ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
 
 export default async (req, context) => {
   if (req.method !== "POST") {
@@ -24,6 +53,24 @@ export default async (req, context) => {
   const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!SUPABASE_URL || !SERVICE_ROLE) {
     return new Response("Server not configured", { status: 500 });
+  }
+
+  // Only accept events that originate from this site. Without this, anyone can
+  // curl the endpoint and pollute the stats. If ALLOWED_ORIGINS is unset the
+  // check is skipped, so an existing deploy keeps working until it is set.
+  const allowed = allowedOrigins();
+  if (allowed.length) {
+    const origin = req.headers.get("origin") || "";
+    // sendBeacon on a same-origin request may omit Origin; a missing header is
+    // therefore tolerated, but a *wrong* one is not.
+    if (origin && !allowed.includes(origin)) {
+      return new Response("Forbidden", { status: 403 });
+    }
+  }
+
+  const ip = context.ip || req.headers.get("x-nf-client-connection-ip") || "unknown";
+  if (rateLimited(ip)) {
+    return new Response("Too Many Requests", { status: 429 });
   }
 
   let payload = {};
@@ -38,12 +85,18 @@ export default async (req, context) => {
     return new Response("Bad event", { status: 400 });
   }
 
+  // An unvalidated project_id reached Postgres and produced a 400 with the raw
+  // database error echoed back to the caller.
+  const projectId = typeof payload.project_id === "string" && UUID_RE.test(payload.project_id)
+    ? payload.project_id
+    : null;
+
   const geo = context.geo || {};
   const ua = req.headers.get("user-agent") || "";
 
   const row = {
     event_type: type,
-    project_id: payload.project_id || null,
+    project_id: projectId,
     // Trim referrer to a hostname-ish string; keep it short and harmless.
     referrer: cleanReferrer(payload.referrer),
     country: geo.country?.name || geo.country?.code || null,
@@ -64,10 +117,12 @@ export default async (req, context) => {
       body: JSON.stringify(row),
     });
     if (!res.ok) {
-      const text = await res.text();
-      return new Response("DB error: " + text, { status: 502 });
+      // Log the detail; do not hand database internals to an anonymous caller.
+      console.error("analytics insert failed:", res.status, await res.text());
+      return new Response("Upstream error", { status: 502 });
     }
   } catch (e) {
+    console.error("analytics upstream error:", e);
     return new Response("Upstream error", { status: 502 });
   }
 
@@ -79,19 +134,23 @@ export const config = {
   path: "/api/track",
 };
 
-function cleanReferrer(ref) {
+export function cleanReferrer(ref) {
   if (!ref || typeof ref !== "string") return null;
   try {
-    return new URL(ref).origin + new URL(ref).pathname;
+    const u = new URL(ref);
+    return u.origin + u.pathname;
   } catch {
     return ref.slice(0, 300);
   }
 }
 
-function deviceFromUA(ua) {
-  const s = ua.toLowerCase();
-  if (/ipad|tablet/.test(s)) return "טאבלט";
-  if (/mobi|iphone|android/.test(s)) return "מובייל";
-  if (!s) return "לא ידוע";
-  return "מחשב";
+// Language-neutral tokens. This used to store Hebrew words directly in the
+// database, which baked one language into the data and made the column
+// unusable from the English UI.
+export function deviceFromUA(ua) {
+  const s = String(ua || "").toLowerCase();
+  if (!s) return null;
+  if (/ipad|tablet/.test(s)) return "tablet";
+  if (/mobi|iphone|android/.test(s)) return "mobile";
+  return "desktop";
 }

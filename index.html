@@ -3,12 +3,94 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="תיק העבודות של טליה ישראל — אוסף הפרויקטים האמיתיים שיצרתי לאחרונה." />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23b5563a'/%3E%3Ctext x='50' y='58' font-size='52' fill='%23fffdf8' text-anchor='middle' font-family='Georgia,serif'%3ET%3C/text%3E%3C/svg%3E" />
-    <title>Talya Israel — Portfolio</title>
+
+    <!-- The app rewrites <html lang>, <title> and the description when the
+         language toggle is used (see src/i18n.jsx). These are the defaults a
+         crawler or an unfurler sees, so they must match the default language
+         (English) — previously this was an English lang with a Hebrew
+         description. -->
+    <title>Talya Israel — Full Stack Developer</title>
+    <meta
+      name="description"
+      content="Portfolio of Talya Israel, Full Stack Developer (B.Sc. Software Engineering). Production systems in React, Next.js, Node.js and PostgreSQL."
+    />
+    <link rel="canonical" href="https://talya-portfolio.netlify.app/" />
+    <meta name="theme-color" content="#b07a4e" />
+    <meta name="author" content="Talya Israel" />
+
+    <!-- The page is client-rendered, so this <head> is all that LinkedIn,
+         WhatsApp or Slack ever see. Without it the link unfurls as a bare URL
+         next to a grey box. -->
+    <meta property="og:type" content="profile" />
+    <meta property="og:site_name" content="Talya Israel" />
+    <meta property="og:title" content="Talya Israel — Full Stack Developer" />
+    <meta
+      property="og:description"
+      content="Production systems built end-to-end: React, Next.js, Node.js, PostgreSQL."
+    />
+    <meta property="og:url" content="https://talya-portfolio.netlify.app/" />
+    <meta property="og:image" content="https://talya-portfolio.netlify.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Talya Israel — Full Stack Developer" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="he_IL" />
+    <meta property="profile:first_name" content="Talya" />
+    <meta property="profile:last_name" content="Israel" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Talya Israel — Full Stack Developer" />
+    <meta
+      name="twitter:description"
+      content="Production systems built end-to-end: React, Next.js, Node.js, PostgreSQL."
+    />
+    <meta name="twitter:image" content="https://talya-portfolio.netlify.app/og-image.png" />
+
+    <!-- Fonts are linked here rather than @import-ed from inside the
+         JS-injected <style>, so the browser can start fetching them during
+         HTML parse instead of after React mounts. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap"
+    />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Talya Israel",
+        "jobTitle": "Full Stack Developer",
+        "url": "https://talya-portfolio.netlify.app/",
+        "image": "https://talya-portfolio.netlify.app/portrait.jpg",
+        "email": "mailto:Talyaisrael12@gmail.com",
+        "sameAs": [
+          "https://www.linkedin.com/in/talya-israel12",
+          "https://github.com/talyaalon"
+        ],
+        "knowsLanguage": ["he", "en"],
+        "knowsAbout": [
+          "React",
+          "Next.js",
+          "Node.js",
+          "PostgreSQL",
+          "Supabase",
+          "System design"
+        ]
+      }
+    </script>
   </head>
-  <body style="margin:0">
+  <body style="margin: 0">
     <div id="root"></div>
+    <noscript>
+      This portfolio needs JavaScript to display its projects. You can still reach me at
+      <a href="mailto:Talyaisrael12@gmail.com">Talyaisrael12@gmail.com</a>.
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

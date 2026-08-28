@@ -1,15 +1,24 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 // ============================================================
-//  i18n. Default English; a toggle switches to Hebrew + RTL.
-//  UI chrome is translated here; project content is user data
-//  stored bilingually in the database.
+//  i18n for the PUBLIC site. Default English; a toggle switches to Hebrew + RTL.
+//
+//  Admin-only strings deliberately do NOT live here — see src/i18n.admin.js.
+//  Everything in this file ships to every visitor, so keep it to public copy.
+//
+//  Project content is not here either: it is user data stored bilingually in
+//  the database and rendered through utils/localized.js.
 // ============================================================
 
 const STORAGE_KEY = "talya:lang";
 
 export const TRANSLATIONS = {
   en: {
+    // document head (kept in sync with the chosen language)
+    docTitle: "Talya Israel — Full Stack Developer",
+    docDescription:
+      "Portfolio of Talya Israel, Full Stack Developer (B.Sc. Software Engineering). Production systems in React, Next.js, Node.js and PostgreSQL.",
+
     // nav
     siteName: "Talya Israel",
     brandFirst: "Talya",
@@ -18,238 +27,137 @@ export const TRANSLATIONS = {
     navProjects: "Projects",
     navSkills: "Skills",
     navContact: "Contact",
+    navLabel: "Main",
     langSwitch: "עברית",
-    adminLogin: "Admin login",
-    adminMode: "Admin mode",
-    logout: "Log out",
+    menuOpen: "Open menu",
+    menuClose: "Close menu",
+    skipToContent: "Skip to content",
+    backToTop: "Back to top",
+
     // hero
     heroEyebrow: "Open to opportunities",
     heroRole: "Full Stack Developer · B.Sc. Software Engineering",
     heroLede:
-      "I build production systems end-to-end — from multi-branch e-commerce to operational platforms that real teams rely on every day.",
+      "I build production systems end-to-end — from multi-branch e-commerce to operational platforms teams depend on every day.",
     btnEmail: "Email me",
+    btnCv: "Download CV",
+
     // about
     secAbout: "About",
     aboutText:
-      "Full Stack Developer with a B.Sc. in Software Engineering, experienced in designing and building production-grade systems. Creator of Air Manage — a maintenance & asset platform in daily use at a real company. Strong in React, Next.js, Node.js and PostgreSQL, with a focus on system design, workflow automation and solving complex operational challenges.",
+      "Full Stack Developer with a B.Sc. in Software Engineering, experienced in designing and building production-grade systems. Creator of Air Manage — a maintenance and asset platform in daily use at a logistics company. Strong in React, Next.js, Node.js and PostgreSQL, with a focus on system design, workflow automation and solving complex operational problems.",
+
     // projects
     secProjects: "Selected Projects",
     cardViewLive: "View live",
-    cardWatchDemo: "Watch demo",
+    cardWatchDemo: "Read the guide",
     cardInternal: "Internal system",
-    cardScreenshot: "Screenshot",
+    cardScreenshot: "No screenshot",
     cardReadme: "Read more",
+    cardOpenAria: "Open details for ",
+    statusProduction: "In production",
+    statusPrototype: "Prototype",
+    statusArchived: "Archived",
+    statusAward: "Award",
+    roleLabel: "Role",
+
     // skills
     secSkills: "Skills",
     skillFrontend: "Frontend",
     skillBackend: "Backend & Data",
     skillTools: "Tools & Platforms",
-    skillAI: "AI-Assisted Development",
-    skillAIChip: "Prompt-driven dev",
+    skillAI: "AI Engineering",
+    skillAIChip: "LLM integration",
+
     // contact
-    secContact: "Let's talk",
+    secContact: "Let us talk",
     contactText:
-      "Looking for my next opportunity to build top-tier projects and systems. Happy to hear about roles, collaborations or any interesting idea.",
+      "Looking for my next role building production systems end-to-end. Happy to hear about positions, collaborations, or an interesting problem.",
     contactLocation: "Bangkok, Thailand",
-    // states / admin
+
+    // states
     loading: "Loading…",
-    loadingData: "Loading data…",
     retry: "Try again",
-    emptyAdmin: "No projects yet. Click “+ Add project” to start.",
-    emptyClient: "No projects yet. Check back soon!",
-    notConnectedTitle: "The site isn't connected to Supabase yet.",
-    notConnectedBody:
-      "Create a .env file from .env.example with your project URL and public key, then restart the server.",
-    projLoadFailed: "Failed to load projects: ",
-    deleteConfirm: "Delete this project?",
-    deleteFailed: "Delete failed: ",
-    tabProjects: "Projects",
-    tabAnalytics: "Analytics",
-    tabSettings: "Settings",
-    addProject: "+ Add project",
-    edit: "Edit",
-    delete: "Delete",
+    emptyClient: "Projects are being updated — check back shortly.",
+    projLoadFailed: "Projects could not be loaded right now.",
+    siteUnavailable: "The projects list is temporarily unavailable.",
+    errorTitle: "Something went wrong on this page.",
+    errorBody: "Please reload. If it keeps happening, email me and I will fix it.",
+    errorReload: "Reload the page",
     close: "Close",
+
     // project modal
     modalReadme: "About the project",
-    modalOpen: "Open project ↗",
-    // form
-    formNew: "New project",
-    formEdit: "Edit project",
-    formUploadLogo: "Upload logo",
-    formLogoHint: "Optional — a small logo for the project",
-    formName: "Project name",
-    formMeta: "Context (company · year)",
-    formShort: "Short description (one line)",
-    formResult: "Highlight / result",
-    formLink: "Live link",
-    formRepo: "GitHub / repo link",
-    formDemo: "Demo / video link",
-    formTools: "Technologies",
-    formToolsPlaceholder: "JavaScript, React…",
-    formAdd: "Add",
-    formReadme: "Detailed description",
-    formReadmePlaceholder: "What the project does, the tools used, challenges solved…",
-    formSave: "Save",
-    formSaving: "Saving…",
-    formCancel: "Cancel",
-    formImageError: "Couldn't process the image. Try another file.",
-    formSaveFailed: "Save failed: ",
-    suffixEn: "(English)",
-    suffixHe: "(Hebrew)",
-    formBilingualHint: "Fill each field in both languages. If you leave one empty, the other language is shown instead.",
-    // login
-    loginTitle: "Admin login",
-    loginSubtitle: "Only you see the edit buttons and the analytics here.",
-    loginEmail: "Email",
-    loginPassword: "Password",
-    loginWrong: "Wrong email or password",
-    loginSigningIn: "Signing in…",
-    loginEnter: "Sign in",
-    // settings
-    setTitle: "Admin settings",
-    setLoggedInAs: "Signed in as ",
-    setNewPassword: "New password",
-    setConfirmPassword: "Confirm password",
-    setTooShort: "Password must be at least 6 characters.",
-    setNoMatch: "Passwords don't match.",
-    setUpdateFailed: "Update failed: ",
-    setUpdated: "Password updated ✓",
-    setUpdate: "Update password",
-    setSaving: "Saving…",
-    // analytics
-    anMonthSummary: "Summary for the current month.",
-    anViewsMonth: "Site views this month",
-    anOpens: "Card opens",
-    anClicks: "Link clicks",
-    anByProject: "By project",
-    anColProject: "Project",
-    anColOpens: "Opens",
-    anColClicks: "Link clicks",
-    anNoProjects: "No projects yet",
-    anSources: "Where they came from (Referrer)",
-    anCountries: "Countries (estimated by IP)",
-    anDirect: "Direct visit",
-    anUnknown: "Unknown",
-    anNoData: "No data yet",
-    anLoadFailed: "Failed to load data: ",
-    anInfoNote:
-      "About data collection: the data here is real and collected server-side. We collect what's possible anonymously — referrer, estimated country/city by IP, device type, and the date. An anonymous visitor's email address is not exposed to any website in the browser — so it is never collected and never shown.",
+    modalScreenshot: "Screenshot of ",
   },
+
   he: {
+    docTitle: "טליה ישראל — מפתחת Full Stack",
+    docDescription:
+      "תיק העבודות של טליה ישראל, מפתחת Full Stack (B.Sc. הנדסת תוכנה). מערכות Production ב-React, ‏Next.js, ‏Node.js ו-PostgreSQL.",
+
     siteName: "טליה ישראל",
     brandFirst: "טליה",
     brandLast: "ישראל",
     navAbout: "אודות",
     navProjects: "פרויקטים",
     navSkills: "מיומנויות",
-    navContact: "צור קשר",
+    navContact: "יצירת קשר",
+    navLabel: "ראשי",
     langSwitch: "English",
-    adminLogin: "כניסת מנהל",
-    adminMode: "מצב מנהל",
-    logout: "יציאה",
+    menuOpen: "פתיחת תפריט",
+    menuClose: "סגירת תפריט",
+    skipToContent: "דילוג לתוכן",
+    backToTop: "חזרה למעלה",
+
     heroEyebrow: "פתוחה להזדמנויות",
     heroRole: "מפתחת Full Stack · B.Sc. הנדסת תוכנה",
     heroLede:
-      "אני בונה מערכות Production מקצה לקצה — מ-E-commerce רב-סניפי ועד פלטפורמות תפעוליות שצוותים אמיתיים מסתמכים עליהן כל יום.",
-    btnEmail: "שלחו לי מייל",
+      "אני בונה מערכות Production מקצה לקצה — מ-E-commerce רב-סניפי ועד פלטפורמות תפעוליות שצוותים מסתמכים עליהן כל יום.",
+    btnEmail: "שליחת מייל",
+    btnCv: "הורדת קורות חיים",
+
     secAbout: "אודות",
     aboutText:
-      "מפתחת Full Stack עם תואר ראשון בהנדסת תוכנה, מנוסה בעיצוב ובניית מערכות ברמת Production. יצרתי את Air Manage — פלטפורמת ניהול תחזוקה ונכסים בשימוש יומיומי בחברה אמיתית. שולטת ב-React, Next.js, Node.js ו-PostgreSQL, עם דגש על עיצוב מערכות, אוטומציה של תהליכים ופתרון אתגרים תפעוליים מורכבים.",
+      "מפתחת Full Stack עם תואר ראשון בהנדסת תוכנה, מנוסה בעיצוב ובבניית מערכות ברמת Production. יצרתי את Air Manage — פלטפורמת ניהול תחזוקה ונכסים בשימוש יומיומי בחברת לוגיסטיקה. שולטת ב-React, ‏Next.js, ‏Node.js ו-PostgreSQL, עם דגש על עיצוב מערכות, אוטומציה של תהליכים ופתרון בעיות תפעוליות מורכבות.",
+
     secProjects: "פרויקטים נבחרים",
     cardViewLive: "צפייה באתר",
-    cardWatchDemo: "צפייה בדמו",
+    cardWatchDemo: "למדריך המלא",
     cardInternal: "מערכת פנימית",
-    cardScreenshot: "צילום מסך",
-    cardReadme: "קראו עוד",
+    cardScreenshot: "אין צילום מסך",
+    cardReadme: "קריאה נוספת",
+    cardOpenAria: "פתיחת פרטים על ",
+    statusProduction: "בפרודקשן",
+    statusPrototype: "אב-טיפוס",
+    statusArchived: "בארכיון",
+    statusAward: "פרס",
+    roleLabel: "תפקיד",
+
     secSkills: "מיומנויות",
     skillFrontend: "צד לקוח",
     skillBackend: "צד שרת ובסיסי נתונים",
     skillTools: "כלים ופלטפורמות",
-    skillAI: "פיתוח בעזרת AI",
-    skillAIChip: "פיתוח מבוסס פרומפטים",
+    skillAI: "הנדסת AI",
+    skillAIChip: "אינטגרציית מודלים",
+
     secContact: "בואו נדבר",
     contactText:
-      "מחפשת את ההזדמנות הבאה שלי לבנות פרויקטים ומערכות מהטובות ביותר. אשמח לשמוע על משרות, שיתופי פעולה או כל רעיון מעניין.",
+      "מחפשת את התפקיד הבא שלי בבניית מערכות Production מקצה לקצה. אשמח לשמוע על משרות, שיתופי פעולה או בעיה מעניינת.",
     contactLocation: "בנגקוק, תאילנד",
+
     loading: "טוען…",
-    loadingData: "טוען נתונים…",
-    retry: "נסה שוב",
-    emptyAdmin: "אין עדיין פרויקטים. לחצי על ‘+ הוסף פרויקט’ כדי להתחיל.",
-    emptyClient: "אין עדיין פרויקטים. חזרו בקרוב!",
-    notConnectedTitle: "האתר עדיין לא מחובר ל-Supabase.",
-    notConnectedBody:
-      "צרי קובץ .env לפי .env.example עם הכתובת והמפתח הציבורי של הפרויקט, ואז הפעילי מחדש את השרת.",
-    projLoadFailed: "טעינת הפרויקטים נכשלה: ",
-    deleteConfirm: "למחוק את הפרויקט הזה?",
-    deleteFailed: "המחיקה נכשלה: ",
-    tabProjects: "פרויקטים",
-    tabAnalytics: "נתוני צפייה",
-    tabSettings: "הגדרות",
-    addProject: "+ הוסף פרויקט",
-    edit: "עריכה",
-    delete: "מחיקה",
+    retry: "לניסיון נוסף",
+    emptyClient: "רשימת הפרויקטים מתעדכנת — נסו שוב בקרוב.",
+    projLoadFailed: "לא הצלחנו לטעון את הפרויקטים כרגע.",
+    siteUnavailable: "רשימת הפרויקטים אינה זמינה זמנית.",
+    errorTitle: "משהו השתבש בעמוד הזה.",
+    errorBody: "אפשר לרענן. אם זה חוזר, שלחו לי מייל ואתקן.",
+    errorReload: "רענון העמוד",
     close: "סגירה",
+
     modalReadme: "על הפרויקט",
-    modalOpen: "פתיחת הפרויקט ↗",
-    formNew: "פרויקט חדש",
-    formEdit: "עריכת פרויקט",
-    formUploadLogo: "העלאת לוגו",
-    formLogoHint: "אופציונלי — לוגו קטן לפרויקט",
-    formName: "שם הפרויקט",
-    formMeta: "הקשר (חברה · שנה)",
-    formShort: "תיאור קצר (שורה אחת)",
-    formResult: "הישג בולט / תוצאה",
-    formLink: "קישור לאתר חי",
-    formRepo: "קישור GitHub",
-    formDemo: "קישור דמו/וידאו",
-    formTools: "טכנולוגיות",
-    formToolsPlaceholder: "JavaScript, React…",
-    formAdd: "הוסף",
-    formReadme: "תיאור מפורט",
-    formReadmePlaceholder: "מה הפרויקט עושה, באילו כלים השתמשת, אילו אתגרים פתרת…",
-    formSave: "שמירה",
-    formSaving: "שומר…",
-    formCancel: "ביטול",
-    formImageError: "לא הצלחתי לעבד את התמונה. נסי קובץ אחר.",
-    formSaveFailed: "השמירה נכשלה: ",
-    suffixEn: "(אנגלית)",
-    suffixHe: "(עברית)",
-    formBilingualHint: "מלאי כל שדה בשתי השפות. אם תשאירי אחד ריק — תוצג השפה השנייה במקומו.",
-    loginTitle: "כניסת מנהל",
-    loginSubtitle: "רק את רואה כאן את כפתורי העריכה ואת נתוני הצפייה.",
-    loginEmail: "אימייל",
-    loginPassword: "סיסמה",
-    loginWrong: "אימייל או סיסמה שגויים",
-    loginSigningIn: "מתחבר…",
-    loginEnter: "כניסה",
-    setTitle: "הגדרות מנהל",
-    setLoggedInAs: "מחוברת כ־",
-    setNewPassword: "סיסמה חדשה",
-    setConfirmPassword: "אימות סיסמה",
-    setTooShort: "הסיסמה חייבת להיות לפחות 6 תווים.",
-    setNoMatch: "הסיסמאות אינן תואמות.",
-    setUpdateFailed: "העדכון נכשל: ",
-    setUpdated: "הסיסמה עודכנה ✓",
-    setUpdate: "עדכון סיסמה",
-    setSaving: "שומר…",
-    anMonthSummary: "סיכום עבור החודש הנוכחי.",
-    anViewsMonth: "צפיות באתר החודש",
-    anOpens: "פתיחות כרטיסיות",
-    anClicks: "קליקים על קישורים",
-    anByProject: "לפי פרויקט",
-    anColProject: "פרויקט",
-    anColOpens: "פתיחות",
-    anColClicks: "קליקים לקישור",
-    anNoProjects: "אין פרויקטים עדיין",
-    anSources: "מאיפה הגיעו (Referrer)",
-    anCountries: "מדינות (משוער לפי IP)",
-    anDirect: "כניסה ישירה",
-    anUnknown: "לא ידוע",
-    anNoData: "אין נתונים עדיין",
-    anLoadFailed: "טעינת הנתונים נכשלה: ",
-    anInfoNote:
-      "על איסוף הנתונים: הנתונים כאן אמיתיים ונאספים בצד-שרת. נאסף מה שאפשר באופן אנונימי — referrer, מדינה/עיר משוערת לפי IP, סוג המכשיר, והתאריך. כתובת המייל של מבקר אנונימי אינה חשופה לאף אתר בדפדפן — לכן היא לא נאספת ולא מוצגת.",
+    modalScreenshot: "צילום מסך של ",
   },
 };
 
@@ -262,32 +170,91 @@ export const CONTACT = {
   github: "https://github.com/talyaalon",
 };
 
+// Downloadable CV, per language. A recruiter who likes the page needs
+// something to forward, and this is the highest-value link on the site.
+//
+// Set each value to a path under public/ once the PDF exists, e.g.
+//   en: "/docs/talya-israel-cv-en.pdf"
+// While a value is null the button is not rendered at all — better no button
+// than a button that 404s in front of a hiring manager.
+export const CV = {
+  en: null,
+  he: null,
+};
+
+export const LANGS = ["en", "he"];
+
 const I18nContext = createContext(null);
 
-export function I18nProvider({ children }) {
+// `extra` merges an additional translation table (see src/i18n.admin.js).
+// The public entry passes nothing, which is what keeps admin copy out of the
+// visitor bundle.
+export function I18nProvider({ children, extra }) {
   const [lang, setLang] = useState(() => {
     try {
-      return localStorage.getItem(STORAGE_KEY) || "en";
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return LANGS.includes(saved) ? saved : "en";
     } catch {
       return "en";
     }
   });
   const dir = lang === "he" ? "rtl" : "ltr";
 
+  const tables = useMemo(() => {
+    if (!extra) return TRANSLATIONS;
+    return {
+      en: { ...TRANSLATIONS.en, ...extra.en },
+      he: { ...TRANSLATIONS.he, ...extra.he },
+    };
+  }, [extra]);
+
   useEffect(() => {
-    document.documentElement.lang = lang;
-    document.documentElement.dir = dir;
+    const root = document.documentElement;
+    root.lang = lang;
+    root.dir = dir;
+
+    // The static <head> can only carry one language; keep it matching the
+    // language actually on screen so crawlers and screen readers agree.
+    const title = tables[lang]?.docTitle;
+    if (title) document.title = title;
+    const desc = tables[lang]?.docDescription;
+    const descTag = document.querySelector('meta[name="description"]');
+    if (desc && descTag) descTag.setAttribute("content", desc);
+
     try {
       localStorage.setItem(STORAGE_KEY, lang);
     } catch {
-      /* ignore */
+      /* storage unavailable (private mode) — language just will not persist */
     }
-  }, [lang, dir]);
+  }, [lang, dir, tables]);
 
   const toggle = () => setLang((l) => (l === "en" ? "he" : "en"));
-  const t = (key) => TRANSLATIONS[lang]?.[key] ?? TRANSLATIONS.en[key] ?? key;
 
-  return <I18nContext.Provider value={{ lang, dir, setLang, toggle, t }}>{children}</I18nContext.Provider>;
+  // A missing key is a bug, not a display value. It fails loudly in
+  // development and in tests; in production it degrades to English rather
+  // than rendering a raw identifier at a recruiter.
+  const t = useCallback((key) => {
+    const hit = tables[lang]?.[key];
+    if (hit !== undefined) return hit;
+
+    const english = tables.en?.[key];
+    if (english !== undefined) {
+      if (import.meta.env.DEV) {
+        throw new Error(`i18n: key "${key}" is missing for language "${lang}"`);
+      }
+      return english;
+    }
+
+    if (import.meta.env.DEV) {
+      throw new Error(`i18n: key "${key}" does not exist in any language`);
+    }
+    console.error(`i18n: missing key "${key}"`);
+    return "";
+  }, [tables, lang]);
+
+  const value = useMemo(() => ({ lang, dir, setLang, toggle, t, tables }), [lang, dir, t, tables]);
+
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
 
 export function useI18n() {
