@@ -1,6 +1,7 @@
-// Screenshot URLs are stored in the database, so they still point at the
-// original PNG/JPG files in public/screenshots/. Those were 4.4 MB in total
-// and rendered into a ~550px box.
+// Screenshot URLs are stored in the database and point at the original
+// PNG/JPG files. Two directories are in play: /shots/ (what the database
+// actually references — desktop and mobile captures of each project) and
+// /screenshots/ (a newer set that no row currently points at).
 //
 // Rather than rewrite database rows (and break any URL that has no converted
 // sibling), the UI asks for the .webp version first and falls back to the
@@ -9,7 +10,7 @@
 // Once every row is confirmed to have a .webp sibling, the originals can be
 // deleted from public/ and this helper simplified away.
 
-const LOCAL_IMAGE = /^\/screenshots\/[^?#]+\.(png|jpe?g)$/i;
+const LOCAL_IMAGE = /^\/(shots|screenshots)\/[^?#]+\.(png|jpe?g)$/i;
 
 export function webpVariant(url) {
   if (typeof url !== "string") return null;

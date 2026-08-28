@@ -35,3 +35,19 @@ describe("preferWebp", () => {
     });
   });
 });
+
+describe("the /shots/ directory the database actually references", () => {
+  it("maps desktop and mobile captures to webp", () => {
+    expect(webpVariant("/shots/jcafe-desktop.png")).toBe("/shots/jcafe-desktop.webp");
+    expect(webpVariant("/shots/jcafe-mobile.png")).toBe("/shots/jcafe-mobile.webp");
+    expect(webpVariant("/shots/airmanage.png")).toBe("/shots/airmanage.webp");
+  });
+
+  it("still falls back to the stored .png if the webp is absent", () => {
+    const { src, onError } = preferWebp("/shots/hgorer-desktop.png");
+    expect(src).toBe("/shots/hgorer-desktop.webp");
+    const el = { dataset: {}, src: "" };
+    onError({ currentTarget: el });
+    expect(el.src).toBe("/shots/hgorer-desktop.png");
+  });
+});
