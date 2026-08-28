@@ -133,7 +133,7 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
 
         {project.screenshot || project.logo ? (
           <button className="shot" onClick={open} aria-label={t("cardOpenAria") + name}>
-            {mobileShot ? (
+            {project.screenshot ? (
               <span className="devices">
                 <span className="dev-laptop">
                   <span className="dev-bar" aria-hidden="true"><i /><i /><i /></span>
@@ -146,21 +146,23 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
                     height="750"
                   />
                 </span>
-                <span className="dev-phone">
-                  <span className="dev-notch" aria-hidden="true" />
-                  <img
-                    {...preferWebp(mobileShot)}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    width="478"
-                    height="1030"
-                  />
-                </span>
+                {mobileShot && (
+                  <span className="dev-phone">
+                    <span className="dev-notch" aria-hidden="true" />
+                    <img
+                      {...preferWebp(mobileShot)}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      width="478"
+                      height="1030"
+                    />
+                  </span>
+                )}
               </span>
             ) : (
               <img
-                {...preferWebp(project.screenshot || project.logo)}
+                {...preferWebp(project.logo)}
                 alt=""
                 loading="lazy"
                 decoding="async"
