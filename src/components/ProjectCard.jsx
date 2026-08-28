@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useI18n } from "../i18n";
 import { loc } from "../utils/localized";
 import { track } from "../lib/analytics";
@@ -29,6 +30,20 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
     e.stopPropagation();
     track("click", project.id);
   };
+
+  // Clicking a device frame opens that capture in a floating lightbox.
+  const [lightbox, setLightbox] = useState(null); // { src, mobile }
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e) => { if (e.key === "Escape") setLightbox(null); };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [lightbox]);
 
   // The old heuristic tested the whole result line for /place|award|פרס|מקום/,
   // so "replaced", "marketplace" and "במקום" all earned a prize star. An award
@@ -131,50 +146,61 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
           )}
         </div>
 
-        {project.screenshot || project.logo ? (
-          <button className="shot" onClick={open} aria-label={t("cardOpenAria") + name}>
-            {project.screenshot ? (
-              <span className="devices">
-                <span className="dev-laptop">
-                  <span className="dev-bar" aria-hidden="true"><i /><i /><i /></span>
-                  <img
-                    {...preferWebp(project.screenshot)}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    width="1200"
-                    height="750"
-                  />
+        {project.screenshot ? (
+          <div className="shot">
+            <span className="devices">
+              <button
+                type="button"
+                className="dev-laptop"
+                aria-label={t("cardOpenAria") + name}
+                onClick={(e) => { e.stopPropagation(); setLightbox({ src: project.screenshot, mobile: false }); }}
+              >
+                <span className="dev-bar" aria-hidden="true"><i /><i /><i /></span>
+                <span className="dev-screen">
+                  <img {...preferWebp(project.screenshot)} alt="" loading="lazy" decoding="async" />
                 </span>
-                {mobileShot && (
-                  <span className="dev-phone">
-                    <span className="dev-notch" aria-hidden="true" />
-                    <img
-                      {...preferWebp(mobileShot)}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                      width="478"
-                      height="1030"
-                    />
+              </button>
+              {mobileShot && (
+                <button
+                  type="button"
+                  className="dev-phone"
+                  aria-label={t("cardOpenAria") + name}
+                  onClick={(e) => { e.stopPropagation(); setLightbox({ src: mobileShot, mobile: true }); }}
+                >
+                  <span className="dev-notch" aria-hidden="true" />
+                  <span className="dev-screen">
+                    <img {...preferWebp(mobileShot)} alt="" loading="lazy" decoding="async" />
                   </span>
-                )}
-              </span>
-            ) : (
-              <img
-                {...preferWebp(project.logo)}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                width="1200"
-                height="750"
-              />
-            )}
+                </button>
+              )}
+            </span>
+          </div>
+        ) : project.logo ? (
+          <button className="shot" onClick={open} aria-label={t("cardOpenAria") + name}>
+            <img
+              {...preferWebp(project.logo)}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              width="1200"
+              height="750"
+            />
           </button>
         ) : (
           <div className="shot shot-empty" aria-hidden="true">
             <Image />
             <span>{t("cardScreenshot")}</span>
+          </div>
+        )}
+        {lightbox && (
+          <div className="shot-lightbox" role="dialog" aria-modal="true" onClick={() => setLightbox(null)}>
+            <button type="button" className="lightbox-close" aria-label="Close" onClick={() => setLightbox(null)}>✕</button>
+            <img
+              {...preferWebp(lightbox.src)}
+              alt={name}
+              className={lightbox.mobile ? "lb-mobile" : "lb-desktop"}
+              onClick={(e) => e.stopPropagation()}
+            />
           </div>
         )}
       </div>
