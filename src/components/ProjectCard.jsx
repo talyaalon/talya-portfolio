@@ -16,6 +16,14 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
   const impact = loc(project, "impact", lang);
   const demo = loc(project, "demo", lang);
 
+  // /shots/<name>-desktop.png ships with a matching <name>-mobile.png; when the
+  // stored screenshot follows that naming, the panel renders a laptop+phone
+  // mockup showing both captures. Any other URL renders as a single image.
+  const mobileShot =
+    project.screenshot && project.screenshot.includes("-desktop.")
+      ? project.screenshot.replace("-desktop.", "-mobile.")
+      : null;
+
   const open = () => onOpen(project);
   const clickLink = (e) => {
     e.stopPropagation();
@@ -125,14 +133,41 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
 
         {project.screenshot || project.logo ? (
           <button className="shot" onClick={open} aria-label={t("cardOpenAria") + name}>
-            <img
-              {...preferWebp(project.screenshot || project.logo)}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              width="1200"
-              height="750"
-            />
+            {mobileShot ? (
+              <span className="devices">
+                <span className="dev-laptop">
+                  <span className="dev-bar" aria-hidden="true"><i /><i /><i /></span>
+                  <img
+                    {...preferWebp(project.screenshot)}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    width="1200"
+                    height="750"
+                  />
+                </span>
+                <span className="dev-phone">
+                  <span className="dev-notch" aria-hidden="true" />
+                  <img
+                    {...preferWebp(mobileShot)}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    width="390"
+                    height="844"
+                  />
+                </span>
+              </span>
+            ) : (
+              <img
+                {...preferWebp(project.screenshot || project.logo)}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                width="1200"
+                height="750"
+              />
+            )}
           </button>
         ) : (
           <div className="shot shot-empty" aria-hidden="true">

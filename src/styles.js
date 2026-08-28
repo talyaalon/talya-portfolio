@@ -176,6 +176,22 @@ button.chip-removable:hover{border-color:var(--tan-text)}
 .shot span{font-size:12.5px;font-weight:600;letter-spacing:.02em}
 .shot img{width:100%;height:100%;object-fit:contain;display:block;border-radius:8px;
   box-shadow:0 4px 14px -8px rgba(38,42,42,.4)}
+/* device mockup: browser-framed desktop capture with a phone-framed mobile
+   capture overlapping its corner — both are real captures of the live site */
+.devices{position:relative;display:flex;align-items:flex-start;justify-content:flex-start;
+  width:100%;padding:6px 4px 12px}
+.dev-laptop{display:block;width:88%;background:#fff;border-radius:10px;overflow:hidden;
+  border:1px solid rgba(38,42,42,.12);box-shadow:0 14px 30px -16px rgba(38,42,42,.5)}
+.dev-bar{display:flex;gap:5px;padding:8px 11px;background:#f1ece4;border-bottom:1px solid rgba(38,42,42,.07)}
+.dev-bar i{width:8px;height:8px;border-radius:50%;background:#d8cfc2;display:block}
+.shot .dev-laptop img{width:100%;height:auto;object-fit:unset;border-radius:0;box-shadow:none}
+.dev-phone{display:block;position:absolute;inset-inline-end:2%;bottom:0;width:26%;min-width:84px;max-width:132px;
+  background:#1f2323;border-radius:18px;padding:5px;z-index:2;
+  border:1px solid rgba(38,42,42,.25);box-shadow:0 16px 32px -14px rgba(38,42,42,.6)}
+.dev-phone .dev-notch{display:block;position:absolute;top:10px;left:50%;transform:translateX(-50%);
+  width:36%;height:5px;border-radius:99px;background:rgba(255,255,255,.28);z-index:3}
+.shot .dev-phone img{width:100%;height:auto;object-fit:unset;border-radius:13px;box-shadow:none}
+@media(max-width:660px){.dev-phone{width:30%}}
 .modal-shot{display:block;margin:18px 0 0;border-radius:12px;overflow:hidden;
   background:var(--beige-soft);border:1px solid var(--line)}
 .modal-shot img{width:100%;height:auto;display:block}
