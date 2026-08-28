@@ -10,3 +10,8 @@
 
 /admin.html
   X-Robots-Tag: noindex, nofollow
+
+# Netlify serves .webmanifest as application/octet-stream, which some browsers
+# refuse to parse as a manifest.
+/site.webmanifest
+  Content-Type: application/manifest+json
