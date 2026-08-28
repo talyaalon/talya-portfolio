@@ -52,7 +52,8 @@ export default function AdminApp() {
 
 function AdminPanes() {
   const { t } = useI18n();
-  const { projects, error, reload, saveProject, deleteProject, uploadLogo } = useProjectsAdmin();
+  const { projects, error, missingColumns, reload, saveProject, deleteProject, uploadLogo } =
+    useProjectsAdmin();
   const [tab, setTab] = useState("projects");
   const [editing, setEditing] = useState(null);
 
@@ -84,6 +85,16 @@ function AdminPanes() {
   return (
     <>
       <AdminTabs tab={tab} onTab={setTab} />
+
+      {/* The public site degrades quietly when the database is behind; the
+          owner should not have to notice it by accident. */}
+      {missingColumns.length > 0 && (
+        <div className="wrap" style={{ paddingTop: 12 }}>
+          <Banner kind="error">
+            {t("adminNeedsMigration")} <span dir="ltr">{missingColumns.join(", ")}</span>
+          </Banner>
+        </div>
+      )}
       {tab === "analytics" ? (
         <Section>
           <Analytics projects={projects} />

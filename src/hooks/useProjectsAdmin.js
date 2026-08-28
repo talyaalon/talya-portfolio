@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { supabase, STORAGE_BUCKET } from "../lib/supabaseClient";
-import { toRow, invalidUrlFields } from "../lib/projectRow";
+import { toRow, invalidUrlFields, MIGRATION_001_COLUMNS } from "../lib/projectRow";
 import { useProjectsRead } from "./useProjectsRead";
 
 // Read + write. Imported only by the admin entry, so the mutation code and
@@ -10,7 +10,7 @@ import { useProjectsRead } from "./useProjectsRead";
 // Row Level Security (supabase/policies-owner-only.sql), which refuses these
 // writes for anyone who is not the owner.
 export function useProjectsAdmin() {
-  const { projects, error, reload } = useProjectsRead();
+  const { projects, error, missingColumns, reload } = useProjectsRead();
 
   // Upload a logo Blob to Storage, return its public URL.
   const uploadLogo = useCallback(async (blob, projectId) => {
@@ -32,7 +32,12 @@ export function useProjectsAdmin() {
         throw e;
       }
 
-      const row = toRow(proj);
+      // Against an unmigrated database, write only the columns it has rather
+      // than failing the whole save on an unknown column.
+      const writable = missingColumns.length
+        ? Object.keys(toRow(proj)).filter((c) => !missingColumns.includes(c))
+        : null;
+      const row = toRow(proj, writable);
       if (proj.id && !proj._isNew) {
         const { error: err } = await supabase.from("projects").update(row).eq("id", proj.id);
         if (err) throw err;
@@ -42,7 +47,7 @@ export function useProjectsAdmin() {
       }
       await reload();
     },
-    [reload]
+    [reload, missingColumns]
   );
 
   const deleteProject = useCallback(
@@ -54,5 +59,5 @@ export function useProjectsAdmin() {
     [reload]
   );
 
-  return { projects, error, reload, saveProject, deleteProject, uploadLogo };
+  return { projects, error, missingColumns, reload, saveProject, deleteProject, uploadLogo };
 }

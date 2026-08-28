@@ -42,6 +42,8 @@ export const ADMIN_TRANSLATIONS = {
     deleteConfirm: "Delete this project?",
     deleteFailed: "Delete failed: ",
     adminLoadFailed: "Failed to load projects: ",
+    adminNeedsMigration:
+      "The database is missing columns this version uses; those fields will not save. Run supabase/migrations/001-project-fields.sql. Missing:",
 
     // form
     formNew: "New project",
@@ -137,6 +139,8 @@ export const ADMIN_TRANSLATIONS = {
     deleteConfirm: "למחוק את הפרויקט הזה?",
     deleteFailed: "המחיקה נכשלה: ",
     adminLoadFailed: "טעינת הפרויקטים נכשלה: ",
+    adminNeedsMigration:
+      "חסרות במסד עמודות שהגרסה הזו משתמשת בהן, והשדות האלה לא יישמרו. יש להריץ את supabase/migrations/001-project-fields.sql. חסר:",
 
     formNew: "פרויקט חדש",
     formEdit: "עריכת פרויקט",

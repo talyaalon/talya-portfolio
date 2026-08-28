@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchProjects, isConfigured } from "../lib/publicApi";
-import { fromRow } from "../lib/projectRow";
+import { fromRow, pendingMigration } from "../lib/projectRow";
 
 // Read-only project list, used by the PUBLIC site.
 //
@@ -10,6 +10,8 @@ import { fromRow } from "../lib/projectRow";
 export function useProjectsRead() {
   const [projects, setProjects] = useState(null); // null = still loading
   const [error, setError] = useState(null);
+  // Columns migration 001 adds that the live database does not have yet.
+  const [missingColumns, setMissingColumns] = useState([]);
 
   // Guards against two overlapping loads resolving out of order and leaving
   // the older response on screen.
@@ -36,6 +38,13 @@ export function useProjectsRead() {
     try {
       const rows = await fetchProjects();
       if (!alive.current || id !== requestId.current) return; // superseded
+      const pending = rows.length ? pendingMigration(rows[0]) : [];
+      if (pending.length) {
+        console.warn(
+          `projects table is missing ${pending.join(", ")} — run supabase/migrations/001-project-fields.sql`
+        );
+      }
+      setMissingColumns(pending);
       setProjects(rows.map(fromRow));
     } catch (e) {
       if (!alive.current || id !== requestId.current) return;
@@ -52,5 +61,5 @@ export function useProjectsRead() {
     load();
   }, [load]);
 
-  return { projects, error, reload: load };
+  return { projects, error, missingColumns, reload: load };
 }

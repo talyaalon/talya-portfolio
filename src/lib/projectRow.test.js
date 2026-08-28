@@ -7,6 +7,9 @@ import {
   invalidUrlFields,
   SchemaMismatchError,
   REQUIRED_COLUMNS,
+  CORE_COLUMNS,
+  MIGRATION_001_COLUMNS,
+  pendingMigration,
 } from "./projectRow";
 
 // A row exactly as the migrated database returns it.
@@ -25,17 +28,19 @@ describe("fromRow", () => {
     expect(p.demoHe).toBe("https://he.example.com");
   });
 
-  it("throws instead of silently blanking a field when a column is missing", () => {
+  it("throws instead of silently blanking a field when a CORE column is missing", () => {
+    // A missing core column means the row is not what this code understands.
+    // Turning it into "" is how the demo_url schema drift stayed invisible.
     const row = dbRow();
-    delete row.demo_url_en;
-    delete row.impact_he;
+    delete row.name_en;
+    delete row.short_he;
 
     expect(() => fromRow(row)).toThrow(SchemaMismatchError);
     try {
       fromRow(row);
     } catch (e) {
-      expect(e.missing).toEqual(["impact_he", "demo_url_en"].sort((a, b) => REQUIRED_COLUMNS.indexOf(a) - REQUIRED_COLUMNS.indexOf(b)));
-      expect(e.message).toMatch(/demo_url_en/);
+      expect(e.missing).toEqual(["name_en", "short_he"]);
+      expect(e.message).toMatch(/name_en/);
     }
   });
 
@@ -117,5 +122,50 @@ describe("isValidUrl", () => {
   it("names every bad field so the form can explain itself", () => {
     const bad = invalidUrlFields({ ...blankProject(), link: "example.com", repo: "https://ok.test" });
     expect(bad).toEqual(["link"]);
+  });
+});
+
+describe("an unmigrated database", () => {
+  // The live database has not run migration 001 yet. The public site must keep
+  // working against it: throwing here would replace the portfolio with an
+  // error message the moment this build went out.
+  function legacyRow(overrides = {}) {
+    const row = {};
+    for (const col of CORE_COLUMNS) row[col] = null;
+    return { ...row, id: "abc", tools: [], position: 0, demo_url: "https://legacy.test", ...overrides };
+  }
+
+  it("renders rows that predate role/impact/status without throwing", () => {
+    const p = fromRow(legacyRow({ name_en: "Air Manage" }));
+    expect(p.nameEn).toBe("Air Manage");
+    expect(p.roleEn).toBe("");
+    expect(p.impactEn).toBe("");
+    expect(p.status).toBe("");
+  });
+
+  it("falls back to the legacy demo_url column", () => {
+    expect(fromRow(legacyRow()).demoEn).toBe("https://legacy.test");
+  });
+
+  it("reports exactly which columns the migration still owes", () => {
+    expect(pendingMigration(legacyRow())).toEqual(MIGRATION_001_COLUMNS);
+    const migrated = {};
+    for (const c of [...CORE_COLUMNS, ...MIGRATION_001_COLUMNS]) migrated[c] = null;
+    expect(pendingMigration(migrated)).toEqual([]);
+  });
+
+  it("still throws when a CORE column is absent", () => {
+    const row = legacyRow();
+    delete row.name_en;
+    expect(() => fromRow(row)).toThrow(SchemaMismatchError);
+  });
+
+  it("omits unmigrated columns from a write instead of failing the whole save", () => {
+    const row = toRow(
+      { ...blankProject(), nameEn: "X", roleEn: "Sole dev" },
+      ["name_en", "short_en", "tools", "position"]
+    );
+    expect(Object.keys(row).sort()).toEqual(["name_en", "position", "short_en", "tools"]);
+    expect(row).not.toHaveProperty("role_en");
   });
 });

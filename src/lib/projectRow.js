@@ -8,54 +8,71 @@
 //  (*_he) value; the UI picks one via utils/localized.js.
 // ============================================================
 
-// Every column fromRow() reads. If the database is missing one of these, the
-// old code turned it into "" and the project silently lost a field — which is
-// how the demo_url / demo_url_en schema drift went unnoticed. Now it throws.
-export const REQUIRED_COLUMNS = [
+// Columns that have always existed. If one of these is missing the row is not
+// something this code understands, and turning it into "" would hide a real
+// problem — so it throws.
+export const CORE_COLUMNS = [
   "id",
   "name_en",
   "name_he",
   "meta_en",
   "meta_he",
-  "role_en",
-  "role_he",
   "short_en",
   "short_he",
   "readme_en",
   "readme_he",
   "result_en",
   "result_he",
-  "impact_en",
-  "impact_he",
-  "status",
   "tools",
   "link",
   "repo_url",
-  "demo_url_en",
-  "demo_url_he",
   "screenshot_url",
   "logo_url",
   "position",
 ];
+
+// Columns added by supabase/migrations/001-project-fields.sql.
+//
+// These are treated differently on purpose. Their absence does not mean "a
+// value went missing", it means "this database has not been migrated yet" —
+// a known, temporary state that must NOT take the public site down. So they
+// degrade to empty, and `pendingMigration` reports it so the admin can say so
+// out loud rather than the owner discovering it by accident.
+export const MIGRATION_001_COLUMNS = [
+  "role_en",
+  "role_he",
+  "impact_en",
+  "impact_he",
+  "status",
+  "demo_url_en",
+  "demo_url_he",
+];
+
+export const REQUIRED_COLUMNS = [...CORE_COLUMNS, ...MIGRATION_001_COLUMNS];
 
 export const STATUSES = ["production", "prototype", "archived", "award"];
 
 export class SchemaMismatchError extends Error {
   constructor(missing) {
     super(
-      `The projects table is missing ${missing.length} expected column(s): ${missing.join(", ")}. ` +
-        `Run supabase/schema.sql and supabase/migrations/ to bring the database up to date.`
+      `The projects table is missing ${missing.length} core column(s): ${missing.join(", ")}. ` +
+        `Run supabase/schema.sql to bring the database up to date.`
     );
     this.name = "SchemaMismatchError";
     this.missing = missing;
   }
 }
 
+// Which migration-001 columns this row is missing. Empty array = fully migrated.
+export function pendingMigration(row) {
+  return MIGRATION_001_COLUMNS.filter((col) => !(col in row));
+}
+
 // Null and empty string both mean "not filled in" for an optional text field,
 // so normalising them to "" is a display convenience, not a masked value.
-// A column that does not EXIST is a different thing entirely, and throws.
+// A CORE column that does not EXIST is a different thing entirely, and throws.
 export function fromRow(row) {
-  const missing = REQUIRED_COLUMNS.filter((col) => !(col in row));
+  const missing = CORE_COLUMNS.filter((col) => !(col in row));
   if (missing.length) throw new SchemaMismatchError(missing);
 
   return {
@@ -78,7 +95,9 @@ export function fromRow(row) {
     tools: row.tools ?? [],
     link: row.link ?? "",
     repo: row.repo_url ?? "",
-    demoEn: row.demo_url_en ?? "",
+    // Before migration 001 there was a single `demo_url`. Fall back to it so
+    // an unmigrated database keeps showing the demo links it already has.
+    demoEn: row.demo_url_en ?? row.demo_url ?? "",
     demoHe: row.demo_url_he ?? "",
     screenshot: row.screenshot_url ?? "",
     logo: row.logo_url ?? "",
@@ -89,8 +108,11 @@ export function fromRow(row) {
 const clean = (s) => String(s ?? "").trim();
 const orNull = (s) => clean(s) || null;
 
-export function toRow(proj) {
-  return {
+// `columns` limits the write to what the database actually has, so saving
+// against an unmigrated database updates the old fields instead of failing
+// wholesale on an unknown column.
+export function toRow(proj, columns = null) {
+  const row = {
     name_en: orNull(proj.nameEn),
     name_he: orNull(proj.nameHe),
     meta_en: orNull(proj.metaEn),
@@ -117,6 +139,10 @@ export function toRow(proj) {
     logo_url: orNull(proj.logo),
     position: Number.isFinite(Number(proj.position)) ? Number(proj.position) : 0,
   };
+
+  if (!columns) return row;
+  const allowed = new Set(columns);
+  return Object.fromEntries(Object.entries(row).filter(([k]) => allowed.has(k)));
 }
 
 export function blankProject() {
