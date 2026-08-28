@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { styles, COLORS } from "./styles";
-import { isConfigured, adminConfigError } from "./lib/supabaseClient";
+import { adminConfigError } from "./lib/supabaseClient";
 import { useI18n } from "./i18n";
 import { useAuth } from "./hooks/useAuth";
 import { useProjectsAdmin } from "./hooks/useProjectsAdmin";
@@ -19,7 +19,7 @@ import { Loader, ErrorState, Banner } from "./components/Feedback";
 // editor, the analytics screen and every password string out of the bundle a
 // visitor downloads.
 export default function AdminApp() {
-  const { dir } = useI18n();
+  const { dir, t } = useI18n();
   const { isAdmin, isImpostor, loading: authLoading, error: authError, signIn, signOut } = useAuth();
 
   return (
@@ -36,14 +36,11 @@ export default function AdminApp() {
         ) : (
           <Section narrow>
             <AdminLogin signIn={signIn} configError={adminConfigError} notOwner={isImpostor} onSignOut={signOut} />
+            {/* /admin is a public URL, so the banner stays generic; the
+                Supabase detail goes to the console for the owner. */}
             {authError && (
               <div style={{ marginTop: 16 }}>
-                <Banner kind="error">{authError}</Banner>
-              </div>
-            )}
-            {!isConfigured && (
-              <div style={{ marginTop: 16 }}>
-                <Banner kind="error">Supabase is not configured for this build.</Banner>
+                <Banner kind="error">{t("loginAuthUnavailable")}</Banner>
               </div>
             )}
           </Section>
@@ -103,7 +100,12 @@ function AdminPanes() {
       )}
 
       {editing && (
-        <Modal onClose={() => setEditing(null)} wide labelledBy="project-form-title" confirmClose>
+        <Modal
+          onClose={() => setEditing(null)}
+          wide
+          labelledBy="project-form-title"
+          confirmClose={t("formDiscard")}
+        >
           <ProjectForm
             project={editing}
             uploadLogo={uploadLogo}

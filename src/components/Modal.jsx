@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useI18n } from "../i18n";
 
 const FOCUSABLE =
@@ -8,19 +8,34 @@ const FOCUSABLE =
 // while open, focus restored to the trigger on close, body scroll locked
 // without the sideways jump a plain `overflow:hidden` causes on Windows.
 //
-// `confirmClose` guards long forms — Escape or a stray overlay click used to
-// discard a half-written bilingual project with no warning.
+// `confirmClose` takes the confirmation MESSAGE (not a boolean) and guards long
+// forms — Escape or a stray overlay click would otherwise discard a half-written
+// bilingual project with no warning.
 export default function Modal({ children, onClose, wide, labelledBy, confirmClose }) {
   const { t } = useI18n();
   const sheetRef = useRef(null);
   const restoreTo = useRef(null);
 
-  const requestClose = useCallback(() => {
-    if (confirmClose && !window.confirm(typeof confirmClose === "string" ? confirmClose : t("close"))) return;
-    onClose();
-  }, [confirmClose, onClose, t]);
+  // Callers pass inline arrows, so these props are a new identity on every
+  // parent render. Holding them in refs keeps the setup effect below mount-only:
+  // when it depended on them, any parent re-render (a Supabase token refresh, a
+  // save completing) tore the effect down — restoring focus to the trigger
+  // behind the dialog — and set it up again on the ✕ button, yanking the caret
+  // out of whatever field was being typed into.
+  const onCloseRef = useRef(onClose);
+  const confirmRef = useRef(confirmClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+    confirmRef.current = confirmClose;
+  });
 
   useEffect(() => {
+    const requestClose = () => {
+      const message = confirmRef.current;
+      if (message && !window.confirm(message)) return;
+      onCloseRef.current();
+    };
+
     restoreTo.current = document.activeElement;
 
     // Compensate for the scrollbar so locking the body does not shift the
@@ -30,6 +45,15 @@ export default function Modal({ children, onClose, wide, labelledBy, confirmClos
     const prevPadding = document.body.style.paddingInlineEnd;
     document.body.style.overflow = "hidden";
     if (gap > 0) document.body.style.paddingInlineEnd = `${gap}px`;
+
+    // Hide the rest of the page from assistive tech while the dialog is open,
+    // so a virtual cursor cannot browse the page behind it.
+    const siblings = [...document.body.children].filter((el) => !el.contains(sheetRef.current));
+    const restoreInert = siblings.map((el) => [el, el.getAttribute("aria-hidden"), el.inert]);
+    for (const el of siblings) {
+      el.setAttribute("aria-hidden", "true");
+      el.inert = true;
+    }
 
     // Move focus into the dialog so the keyboard does not stay behind it.
     const first = sheetRef.current?.querySelector(FOCUSABLE);
@@ -43,13 +67,24 @@ export default function Modal({ children, onClose, wide, labelledBy, confirmClos
       }
       if (e.key !== "Tab") return;
 
-      const items = Array.from(sheetRef.current?.querySelectorAll(FOCUSABLE) || []).filter(
+      const sheet = sheetRef.current;
+      if (!sheet) return;
+      const items = [...sheet.querySelectorAll(FOCUSABLE)].filter(
         (el) => el.offsetParent !== null || el === document.activeElement
       );
       if (items.length === 0) return;
 
       const firstItem = items[0];
       const lastItem = items[items.length - 1];
+
+      // If focus has escaped the sheet entirely — e.g. a cancelled overlay
+      // click left it on <body> — pull it back rather than letting Tab walk
+      // into the page behind the dialog.
+      if (!sheet.contains(document.activeElement)) {
+        e.preventDefault();
+        (e.shiftKey ? lastItem : firstItem).focus();
+        return;
+      }
       if (e.shiftKey && document.activeElement === firstItem) {
         e.preventDefault();
         lastItem.focus();
@@ -64,9 +99,19 @@ export default function Modal({ children, onClose, wide, labelledBy, confirmClos
       document.removeEventListener("keydown", onKey, true);
       document.body.style.overflow = prevOverflow;
       document.body.style.paddingInlineEnd = prevPadding;
+      for (const [el, prevAria, prevInert] of restoreInert) {
+        if (prevAria === null) el.removeAttribute("aria-hidden");
+        else el.setAttribute("aria-hidden", prevAria);
+        el.inert = prevInert;
+      }
       restoreTo.current?.focus?.();
     };
-  }, [requestClose]);
+  }, []);
+
+  const requestClose = () => {
+    if (confirmClose && !window.confirm(confirmClose)) return;
+    onClose();
+  };
 
   // Close only when the press STARTED on the overlay; otherwise selecting text
   // inside the dialog and releasing outside would close it.

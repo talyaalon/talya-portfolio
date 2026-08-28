@@ -15,8 +15,8 @@ export const COLORS = {
   // `tan` is the brand accent. It is used for large text, borders and icons —
   // NOT for body-size text, where it measured 3.31:1 on cream.
   tan: "#b07a4e",
-  // Accessible variant for text and for solid buttons: 4.450:1 on cream and
-  // 4.62:1 for white-on-tanText, both clearing WCAG AA.
+  // Accessible variant for text and for solid buttons: 5.29:1 on cream, and
+  // 5.86:1 for white on it. Both clear WCAG AA (4.5:1) with room to spare.
   tanText: "#8a5a30",
   tanDeep: "#7d4f28",
   line: "#e3dcd3",
@@ -168,7 +168,7 @@ button.chip-removable:hover{border-color:var(--tan-text)}
 /* the whole screenshot is shown (object-fit:contain) inside a roomy rectangular
    frame with a soft cream mat, so nothing gets cropped on any side */
 .shot{background:linear-gradient(135deg,#efe9e1,#e4ddd3);display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:10px;min-height:250px;color:#6f6659;padding:14px;
+  align-items:center;justify-content:center;gap:10px;min-height:250px;color:#5d5449;padding:14px;
   border-inline-start:1px solid var(--line);cursor:pointer;overflow:hidden;border:none;width:100%}
 .shot-empty{cursor:default}
 @media(max-width:660px){.shot{min-height:200px;border-inline-start:none;border-top:1px solid var(--line)}}
@@ -213,8 +213,9 @@ button.chip-removable:hover{border-color:var(--tan-text)}
 .to-top{position:fixed;inset-block-end:22px;inset-inline-end:22px;z-index:60;
   width:48px;height:48px;border-radius:50%;border:1px solid var(--line);
   background:var(--paper);color:var(--ink);font-size:20px;cursor:pointer;
-  box-shadow:var(--shadow);opacity:0;transition:opacity .25s}
-.to-top.show{opacity:1}
+  box-shadow:var(--shadow);opacity:0;visibility:hidden;
+  transition:opacity .25s,visibility 0s linear .25s}
+.to-top.show{opacity:1;visibility:visible;transition:opacity .25s,visibility 0s}
 
 /* ---------- admin tabs ---------- */
 .tabs{display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--line);flex-wrap:wrap;margin-bottom:8px}
@@ -279,7 +280,7 @@ input[type=file].inp{padding:10px 12px;background:var(--paper);cursor:pointer}
   .reveal{opacity:1;transform:none;transition:none}
   *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;
     transition-duration:.001ms !important;scroll-behavior:auto !important}
-  .btn:hover,.card:hover{transform:none}
+  .btn:hover,.card:hover,.card:focus-within{transform:none}
 }
 
 /* ---------- print ---------- */
@@ -295,6 +296,14 @@ input[type=file].inp{padding:10px 12px;background:var(--paper);cursor:pointer}
   .contact{background:#fff;color:#000;border:1px solid #bbb;padding:20px}
   .contact h2,.contact p{color:#000}
   .site-footer{color:#000}
+  /* Buttons are painted with a background the printer drops, or with light
+     text meant for the dark contact panel. Both render as white-on-white on
+     paper, which silently deleted the entire call-to-action row — the one
+     thing a printed CV needs. Force ink. */
+  .btn,.btn-primary,.btn-ghost,
+  .contact .btn,.contact .btn-primary,.contact .btn-ghost{
+    background:transparent !important;color:#000 !important}
+  a[href^="http"]::after{color:#444 !important}
   .hero{padding-top:0}
   a[href^="http"]::after{content:" (" attr(href) ")";font-size:9pt;color:#444}
   .plink,.btn{border:none;padding:0;min-height:0}

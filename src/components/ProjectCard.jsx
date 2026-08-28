@@ -27,7 +27,10 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
   // is now an explicit status rather than something guessed from prose.
   const isAward = project.status === "award";
   const hasAnyLink = project.link || demo || project.repo;
-  const statusLabel = project.status ? t(statusKey(project.status)) : "";
+  // An unrecognised status renders nothing rather than defaulting to
+  // "Archived" — mislabelling a live project is worse than omitting the tag.
+  const statusTag = statusKey(project.status);
+  const statusLabel = statusTag ? t(statusTag) : "";
 
   return (
     <article className="proj">
@@ -43,7 +46,10 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
           )}
 
           <h3 dir="auto">
-            <button className="card-title" onClick={open} aria-label={t("cardOpenAria") + name}>
+            {/* No aria-label here: it would replace the heading's accessible
+                name, so heading navigation would announce the instruction
+                instead of the project. The visible text is the name. */}
+            <button className="card-title" onClick={open}>
               {name}
             </button>
           </h3>
@@ -143,5 +149,6 @@ function statusKey(status) {
   if (status === "production") return "statusProduction";
   if (status === "prototype") return "statusPrototype";
   if (status === "award") return "statusAward";
-  return "statusArchived";
+  if (status === "archived") return "statusArchived";
+  return null;
 }

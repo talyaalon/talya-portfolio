@@ -32,6 +32,7 @@ export const ADMIN_TRANSLATIONS = {
     loginNotOwner: "This account is not the site owner.",
     loginMisconfigured:
       "The admin area is not configured. Set VITE_ADMIN_USER_ID and VITE_ADMIN_EMAIL_DOMAIN, then rebuild.",
+    loginAuthUnavailable: "Sign-in is unavailable right now. Check the browser console for details.",
 
     // projects admin
     addProject: "+ Add project",
@@ -127,6 +128,7 @@ export const ADMIN_TRANSLATIONS = {
     loginNotOwner: "החשבון הזה אינו בעל האתר.",
     loginMisconfigured:
       "אזור המנהל אינו מוגדר. יש להגדיר VITE_ADMIN_USER_ID ו-VITE_ADMIN_EMAIL_DOMAIN ולבנות מחדש.",
+    loginAuthUnavailable: "ההתחברות אינה זמינה כרגע. הפרטים בקונסול של הדפדפן.",
 
     addProject: "+ הוספת פרויקט",
     edit: "עריכה",

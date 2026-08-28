@@ -43,6 +43,10 @@ export const ADMIN_EMAIL_DOMAIN = import.meta.env.VITE_ADMIN_EMAIL_DOMAIN;
 // than quietly granting or denying access on a default.
 export const adminConfigError = (() => {
   const missing = [];
+  // Supabase itself must be configured too, or `supabase` is null and the
+  // login form would render, accept a submission, and throw on a null deref.
+  if (!url) missing.push("VITE_SUPABASE_URL");
+  if (!anonKey) missing.push("VITE_SUPABASE_ANON_KEY");
   if (!OWNER_USER_ID) missing.push("VITE_ADMIN_USER_ID");
   if (!ADMIN_EMAIL_DOMAIN) missing.push("VITE_ADMIN_EMAIL_DOMAIN");
   return missing.length ? `Missing environment variables: ${missing.join(", ")}` : null;

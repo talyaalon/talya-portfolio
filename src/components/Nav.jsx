@@ -21,6 +21,17 @@ export default function Nav() {
   const buttonRef = useRef(null);
   const panelRef = useRef(null);
 
+  // Above 720px the toggle is display:none, so an open menu would be stranded
+  // with aria-expanded="true" and no way to close it.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 720px)");
+    const sync = () => {
+      if (!mq.matches) setOpen(false);
+    };
+    mq.addEventListener?.("change", sync);
+    return () => mq.removeEventListener?.("change", sync);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
 

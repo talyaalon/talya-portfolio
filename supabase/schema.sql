@@ -49,27 +49,28 @@ create index if not exists analytics_events_project_idx on public.analytics_even
 alter table public.projects        enable row level security;
 alter table public.analytics_events enable row level security;
 
--- projects: anyone can READ; only logged-in admin can write.
-drop policy if exists "projects_public_read"  on public.projects;
-drop policy if exists "projects_admin_insert"  on public.projects;
-drop policy if exists "projects_admin_update"  on public.projects;
-drop policy if exists "projects_admin_delete"  on public.projects;
+-- projects: anyone can READ. WRITES ARE NOT GRANTED HERE.
+--
+--  This file used to create insert/update/delete policies for the role
+--  `authenticated` with `using (true)`. In Supabase "authenticated" means ANY
+--  row in auth.users — not the site owner — so with sign-up enabled that gave
+--  every stranger who registered full control of the portfolio.
+--
+--  Write policies now live in policies-owner-only.sql, and ONLY there. That
+--  matters because this file is safe to re-run: if it also created permissive
+--  policies, re-running it after the lockdown would silently recreate them
+--  alongside the owner-only ones. Postgres OR-s permissive policies together,
+--  so the weakest one wins and the hole reopens with no visible symptom.
+--
+--  Keep it that way. Never add a write policy to this file.
 
+drop policy if exists "projects_public_read"  on public.projects;
 create policy "projects_public_read"  on public.projects
   for select using (true);
-create policy "projects_admin_insert" on public.projects
-  for insert to authenticated with check (true);
-create policy "projects_admin_update" on public.projects
-  for update to authenticated using (true) with check (true);
-create policy "projects_admin_delete" on public.projects
-  for delete to authenticated using (true);
 
--- analytics_events: NO client write policy on purpose — inserts happen only
+-- analytics_events: no client write policy on purpose — inserts happen only
 -- from the Netlify Function using the service_role key (which bypasses RLS).
--- Only the logged-in admin may READ them.
-drop policy if exists "analytics_admin_read" on public.analytics_events;
-create policy "analytics_admin_read" on public.analytics_events
-  for select to authenticated using (true);
+-- The owner-only read policy is in policies-owner-only.sql.
 
 -- ---------- Storage bucket for logos ----------
 
@@ -77,19 +78,10 @@ insert into storage.buckets (id, name, public)
 values ('logos', 'logos', true)
 on conflict (id) do update set public = true;
 
+-- Public read only; writes are granted in policies-owner-only.sql.
 drop policy if exists "logos_public_read"   on storage.objects;
-drop policy if exists "logos_admin_insert"  on storage.objects;
-drop policy if exists "logos_admin_update"  on storage.objects;
-drop policy if exists "logos_admin_delete"  on storage.objects;
-
 create policy "logos_public_read" on storage.objects
   for select using (bucket_id = 'logos');
-create policy "logos_admin_insert" on storage.objects
-  for insert to authenticated with check (bucket_id = 'logos');
-create policy "logos_admin_update" on storage.objects
-  for update to authenticated using (bucket_id = 'logos');
-create policy "logos_admin_delete" on storage.objects
-  for delete to authenticated using (bucket_id = 'logos');
 
 -- ---------- Seed ----------
 --

@@ -51,12 +51,16 @@ grant execute on function public.is_site_owner() to authenticated;
 
 -- ---------- Step 2: register yourself as the owner ----------
 --
---  Run this first to find your id:
+--  Find your id first:
 --      select id, email, created_at from auth.users order by created_at;
 --
---  Then uncomment the line below, paste the uuid, and run it.
---  (Kept commented so this file stays safe to re-run and carries no identity.)
+--  Then UNCOMMENT the statement below, paste your uuid, and run the file.
 --
+--  Forgetting this step does not fail silently: Step 7 at the end raises, and
+--  because the SQL editor runs the file in a single transaction, everything
+--  rolls back. You get an error message instead of a database where nobody —
+--  including you — can write anything.
+
 -- insert into public.site_owners (user_id)
 -- values ('PASTE-YOUR-UUID-HERE'::uuid)
 -- on conflict (user_id) do nothing;
@@ -144,3 +148,46 @@ create policy "logos_owner_delete" on storage.objects
 --     sign-up), log in as it, and confirm this is refused with 42501:
 --         insert into public.projects (name_en) values ('should fail');
 --     Then delete that user and turn sign-up back off.
+
+
+-- ---------- Step 7: fail loudly if the lockdown would lock YOU out ----------
+--
+--  Running this file with an empty site_owners table produces a database where
+--  nobody can write anything, and the admin UI cannot tell: it decides what to
+--  render from VITE_ADMIN_USER_ID, not from this table. You would see "admin
+--  mode", open the editor, and get a raw permission error on every Save.
+--
+--  So: refuse to finish in that state.
+
+do $$
+declare
+  owners int;
+begin
+  select count(*) into owners from public.site_owners;
+  if owners = 0 then
+    raise exception
+      'site_owners is empty: every write is now denied, including yours. Edit Step 2 of this file with your auth.users id and run it again.';
+  end if;
+end $$;
+
+-- ---------- Step 8: assert no permissive policy survived ----------
+--
+--  Postgres OR-s permissive policies, so one leftover `using (true)` silently
+--  undoes everything above. This catches that.
+
+do $$
+declare
+  bad text;
+begin
+  select string_agg(schemaname || '.' || tablename || ' / ' || policyname, ', ')
+    into bad
+  from pg_policies
+  where schemaname in ('public', 'storage')
+    and cmd <> 'SELECT'
+    and coalesce(qual, 'true') = 'true'
+    and coalesce(with_check, 'true') = 'true';
+
+  if bad is not null then
+    raise exception 'Permissive write policies still present: %', bad;
+  end if;
+end $$;

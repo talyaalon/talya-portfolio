@@ -35,19 +35,6 @@ export default function Contact() {
         </div>
       </Reveal>
 
-      {/* contentinfo landmark, and legible: the old footer colour sat at
-          2.80:1 while carrying the phone number. */}
-      <footer className="site-footer">
-        <div className="wrap">
-          <span dir="auto">{t("contactLocation")}</span>
-          <span aria-hidden="true"> · </span>
-          <a className="ltr" href={`tel:${CONTACT.phone.replace(/\s/g, "")}`}>{CONTACT.phone}</a>
-          <span aria-hidden="true"> · </span>
-          <a className="ltr" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
-          <span aria-hidden="true"> · </span>
-          <span>© {year} {t("siteName")}</span>
-        </div>
-      </footer>
     </section>
   );
 }

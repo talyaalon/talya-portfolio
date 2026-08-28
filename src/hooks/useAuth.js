@@ -27,17 +27,27 @@ export function useAuth() {
       return;
     }
     let active = true;
+    // Once onAuthStateChange has spoken, a late getSession() response must not
+    // overwrite it. Without this the comment below was aspirational: a slow
+    // getSession() resolving null after a SIGNED_IN event bounced the owner
+    // straight back to the login form.
+    let authoritative = false;
 
     // `finally` matters: without it any auth/network failure leaves the app
     // on a spinner forever, because loading was only cleared on success.
     supabase.auth
       .getSession()
       .then(({ data, error: err }) => {
-        if (!active) return;
-        if (err) setError(err.message);
-        else setSession(data.session);
+        if (!active || authoritative) return;
+        if (err) {
+          console.error("getSession failed:", err);
+          setError(err.message);
+        } else {
+          setSession(data.session);
+        }
       })
       .catch((e) => {
+        console.error("getSession threw:", e);
         if (active) setError(e?.message || String(e));
       })
       .finally(() => {
@@ -48,7 +58,11 @@ export function useAuth() {
     // resolves the race with the getSession() call above.
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
       if (!active) return;
+      authoritative = true;
       setSession(s);
+      // A successful state change clears a stale load-time error, which
+      // otherwise stayed pinned under the login form for the life of the page.
+      setError(null);
       setLoading(false);
     });
 
@@ -63,12 +77,23 @@ export function useAuth() {
     const clean = String(username || "").trim().toLowerCase();
     if (!clean || !password) return new Error("empty-credentials");
     const email = `${clean}@${ADMIN_EMAIL_DOMAIN}`;
-    const { error: err } = await supabase.auth.signInWithPassword({ email, password });
-    return err;
+    // Returns the error rather than throwing, so the caller can always clear
+    // its busy state — a rejection here used to leave the button stuck on
+    // "Signing in…" forever.
+    try {
+      const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+      return err;
+    } catch (e) {
+      return e instanceof Error ? e : new Error(String(e));
+    }
   }, []);
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      console.error("sign-out failed:", e);
+    }
     setSession(null);
   }, []);
 

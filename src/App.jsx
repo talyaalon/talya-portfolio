@@ -13,6 +13,7 @@ import Skills from "./components/Skills";
 import Contact from "./components/Contact";
 import ProjectModal from "./components/ProjectModal";
 import BackToTop from "./components/BackToTop";
+import SiteFooter from "./components/SiteFooter";
 import { Loader, ErrorState } from "./components/Feedback";
 
 // The PUBLIC site. Read-only by construction: it never imports useAuth, the
@@ -87,6 +88,7 @@ function Shell({ children }) {
       </a>
       <Nav />
       <main id="main">{children}</main>
+      <SiteFooter />
     </div>
   );
 }

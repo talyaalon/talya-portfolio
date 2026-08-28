@@ -23,9 +23,14 @@ export default function AdminLogin({ signIn, configError, notOwner, onSignOut })
     if (busy || configError) return;
     setErr("");
     setBusy(true);
-    const error = await signIn(username, password);
-    setBusy(false);
-    if (error) setErr(t("loginWrong"));
+    try {
+      const error = await signIn(username, password);
+      if (error) setErr(t("loginWrong"));
+    } catch {
+      setErr(t("loginWrong"));
+    } finally {
+      setBusy(false);
+    }
   };
 
   // Misconfiguration is not a login failure — say so plainly instead of

@@ -19,8 +19,13 @@
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-// Very small in-memory limiter. Function instances are short-lived and not
-// shared, so this is a speed bump against casual flooding, not a guarantee.
+// Very small in-memory limiter.
+//
+// Scope, stated plainly: this Map lives in one warm function instance. Netlify
+// runs many, so the real ceiling is MAX_PER_WINDOW * instances, not
+// MAX_PER_WINDOW. It blunts casual flooding from a single client; it is not a
+// guarantee and must not be described as one. A real cap needs shared state
+// (Netlify Blobs, or a counter table in Postgres).
 const HITS = new Map();
 const WINDOW_MS = 60_000;
 const MAX_PER_WINDOW = 60;
@@ -60,16 +65,21 @@ export default async (req, context) => {
   // check is skipped, so an existing deploy keeps working until it is set.
   const allowed = allowedOrigins();
   if (allowed.length) {
-    const origin = req.headers.get("origin") || "";
-    // sendBeacon on a same-origin request may omit Origin; a missing header is
-    // therefore tolerated, but a *wrong* one is not.
-    if (origin && !allowed.includes(origin)) {
+    const origin = req.headers.get("origin");
+    // Per Fetch, an Origin header is attached to every request whose method is
+    // not GET/HEAD — same-origin included, sendBeacon included. So a POST that
+    // arrives WITHOUT one did not come from a browser page, and tolerating that
+    // case (as an earlier version did) removed the control entirely: `curl -X
+    // POST .../api/track` sent no Origin and sailed through.
+    if (origin === null || !allowed.includes(origin)) {
       return new Response("Forbidden", { status: 403 });
     }
   }
 
-  const ip = context.ip || req.headers.get("x-nf-client-connection-ip") || "unknown";
-  if (rateLimited(ip)) {
+  // Deliberately NOT falling back to an x-nf-client-connection-ip header: that
+  // header is client-supplied, so a caller could mint a fresh bucket per
+  // request and defeat the limiter entirely. context.ip is set by Netlify.
+  if (rateLimited(context.ip || "unknown")) {
     return new Response("Too Many Requests", { status: 429 });
   }
 
@@ -134,13 +144,18 @@ export const config = {
   path: "/api/track",
 };
 
+const MAX_REFERRER = 300;
+
 export function cleanReferrer(ref) {
   if (!ref || typeof ref !== "string") return null;
+  // The cap has to apply to the parsed branch too. A 200 KB string that happens
+  // to be a valid URL parses fine, and only the catch branch used to truncate —
+  // so an attacker-controlled referrer went into the database at full length.
   try {
     const u = new URL(ref);
-    return u.origin + u.pathname;
+    return (u.origin + u.pathname).slice(0, MAX_REFERRER);
   } catch {
-    return ref.slice(0, 300);
+    return ref.slice(0, MAX_REFERRER);
   }
 }
 
