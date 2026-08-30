@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { webpVariant, preferWebp } from "./screenshot";
+import { webpVariant, preferWebp, mobileVariant } from "./screenshot";
 
 describe("webpVariant", () => {
   it("maps a local screenshot to its webp sibling", () => {
@@ -49,5 +49,30 @@ describe("the /shots/ directory the database actually references", () => {
     const el = { dataset: {}, src: "" };
     onError({ currentTarget: el });
     expect(el.src).toBe("/shots/hgorer-desktop.png");
+  });
+});
+
+describe("mobileVariant — which phone capture belongs to a desktop capture", () => {
+  it("maps a -desktop capture to its -mobile sibling", () => {
+    expect(mobileVariant("/shots/jcafe-desktop.png")).toBe("/shots/jcafe-mobile.png");
+    expect(mobileVariant("/shots/bom-desktop.png")).toBe("/shots/bom-mobile.png");
+  });
+
+  // The regression this exists for: Air Manage's row was written before the
+  // -desktop/-mobile convention and stores a bare name, so the card rendered a
+  // laptop on its own while /shots/airmanage-mobile.png sat there unused.
+  it("maps a bare capture name to its -mobile sibling too", () => {
+    expect(mobileVariant("/shots/airmanage.png")).toBe("/shots/airmanage-mobile.png");
+    expect(mobileVariant("/screenshots/nlp-cert.jpg")).toBe("/screenshots/nlp-cert-mobile.jpg");
+  });
+
+  it("does not turn a -mobile capture into a sibling of itself", () => {
+    expect(mobileVariant("/shots/jcafe-mobile.png")).toBeNull();
+  });
+
+  it("leaves anything that is not a local capture alone", () => {
+    expect(mobileVariant("https://cdn.supabase.co/logos/x.png")).toBeNull();
+    expect(mobileVariant("")).toBeNull();
+    expect(mobileVariant(null)).toBeNull();
   });
 });

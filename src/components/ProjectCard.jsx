@@ -4,7 +4,7 @@ import { useI18n } from "../i18n";
 import { loc } from "../utils/localized";
 import { track } from "../lib/analytics";
 import { Check, Star, Link, Play, GitHub, Image } from "./Icons";
-import { preferWebp } from "../utils/screenshot";
+import { preferWebp, mobileVariant } from "../utils/screenshot";
 
 // One project, rendered in the editorial "CV card" style: a text body on one
 // side and a screenshot panel on the other, hung off the timeline spine.
@@ -18,13 +18,18 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
   const impact = loc(project, "impact", lang);
   const demo = loc(project, "demo", lang);
 
-  // /shots/<name>-desktop.png ships with a matching <name>-mobile.png; when the
-  // stored screenshot follows that naming, the panel renders a laptop+phone
-  // mockup showing both captures. Any other URL renders as a single image.
-  const mobileShot =
-    project.screenshot && project.screenshot.includes("-desktop.")
-      ? project.screenshot.replace("-desktop.", "-mobile.")
-      : null;
+  // A local capture ships with a matching <name>-mobile sibling; when that
+  // sibling loads, the panel renders a laptop+phone mockup showing both.
+  // mobileVariant only names the candidate — it cannot know the file is there,
+  // so a capture that fails to load collapses the panel back to the laptop
+  // alone rather than leaving an empty phone on the card.
+  const mobileShot = mobileVariant(project.screenshot);
+  // Remember WHICH capture was missing rather than a bare boolean, so pointing
+  // the card at a different project clears the flag on its own — no effect, and
+  // no stale "missing" carried over from the previous capture.
+  const [missingShot, setMissingShot] = useState(null);
+  const phoneMissing = missingShot === mobileShot;
+  const phoneImg = mobileShot ? preferWebp(mobileShot) : null;
 
   const open = () => onOpen(project);
   const clickLink = (e) => {
@@ -161,7 +166,7 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
                   <img {...preferWebp(project.screenshot)} alt="" loading="lazy" decoding="async" />
                 </span>
               </button>
-              {mobileShot && (
+              {mobileShot && !phoneMissing && (
                 <button
                   type="button"
                   className="dev-phone"
@@ -170,7 +175,20 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
                 >
                   <span className="dev-notch" aria-hidden="true" />
                   <span className="dev-screen">
-                    <img {...preferWebp(mobileShot)} alt="" loading="lazy" decoding="async" />
+                    <img
+                      {...phoneImg}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => {
+                        // preferWebp swaps the .webp for the stored URL once;
+                        // only when that also fails is the capture really absent.
+                        const exhausted =
+                          !phoneImg.onError || e.currentTarget.dataset.fellBack === "1";
+                        phoneImg.onError?.(e);
+                        if (exhausted) setMissingShot(mobileShot);
+                      }}
+                    />
                   </span>
                 </button>
               )}

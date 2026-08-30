@@ -32,3 +32,22 @@ export function preferWebp(url) {
     },
   };
 }
+
+// Which phone capture belongs to a desktop capture.
+//
+// The convention is <name>-desktop.png beside <name>-mobile.png. Air Manage's
+// row predates it and stores a bare "/shots/airmanage.png", so deriving the
+// phone capture by looking for "-desktop." alone left that card showing a
+// laptop on its own while /shots/airmanage-mobile.png sat in the same
+// directory, unused. Both spellings therefore resolve to the same sibling.
+//
+// This only names a candidate; it cannot know the file exists. The caller must
+// treat a capture that fails to load as "this project has no phone capture"
+// rather than rendering an empty phone.
+export function mobileVariant(url) {
+  if (typeof url !== "string") return null;
+  if (!LOCAL_IMAGE.test(url)) return null;
+  if (/-mobile\.[a-z0-9]+$/i.test(url)) return null;
+  if (url.includes("-desktop.")) return url.replace("-desktop.", "-mobile.");
+  return url.replace(/(\.[a-z0-9]+)$/i, "-mobile$1");
+}
