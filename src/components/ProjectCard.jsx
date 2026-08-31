@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { useI18n } from "../i18n";
 import { loc } from "../utils/localized";
 import { track } from "../lib/analytics";
-import { Check, Star, Link, Play, GitHub, Image } from "./Icons";
+import { Check, Star, Link, Play, GitHub, Lock, Image } from "./Icons";
 import { preferWebp, mobileVariant } from "../utils/screenshot";
 
 // One project, rendered in the editorial "CV card" style: a text body on one
@@ -55,7 +55,9 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
   // so "replaced", "marketplace" and "במקום" all earned a prize star. An award
   // is now an explicit status rather than something guessed from prose.
   const isAward = project.status === "award";
-  const hasAnyLink = project.link || demo || project.repo;
+  // A private repo fills the links row with its own badge, so the card is not
+  // link-less and should not also fall back to the "Internal system" note.
+  const hasAnyLink = project.link || demo || project.repo || project.repoPrivate;
   // An unrecognised status renders nothing rather than defaulting to
   // "Archived" — mislabelling a live project is worse than omitting the tag.
   const statusTag = statusKey(project.status);
@@ -125,10 +127,19 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
                 <Play aria-hidden="true" /> <span>{t("cardWatchDemo")}</span>
               </a>
             )}
-            {project.repo && (
-              <a className="plink soft" href={project.repo} target="_blank" rel="noopener noreferrer" onClick={clickLink}>
-                <GitHub aria-hidden="true" /> GitHub
-              </a>
+            {/* The private branch comes first and does not fall through to the
+                link: a company repo must never render an href, so the URL the
+                admin keeps for herself stays out of the public HTML. */}
+            {project.repoPrivate ? (
+              <span className="plink locked" title={t("cardRepoPrivateHint")}>
+                <Lock aria-hidden="true" /> <span>{t("cardRepoPrivate")}</span>
+              </span>
+            ) : (
+              project.repo && (
+                <a className="plink soft" href={project.repo} target="_blank" rel="noopener noreferrer" onClick={clickLink}>
+                  <GitHub aria-hidden="true" /> GitHub
+                </a>
+              )
             )}
             <button className="plink" onClick={open}>
               {t("cardReadme")}

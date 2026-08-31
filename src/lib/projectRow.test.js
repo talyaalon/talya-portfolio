@@ -9,6 +9,7 @@ import {
   REQUIRED_COLUMNS,
   CORE_COLUMNS,
   MIGRATION_001_COLUMNS,
+  MIGRATION_002_COLUMNS,
   pendingMigration,
 } from "./projectRow";
 
@@ -147,10 +148,15 @@ describe("an unmigrated database", () => {
     expect(fromRow(legacyRow()).demoEn).toBe("https://legacy.test");
   });
 
-  it("reports exactly which columns the migration still owes", () => {
-    expect(pendingMigration(legacyRow())).toEqual(MIGRATION_001_COLUMNS);
+  it("reports exactly which columns the migrations still owe", () => {
+    expect(pendingMigration(legacyRow())).toEqual([
+      ...MIGRATION_001_COLUMNS,
+      ...MIGRATION_002_COLUMNS,
+    ]);
     const migrated = {};
-    for (const c of [...CORE_COLUMNS, ...MIGRATION_001_COLUMNS]) migrated[c] = null;
+    for (const c of [...CORE_COLUMNS, ...MIGRATION_001_COLUMNS, ...MIGRATION_002_COLUMNS]) {
+      migrated[c] = null;
+    }
     expect(pendingMigration(migrated)).toEqual([]);
   });
 
@@ -167,5 +173,29 @@ describe("an unmigrated database", () => {
     );
     expect(Object.keys(row).sort()).toEqual(["name_en", "position", "short_en", "tools"]);
     expect(row).not.toHaveProperty("role_en");
+  });
+});
+
+describe("a private repository", () => {
+  it("carries the flag in both directions", () => {
+    const p = fromRow(dbRow({ repo_url: "https://github.com/company/jcafe", repo_private: true }));
+    expect(p.repo).toBe("https://github.com/company/jcafe");
+    expect(p.repoPrivate).toBe(true);
+    expect(toRow({ ...blankProject(), repoPrivate: true }).repo_private).toBe(true);
+  });
+
+  it("treats a null or absent column as public rather than throwing", () => {
+    // repo_private arrives null from a row written before the column existed,
+    // and is absent entirely from a database that has not run migration 002.
+    expect(fromRow(dbRow({ repo_private: null })).repoPrivate).toBe(false);
+    const row = dbRow();
+    delete row.repo_private;
+    expect(fromRow(row).repoPrivate).toBe(false);
+  });
+
+  it("a database that ran 001 but not 002 owes exactly repo_private", () => {
+    const row = {};
+    for (const c of [...CORE_COLUMNS, ...MIGRATION_001_COLUMNS]) row[c] = null;
+    expect(pendingMigration(row)).toEqual(MIGRATION_002_COLUMNS);
   });
 });

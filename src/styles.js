@@ -165,6 +165,11 @@ button.chip-removable:hover{border-color:var(--tan-text)}
 .plink svg{width:15px;height:15px;flex:0 0 auto}
 .plink:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
 .plink.soft{color:var(--ink-soft);border-style:dashed}
+/* a private company repo: stated, not offered. It is a <span>, so it must not
+   look or behave like the buttons around it -- no pointer, no hover invert */
+.plink.locked{color:var(--ink-soft);border-style:dashed;cursor:default}
+.plink.locked:hover{background:none;color:var(--ink-soft);border-color:var(--line)}
+.plink.locked svg{color:var(--tan-text)}
 /* the whole screenshot is shown (object-fit:contain) inside a roomy rectangular
    frame with a soft cream mat, so nothing gets cropped on any side */
 .shot{background:linear-gradient(135deg,#efe9e1,#e4ddd3);display:flex;flex-direction:column;

@@ -156,6 +156,24 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
 
       {single(t("formLink"), "link", "https://…")}
       {single(t("formRepo"), "repo", "https://github.com/…")}
+      {/* A company repo has a URL that is useful to keep and useless to
+          publish, so it is stored and marked private rather than deleted. */}
+      <label
+        className="lbl"
+        htmlFor={fieldId("repoPrivate")}
+        style={{ display: "flex", alignItems: "center", gap: 8 }}
+      >
+        <input
+          id={fieldId("repoPrivate")}
+          type="checkbox"
+          checked={Boolean(form.repoPrivate)}
+          onChange={(e) => set("repoPrivate", e.target.checked)}
+        />
+        {t("formRepoPrivate")}
+      </label>
+      <p style={{ fontSize: 13, color: COLORS.inkSoft, margin: "6px 0 0" }}>
+        {t("formRepoPrivateHint")}
+      </p>
       {single(`${t("formDemo")} ${t("suffixEn")}`, "demoEn", "https://…")}
       {single(`${t("formDemo")} ${t("suffixHe")}`, "demoHe", "https://…")}
       {single(t("formScreenshot"), "screenshot", "https://…")}

@@ -48,7 +48,15 @@ export const MIGRATION_001_COLUMNS = [
   "demo_url_he",
 ];
 
-export const REQUIRED_COLUMNS = [...CORE_COLUMNS, ...MIGRATION_001_COLUMNS];
+// Columns added by supabase/migrations/002-repo-private.sql. Same contract as
+// migration 001: absent means "not migrated yet", which must not take the site
+// down, so it degrades to `false` (= a public repo, the state before the
+// column existed) rather than to a maybe-private guess.
+export const MIGRATION_002_COLUMNS = ["repo_private"];
+
+export const MIGRATION_COLUMNS = [...MIGRATION_001_COLUMNS, ...MIGRATION_002_COLUMNS];
+
+export const REQUIRED_COLUMNS = [...CORE_COLUMNS, ...MIGRATION_COLUMNS];
 
 export const STATUSES = ["production", "prototype", "archived", "award"];
 
@@ -63,9 +71,9 @@ export class SchemaMismatchError extends Error {
   }
 }
 
-// Which migration-001 columns this row is missing. Empty array = fully migrated.
+// Which migration columns this row is missing. Empty array = fully migrated.
 export function pendingMigration(row) {
-  return MIGRATION_001_COLUMNS.filter((col) => !(col in row));
+  return MIGRATION_COLUMNS.filter((col) => !(col in row));
 }
 
 // Null and empty string both mean "not filled in" for an optional text field,
@@ -95,6 +103,9 @@ export function fromRow(row) {
     tools: row.tools ?? [],
     link: row.link ?? "",
     repo: row.repo_url ?? "",
+    // A company repository: it exists on GitHub, but nobody outside can open
+    // it. The card says so instead of offering a link into a 404.
+    repoPrivate: row.repo_private ?? false,
     // Before migration 001 there was a single `demo_url`. Fall back to it so
     // an unmigrated database keeps showing the demo links it already has.
     demoEn: row.demo_url_en ?? row.demo_url ?? "",
@@ -131,6 +142,7 @@ export function toRow(proj, columns = null) {
     tools: proj.tools ?? [],
     link: orNull(proj.link),
     repo_url: orNull(proj.repo),
+    repo_private: Boolean(proj.repoPrivate),
     demo_url_en: orNull(proj.demoEn),
     demo_url_he: orNull(proj.demoHe),
     // Both of these used to be dropped on save, so a screenshot or an ordering
@@ -158,7 +170,7 @@ export function blankProject() {
     impactEn: "", impactHe: "",
     status: "",
     tools: [],
-    link: "", repo: "", demoEn: "", demoHe: "",
+    link: "", repo: "", repoPrivate: false, demoEn: "", demoHe: "",
     logo: "", screenshot: "",
     position: 0,
   };

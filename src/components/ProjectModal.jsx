@@ -4,7 +4,7 @@ import { COLORS } from "../styles";
 import { useI18n } from "../i18n";
 import { loc } from "../utils/localized";
 import { track } from "../lib/analytics";
-import { Link, GitHub, Play, Check, Star } from "./Icons";
+import { Link, GitHub, Lock, Play, Check, Star } from "./Icons";
 import { preferWebp } from "../utils/screenshot";
 
 // Full project detail: name, context, role, tools, result, README and links.
@@ -92,7 +92,7 @@ export default function ProjectModal({ project, onClose }) {
         </>
       )}
 
-      {(project.link || project.repo || demo) && (
+      {(project.link || project.repo || project.repoPrivate || demo) && (
         <div className="plinks" style={{ marginTop: 22 }}>
           {project.link && (
             <a className="plink" href={project.link} target="_blank" rel="noopener noreferrer" onClick={onLink}>
@@ -104,12 +104,27 @@ export default function ProjectModal({ project, onClose }) {
               <Play aria-hidden="true" /> <span>{t("cardWatchDemo")}</span>
             </a>
           )}
-          {project.repo && (
-            <a className="plink soft" href={project.repo} target="_blank" rel="noopener noreferrer" onClick={onLink}>
-              <GitHub aria-hidden="true" /> GitHub
-            </a>
+          {project.repoPrivate ? (
+            <span className="plink locked">
+              <Lock aria-hidden="true" /> <span>{t("cardRepoPrivate")}</span>
+            </span>
+          ) : (
+            project.repo && (
+              <a className="plink soft" href={project.repo} target="_blank" rel="noopener noreferrer" onClick={onLink}>
+                <GitHub aria-hidden="true" /> GitHub
+              </a>
+            )
           )}
         </div>
+      )}
+
+      {/* The modal has the room the card does not, so the badge gets its
+          sentence here rather than living only in a title attribute a touch
+          screen never shows. */}
+      {project.repoPrivate && (
+        <p dir="auto" style={{ fontSize: 13.5, color: COLORS.inkSoft, margin: "12px 0 0" }}>
+          {t("cardRepoPrivateHint")}
+        </p>
       )}
     </Modal>
   );

@@ -61,3 +61,38 @@ describe("ProjectCard device mockup", () => {
     expect(document.querySelector(".shot img")).toHaveAttribute("src", "https://cdn.test/logo.png");
   });
 });
+
+// A repo that belongs to the company is not a link — it is a fact about the
+// project. The card says the code lives on GitHub and stops there: no href,
+// and the private URL never reaches the page a visitor can read.
+describe("ProjectCard private repository", () => {
+  const ghLink = () => document.querySelector('.plinks a[href*="github.com"]');
+  const badge = () => document.querySelector(".plink.locked");
+
+  it("still links a public repo", () => {
+    card({ repo: "https://github.com/talyaalon/portfolio" });
+    expect(ghLink()).toHaveAttribute("href", "https://github.com/talyaalon/portfolio");
+    expect(badge()).toBeNull();
+  });
+
+  it("replaces the link with a locked badge when the repo is private", () => {
+    card({ repo: "https://github.com/company/jcafe-internal", repoPrivate: true });
+    expect(ghLink()).toBeNull();
+    expect(badge()).toBeTruthy();
+    expect(badge().tagName).toBe("SPAN"); // not an anchor, not a button
+    expect(badge().textContent).toMatch(/GitHub/);
+    // The whole point: the private URL is not in the document at all.
+    expect(document.body.innerHTML).not.toContain("jcafe-internal");
+  });
+
+  it("says the repo exists even when no URL is stored for it", () => {
+    card({ repo: "", repoPrivate: true });
+    expect(badge()).toBeTruthy();
+  });
+
+  it("says nothing about GitHub for a project with no repo at all", () => {
+    card({ repo: "" });
+    expect(badge()).toBeNull();
+    expect(ghLink()).toBeNull();
+  });
+});

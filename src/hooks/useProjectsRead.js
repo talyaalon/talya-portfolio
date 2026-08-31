@@ -10,7 +10,7 @@ import { fromRow, pendingMigration } from "../lib/projectRow";
 export function useProjectsRead() {
   const [projects, setProjects] = useState(null); // null = still loading
   const [error, setError] = useState(null);
-  // Columns migration 001 adds that the live database does not have yet.
+  // Columns the migrations add that the live database does not have yet.
   const [missingColumns, setMissingColumns] = useState([]);
 
   // Guards against two overlapping loads resolving out of order and leaving
@@ -41,7 +41,7 @@ export function useProjectsRead() {
       const pending = rows.length ? pendingMigration(rows[0]) : [];
       if (pending.length) {
         console.warn(
-          `projects table is missing ${pending.join(", ")} — run supabase/migrations/001-project-fields.sql`
+          `projects table is missing ${pending.join(", ")} — run the unapplied files in supabase/migrations/`
         );
       }
       setMissingColumns(pending);
