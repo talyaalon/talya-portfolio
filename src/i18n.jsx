@@ -40,7 +40,7 @@ export const TRANSLATIONS = {
     heroLede:
       "I build production systems end-to-end — from multi-branch e-commerce to operational platforms teams depend on every day.",
     btnEmail: "Email me",
-    btnCv: "Download CV",
+    btnCv: "View CV",
 
     // about
     secAbout: "About",
@@ -52,6 +52,7 @@ export const TRANSLATIONS = {
     cardViewLive: "View live",
     cardWatchDemo: "Watch the video",
     cardPresentation: "View the deck",
+    cardOpenInCanva: "Open in Canva",
     cardInternal: "Internal system",
     cardRepoPrivate: "GitHub · Private repo",
     cardRepoPrivateHint: "The code lives on GitHub in a private repository — internal company code, not open to the public.",
@@ -118,7 +119,7 @@ export const TRANSLATIONS = {
     heroLede:
       "אני בונה מערכות Production מקצה לקצה — מ-E-commerce רב-סניפי ועד פלטפורמות תפעוליות שצוותים מסתמכים עליהן כל יום.",
     btnEmail: "שליחת מייל",
-    btnCv: "הורדת קורות חיים",
+    btnCv: "צפייה בקורות החיים",
 
     secAbout: "אודות",
     aboutText:
@@ -128,6 +129,7 @@ export const TRANSLATIONS = {
     cardViewLive: "צפייה באתר",
     cardWatchDemo: "לצפייה בסרטון",
     cardPresentation: "למצגת",
+    cardOpenInCanva: "פתיחה ב-Canva",
     cardInternal: "מערכת פנימית",
     cardRepoPrivate: "GitHub · ריפו פרטי",
     cardRepoPrivateHint: "הקוד יושב בגיטהאב במאגר פרטי — קוד פנימי של החברה, לא פתוח לציבור.",
@@ -176,17 +178,12 @@ export const CONTACT = {
   github: "https://github.com/talyaalon",
 };
 
-// Downloadable CV, per language. A recruiter who likes the page needs
-// something to forward, and this is the highest-value link on the site.
-//
-// Set each value to a path under public/ once the PDF exists, e.g.
-//   en: "/docs/talya-israel-cv-en.pdf"
-// While a value is null the button is not rendered at all — better no button
-// than a button that 404s in front of a hiring manager.
-export const CV = {
-  en: null,
-  he: null,
-};
+// The CV is NOT here. It used to be `CV = { en: null, he: null }`, which meant
+// the button never rendered and putting one file on the site took a developer,
+// a commit and a deploy. It is uploaded from the admin area now and its URL is
+// read from the database — see src/lib/siteSettings.js. What is still absent
+// renders no button at all, exactly as before: better no button than a button
+// that 404s in front of a hiring manager.
 
 export const LANGS = ["en", "he"];
 

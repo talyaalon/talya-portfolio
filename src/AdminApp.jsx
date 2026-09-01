@@ -4,11 +4,13 @@ import { adminConfigError, ADMIN_EMAIL_DOMAIN } from "./lib/supabaseClient";
 import { useI18n } from "./i18n";
 import { useAuth } from "./hooks/useAuth";
 import { useProjectsAdmin } from "./hooks/useProjectsAdmin";
+import { useSiteSettingsAdmin } from "./hooks/useSiteSettingsAdmin";
 import { blankProject } from "./lib/projectRow";
 
 import AdminLogin from "./components/AdminLogin";
 import AdminTabs from "./components/AdminTabs";
 import Analytics from "./components/Analytics";
+import CvPanel from "./components/CvPanel";
 import Projects from "./components/Projects";
 import ProjectForm from "./components/ProjectForm";
 import Modal from "./components/Modal";
@@ -101,7 +103,11 @@ function AdminPanes() {
           </Banner>
         </div>
       )}
-      {tab === "analytics" ? (
+      {tab === "cv" ? (
+        <Section>
+          <CvPane />
+        </Section>
+      ) : tab === "analytics" ? (
         <Section>
           <Analytics projects={projects} />
         </Section>
@@ -135,6 +141,21 @@ function AdminPanes() {
         </Modal>
       )}
     </>
+  );
+}
+
+// The CV lives in its own pane so its query runs when the tab is opened, and
+// not on every visit to the projects screen.
+function CvPane() {
+  const { settings, error, needsMigration, uploadCv, removeCv } = useSiteSettingsAdmin();
+  return (
+    <CvPanel
+      settings={settings}
+      error={error}
+      needsMigration={needsMigration}
+      onUpload={uploadCv}
+      onRemove={removeCv}
+    />
   );
 }
 

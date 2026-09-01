@@ -1,11 +1,16 @@
-import { useI18n, CONTACT, CV } from "../i18n";
+import { useI18n, CONTACT } from "../i18n";
+import { useSiteSettings } from "../hooks/useSiteSettings";
+import { cvUrl } from "../lib/siteSettings";
 import Reveal from "./Reveal";
-import { Mail, WhatsApp, LinkedIn, GitHub, Download } from "./Icons";
+import { Mail, WhatsApp, LinkedIn, GitHub, FileText } from "./Icons";
 
 export default function Contact() {
   const { t, lang } = useI18n();
   const year = new Date().getFullYear();
-  const cvHref = CV[lang];
+  // The same file as the hero's button, from the same single request — see
+  // src/hooks/useSiteSettings.js.
+  const { settings } = useSiteSettings();
+  const cvHref = settings ? cvUrl(settings, lang) : "";
 
   return (
     <section className="section" id="contact">
@@ -18,8 +23,8 @@ export default function Contact() {
               <Mail aria-hidden="true" /> <span className="ltr">{CONTACT.email}</span>
             </a>
             {cvHref && (
-              <a className="btn btn-ghost" href={cvHref} download>
-                <Download aria-hidden="true" /> <span>{t("btnCv")}</span>
+              <a className="btn btn-ghost" href={cvHref} target="_blank" rel="noopener noreferrer">
+                <FileText aria-hidden="true" /> <span>{t("btnCv")}</span>
               </a>
             )}
             <a className="btn btn-ghost" href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer">

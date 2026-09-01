@@ -8,6 +8,7 @@ export default function AdminTabs({ tab, onTab }) {
   const { t } = useI18n();
   const tabs = [
     ["projects", t("tabProjects")],
+    ["cv", t("tabCv")],
     ["analytics", t("tabAnalytics")],
   ];
   return (

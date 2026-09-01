@@ -153,6 +153,25 @@ describe("ProjectCard Canva embeds", () => {
     );
   });
 
+  // A frame refused by the browser -- a CSP directive that has drifted, a
+  // sharing setting changed at Canva's end -- fires `load` like a successful
+  // one, so no code here can detect it and swap in something else. The way out
+  // is offered up front instead: the original link, always in the lightbox.
+  it("offers the original deck link from inside the lightbox", () => {
+    card({ embedUrl: DECK });
+    fireEvent.click(document.querySelector(".dev-laptop"));
+    const a = document.querySelector(".shot-lightbox a[href]");
+    expect(a).toHaveAttribute("href", DECK);
+    expect(a).toHaveAttribute("target", "_blank");
+    expect(a).toHaveAttribute("rel", expect.stringContaining("noopener"));
+  });
+
+  it("offers the original video link from inside the lightbox", () => {
+    card({ demoEn: VIDEO, demoHe: VIDEO });
+    fireEvent.click([...document.querySelectorAll(".plinks button")].find((b) => b.textContent.trim()));
+    expect(document.querySelector(".shot-lightbox a[href]")).toHaveAttribute("href", VIDEO);
+  });
+
   // The demo field is generic. A link that cannot be framed must keep behaving
   // exactly as it does today rather than opening an iframe that stays blank.
   it("still opens a non-embeddable demo link in a new tab", () => {

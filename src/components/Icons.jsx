@@ -56,6 +56,16 @@ export const Download = (props) => (
     <path d="M4 20h16" />
   </svg>
 );
+// A document, for the CV. Not the Download arrow: the CV button opens the file
+// to read rather than saving it to the visitor's disk.
+export const FileText = (props) => (
+  <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z" />
+    <path d="M14 3v5h5" />
+    <path d="M9 13h6" />
+    <path d="M9 17h4" />
+  </svg>
+);
 export const Lock = (props) => (
   <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <rect x="4" y="10" width="16" height="10" rx="2" />

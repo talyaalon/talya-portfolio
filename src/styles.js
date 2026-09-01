@@ -215,6 +215,9 @@ button.chip-removable:hover{border-color:var(--tan-text)}
 .shot-lightbox img.lb-mobile{max-width:min(400px,88vw)}
 .shot-lightbox .lb-embed{width:min(1200px,94vw);aspect-ratio:16/9;max-height:88vh;border:0;
   border-radius:12px;background:#000;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.lightbox-open{position:fixed;top:18px;inset-inline-start:22px;z-index:121;
+  background:#fff;color:#262a2a;text-decoration:none;font-size:13.5px;font-weight:600;
+  border-radius:999px;padding:11px 18px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
 .lightbox-close{position:fixed;top:18px;inset-inline-end:22px;z-index:121;width:42px;height:42px;
   background:#fff;color:#262a2a;border:none;border-radius:999px;font-size:18px;cursor:pointer;
   box-shadow:0 6px 18px rgba(0,0,0,.3)}

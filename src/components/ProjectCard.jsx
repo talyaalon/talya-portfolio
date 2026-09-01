@@ -45,7 +45,8 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
     track("click", project.id);
   };
   // Clicking a device frame opens that capture in a floating lightbox.
-  const [lightbox, setLightbox] = useState(null); // { src, mobile } | { src, kind:"embed" }
+  // { src, mobile } | { src, kind:"embed", href }
+  const [lightbox, setLightbox] = useState(null);
   useEffect(() => {
     if (!lightbox) return;
     const onKey = (e) => { if (e.key === "Escape") setLightbox(null); };
@@ -60,10 +61,15 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
 
   // Opening an embed counts as a click on the project, the same as following
   // the link would have.
-  const openEmbed = (src) => (e) => {
+  //
+  // `href` is the link as the owner stored it, kept beside the embed URL: a
+  // frame the browser refuses fires `load` exactly like one that worked, so
+  // nothing here can notice a blank frame and react to it. The way out is
+  // offered up front instead.
+  const openEmbed = (src, href) => (e) => {
     e.stopPropagation();
     track("click", project.id);
-    setLightbox({ src, kind: "embed" });
+    setLightbox({ src, href, kind: "embed" });
   };
 
   // The old heuristic tested the whole result line for /place|award|פרס|מקום/,
@@ -139,7 +145,7 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
             )}
             {demo &&
               (demoEmbed ? (
-                <button type="button" className="plink soft" onClick={openEmbed(demoEmbed)}>
+                <button type="button" className="plink soft" onClick={openEmbed(demoEmbed, demo)}>
                   <Play aria-hidden="true" /> <span>{t("cardWatchDemo")}</span>
                 </button>
               ) : (
@@ -150,7 +156,7 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
             {/* The frame carries the deck on a wide screen; on a phone it is
                 small enough that a plain button is how anyone finds it. */}
             {deckEmbed && (
-              <button type="button" className="plink soft" onClick={openEmbed(deckEmbed)}>
+              <button type="button" className="plink soft" onClick={openEmbed(deckEmbed, project.embedUrl)}>
                 <Slides aria-hidden="true" /> <span>{t("cardPresentation")}</span>
               </button>
             )}
@@ -197,7 +203,7 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
                 type="button"
                 className="dev-laptop"
                 aria-label={t("cardOpenAria") + name}
-                onClick={openEmbed(deckEmbed)}
+                onClick={openEmbed(deckEmbed, project.embedUrl)}
               >
                 <span className="dev-bar" aria-hidden="true"><i /><i /><i /></span>
                 {/* The preview is deliberately inert: pointer-events are off in
@@ -271,6 +277,17 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
         {lightbox && createPortal(
           <div className="shot-lightbox" role="dialog" aria-modal="true" onClick={() => setLightbox(null)}>
             <button type="button" className="lightbox-close" aria-label="Close" onClick={() => setLightbox(null)}>✕</button>
+            {lightbox.href && (
+              <a
+                className="lightbox-open"
+                href={lightbox.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {t("cardOpenInCanva")}
+              </a>
+            )}
             {lightbox.kind === "embed" ? (
               <iframe
                 className="lb-embed"

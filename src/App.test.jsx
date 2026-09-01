@@ -21,10 +21,16 @@ function dbRow(overrides = {}) {
   };
 }
 
-function mockFetch(rows) {
+function mockFetch(rows, settingsRows = []) {
   return vi.fn(async (url) => {
     if (String(url).includes("/rest/v1/projects")) {
       return { ok: true, status: 200, json: async () => rows, text: async () => "" };
+    }
+    // The hero and the contact section read the CV from here. An empty table
+    // is the normal state until one is uploaded, and must stay a page with no
+    // CV button rather than a page with an error on it.
+    if (String(url).includes("/rest/v1/site_settings")) {
+      return { ok: true, status: 200, json: async () => settingsRows, text: async () => "" };
     }
     return { ok: true, status: 204, json: async () => ({}), text: async () => "" };
   });

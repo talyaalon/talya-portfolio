@@ -19,6 +19,7 @@ export const ADMIN_TRANSLATIONS = {
     backToSite: "View site",
     tabProjects: "Projects",
     tabAnalytics: "Analytics",
+    tabCv: "CV",
     loadingData: "Loading data…",
 
     // login
@@ -100,6 +101,28 @@ export const ADMIN_TRANSLATIONS = {
     formBilingualHint:
       "Fill each field in both languages. If you leave one empty, the other language is shown instead.",
 
+    // cv
+    cvTitle: "Curriculum vitae",
+    cvIntro:
+      "The file behind the CV button at the top of the site, and in the contact section. Upload one per language; if only one is there, every visitor is given that one.",
+    cvLabelEn: "English CV (PDF)",
+    cvLabelHe: "Hebrew CV (PDF)",
+    cvNone: "Nothing uploaded yet — the button is not shown.",
+    cvOnSite: "On the site now",
+    cvView: "Open the file",
+    cvRemove: "Remove",
+    cvRemoveConfirm: "Remove this CV from the site?",
+    cvUploading: "Uploading…",
+    cvUploaded: "Uploaded. It is on the site now.",
+    cvRemoved: "Removed. The button is no longer shown.",
+    cvNotPdf: "That is not a PDF. Choose a .pdf file.",
+    cvTooBig: "That file is over 8 MB. Compress it and upload it again.",
+    cvUploadFailed: "Upload failed: ",
+    cvRemoveFailed: "Removal failed: ",
+    cvLoadFailed: "Failed to read the current CV: ",
+    cvNeedsMigration:
+      "The site_settings table does not exist yet, so there is nowhere to record the CV. Run supabase/migrations/004-site-settings.sql in the Supabase dashboard, then reload this page.",
+
     // analytics
     anMonthSummary: "Summary for the current month.",
     anViewsMonth: "Site views this month",
@@ -132,6 +155,7 @@ export const ADMIN_TRANSLATIONS = {
     backToSite: "לאתר",
     tabProjects: "פרויקטים",
     tabAnalytics: "נתוני צפייה",
+    tabCv: "קורות חיים",
     loadingData: "טוען נתונים…",
 
     loginTitle: "כניסת מנהל",
@@ -205,6 +229,28 @@ export const ADMIN_TRANSLATIONS = {
     suffixHe: "(עברית)",
     formBilingualHint:
       "מלאי כל שדה בשתי השפות. אם תשאירי אחד ריק — תוצג השפה השנייה במקומו.",
+
+    // cv
+    cvTitle: "קורות חיים",
+    cvIntro:
+      "הקובץ שנפתח מכפתור קורות החיים בראש האתר ובאזור יצירת הקשר. אפשר להעלות קובץ לכל שפה; אם הועלה רק אחד, הוא יוצג לכולם.",
+    cvLabelEn: "קורות חיים באנגלית (PDF)",
+    cvLabelHe: "קורות חיים בעברית (PDF)",
+    cvNone: "עדיין לא הועלה קובץ — הכפתור אינו מוצג.",
+    cvOnSite: "נמצא באתר כעת",
+    cvView: "פתיחת הקובץ",
+    cvRemove: "הסרה",
+    cvRemoveConfirm: "להסיר את קורות החיים מהאתר?",
+    cvUploading: "מעלה…",
+    cvUploaded: "הועלה. הקובץ נמצא עכשיו באתר.",
+    cvRemoved: "הוסר. הכפתור אינו מוצג יותר.",
+    cvNotPdf: "הקובץ שנבחר אינו PDF. יש לבחור קובץ בסיומת pdf.",
+    cvTooBig: "הקובץ גדול מ-8 מגה־בייט. כדאי לדחוס אותו ולהעלות שוב.",
+    cvUploadFailed: "ההעלאה נכשלה: ",
+    cvRemoveFailed: "ההסרה נכשלה: ",
+    cvLoadFailed: "קריאת קורות החיים הנוכחיים נכשלה: ",
+    cvNeedsMigration:
+      "הטבלה עדיין לא קיימת ולכן אין איפה לשמור את קורות החיים. יש להריץ בלוח הבקרה של Supabase את הקובץ supabase/migrations/004-site-settings.sql, ואז לטעון מחדש את העמוד.",
 
     anMonthSummary: "סיכום עבור החודש הנוכחי.",
     anViewsMonth: "צפיות באתר החודש",

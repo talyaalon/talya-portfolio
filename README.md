@@ -16,7 +16,7 @@ The build has **two entry points**, and the separation is load-bearing:
 | Entry        | Serves            | Contains                                        |
 | ------------ | ----------------- | ----------------------------------------------- |
 | `index.html` | the public site   | project list, rendered read-only. No auth code.  |
-| `admin.html` | `/admin`          | sign-in, project editor, analytics.              |
+| `admin.html` | `/admin`          | sign-in, project editor, CV upload, analytics.    |
 
 The public site reads projects over plain PostgREST (`src/lib/publicApi.js`)
 rather than the Supabase SDK. That is deliberate: importing the SDK pulls its
@@ -38,11 +38,19 @@ src/
     publicApi.js      read-only REST, no SDK
     supabaseClient.js SDK — admin only
     projectRow.js     row <-> UI mapping, pure and unit-tested
+    siteSettings.js   settings row <-> UI mapping (the CV), pure and unit-tested
   hooks/
-    useProjectsRead.js   public: list projects
-    useProjectsAdmin.js  admin: + create / update / delete / upload
-    useAuth.js           admin only
+    useProjectsRead.js      public: list projects
+    useProjectsAdmin.js     admin: + create / update / delete / upload
+    useSiteSettings.js      public: the CV behind the hero button
+    useSiteSettingsAdmin.js admin: upload / remove the CV
+    useAuth.js              admin only
 ```
+
+The CV is uploaded from `/admin`, not committed: the file lands in the `logos`
+Storage bucket under `cv/`, and its public URL is recorded in `site_settings`.
+One file per language; when only one exists, every visitor is given that one,
+and when neither does, no button is rendered at all.
 
 ## Security model
 
@@ -77,7 +85,10 @@ supabase/schema.sql                    tables, indexes, storage bucket
 supabase/migrations/001-project-fields.sql   additive: role, impact, status, bilingual demo links
 supabase/migrations/002-repo-private.sql     additive: repo_private (a repo that exists but is closed)
 supabase/migrations/003-embed-url.sql        additive: embed_url (a live Canva deck in the device frame)
-supabase/policies-owner-only.sql       owner-only writes  (run last)
+supabase/policies-owner-only.sql       owner-only writes
+supabase/migrations/004-site-settings.sql    additive: site_settings (the CV, uploaded from /admin)
+                                             run AFTER the policies file — its own
+                                             policies call is_site_owner()
 ```
 
 One-off scripts, each with a "look before you act" step first:
@@ -118,6 +129,13 @@ SUPABASE_SERVICE_ROLE_KEY
 
 `SUPABASE_SERVICE_ROLE_KEY` is secret and server-side only — it must never
 appear in a `VITE_` variable, since those are compiled into the browser bundle.
+
+`public/_headers` carries the security headers, and **Netlify applies it, the
+dev server does not** — anything it forbids works locally and breaks in
+production. Its `frame-src` is what lets a project card frame a Canva deck; a
+frame the CSP refuses still fires `load`, so nothing in the app can notice it
+and fall back. `src/test/headers.test.js` checks the two against each other
+instead.
 
 ## Images
 

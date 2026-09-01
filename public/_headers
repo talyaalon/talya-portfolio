@@ -1,9 +1,18 @@
+# frame-src is what THIS page may embed: the Canva deck in the laptop frame on
+# a project card, and the recording its lightbox opens. Without the directive
+# it is not "unset" -- CSP falls back to child-src and then to default-src, so
+# 'self' silently blocked both, and the card showed the browser's error page
+# inside the frame with nothing to explain it. A frame refused by CSP still
+# fires `load`, so no code can detect this; src/test/headers.test.js does.
+#
+# frame-ancestors and X-Frame-Options below are the OPPOSITE direction -- who
+# may embed this page -- and stay shut.
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co; frame-src https://www.canva.com https://canva.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
 
 /admin
   X-Robots-Tag: noindex, nofollow

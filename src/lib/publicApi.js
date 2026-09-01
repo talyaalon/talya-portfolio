@@ -45,3 +45,45 @@ export async function fetchProjects({ signal } = {}) {
 
   return res.json();
 }
+
+// ============================================================
+//  Site settings (today: the CV).
+//
+//  A separate, tiny request rather than something folded into the projects
+//  call: they are different tables, and a settings table that is not there yet
+//  must not take the project list down with it.
+// ============================================================
+
+export async function fetchSiteSettings({ signal } = {}) {
+  if (!isConfigured) throw new Error("missing-config");
+
+  const res = await fetch(`${url}/rest/v1/site_settings?select=key,value`, {
+    method: "GET",
+    signal,
+    headers: {
+      apikey: anonKey,
+      Authorization: `Bearer ${anonKey}`,
+      Accept: "application/json",
+    },
+  });
+
+  // The table arrives with supabase/migrations/004-site-settings.sql. Until it
+  // has been run, PostgREST answers 404 for the whole relation. That is a
+  // known, temporary state -- "no CV uploaded yet" looks the same to a visitor
+  // -- so it degrades to no settings instead of an error, and says so in the
+  // console for the owner. Any OTHER status is a real failure and throws.
+  if (res.status === 404) {
+    console.warn(
+      "site_settings table not found — run supabase/migrations/004-site-settings.sql"
+    );
+    return [];
+  }
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    console.error("site settings fetch failed:", res.status, detail);
+    throw new Error(`site-settings-fetch-failed-${res.status}`);
+  }
+
+  return res.json();
+}
