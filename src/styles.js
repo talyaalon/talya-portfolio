@@ -122,6 +122,28 @@ p,h1,h2,h3,h4,.chip,.plink,.proj-meta{overflow-wrap:anywhere}
 .sec-label .rule{flex:1;min-width:20px;height:1px;background:var(--line)}
 .about-text{font-size:18px;max-width:46em}
 
+/* ---------- EXPERIENCE ---------- */
+/* Two columns on desktop: the dates sit in a narrow rail so a recruiter can
+   scan the timeline without reading the bullets. One column on mobile. */
+.role{display:grid;grid-template-columns:170px 1fr;gap:24px;margin-bottom:34px}
+@media(max-width:780px){.role{grid-template-columns:1fr;gap:6px}}
+.role-when{font-size:13.5px;font-weight:700;color:var(--tan-deep);letter-spacing:.02em;
+  padding-top:3px;font-variant-numeric:tabular-nums}
+.role-body h3{font-size:20px;margin-bottom:4px}
+.role-where{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:12px}
+.role-points{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:9px}
+.role-points li{position:relative;padding-inline-start:18px;font-size:15.5px;color:var(--ink-soft)}
+.role-points li::before{content:"";position:absolute;inset-inline-start:0;top:11px;
+  width:6px;height:6px;border-radius:50%;background:var(--tan)}
+
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:8px}
+.factcard{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px 22px}
+.factcard h3{font-size:13px;font-weight:700;color:var(--tan-deep);letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:13px}
+.factcard strong{color:var(--ink);font-weight:700;font-size:15.5px;display:block}
+.fact-sub{font-size:14.5px;color:var(--ink-soft);margin-top:4px;line-height:1.6}
+.fact-list{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:15px;color:var(--ink-soft)}
+
 /* ---------- PROJECTS / spine ---------- */
 .projects{position:relative}
 .spine{position:absolute;inset-block:6px 40px;inset-inline-end:11px;width:2px;

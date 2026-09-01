@@ -13,7 +13,7 @@ export default function Projects({ projects, isAdmin, onOpen, onEdit, onDelete, 
         <Reveal>
           <div className="sec-label">
             <span className="num" aria-hidden="true">
-              02
+              03
             </span>
             <h2>{t("secProjects")}</h2>
             <span className="rule" aria-hidden="true" />

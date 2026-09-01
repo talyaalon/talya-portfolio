@@ -45,7 +45,15 @@ export const TRANSLATIONS = {
     // about
     secAbout: "About",
     aboutText:
-      "Full Stack Developer with a B.Sc. in Software Engineering, experienced in designing and building production-grade systems. Creator of Air Manage — a maintenance and asset platform in daily use at a logistics company. Strong in React, Next.js, Node.js and PostgreSQL, with a focus on system design, workflow automation and solving complex operational problems.",
+      "Full Stack Developer with a B.Sc. in Software Engineering, experienced in designing and building production-grade systems. Creator of Air Manage — a maintenance and asset platform in daily use by 15+ employees. Strong in React, Next.js, Node.js and PostgreSQL, with a focus on system design, workflow automation and solving complex operational problems.",
+
+    // experience
+    secExperience: "Experience",
+    secEducation: "Education",
+    secAwards: "Recognition",
+    secLanguages: "Languages",
+    navExperience: "Experience",
+    present: "Present",
 
     // projects
     secProjects: "Selected Projects",
@@ -123,7 +131,14 @@ export const TRANSLATIONS = {
 
     secAbout: "אודות",
     aboutText:
-      "מפתחת Full Stack עם תואר ראשון בהנדסת תוכנה, מנוסה בעיצוב ובבניית מערכות ברמת Production. יצרתי את Air Manage — פלטפורמת ניהול תחזוקה ונכסים בשימוש יומיומי בחברת לוגיסטיקה. שולטת ב-React, ‏Next.js, ‏Node.js ו-PostgreSQL, עם דגש על עיצוב מערכות, אוטומציה של תהליכים ופתרון בעיות תפעוליות מורכבות.",
+      "מפתחת Full Stack עם תואר ראשון בהנדסת תוכנה, מנוסה בעיצוב ובבניית מערכות ברמת Production. יצרתי את Air Manage — פלטפורמת ניהול תחזוקה ונכסים בשימוש יומיומי של 15+ עובדים. שולטת ב-React, ‏Next.js, ‏Node.js ו-PostgreSQL, עם דגש על עיצוב מערכות, אוטומציה של תהליכים ופתרון בעיות תפעוליות מורכבות.",
+
+    secExperience: "ניסיון",
+    secEducation: "השכלה",
+    secAwards: "הוקרה",
+    secLanguages: "שפות",
+    navExperience: "ניסיון",
+    present: "היום",
 
     secProjects: "פרויקטים נבחרים",
     cardViewLive: "צפייה באתר",

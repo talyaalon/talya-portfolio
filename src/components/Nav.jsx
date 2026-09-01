@@ -3,6 +3,7 @@ import { useI18n } from "../i18n";
 
 const LINKS = [
   ["#about", "navAbout"],
+  ["#experience", "navExperience"],
   ["#work", "navProjects"],
   ["#skills", "navSkills"],
   ["#contact", "navContact"],

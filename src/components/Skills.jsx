@@ -16,7 +16,7 @@ export default function Skills() {
       <div className="wrap">
         <Reveal>
           <div className="sec-label">
-            <span className="num" aria-hidden="true">03</span>
+            <span className="num" aria-hidden="true">04</span>
             <h2>{t("secSkills")}</h2>
             <span className="rule" aria-hidden="true" />
           </div>
