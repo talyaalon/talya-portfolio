@@ -176,6 +176,10 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
       </p>
       {single(`${t("formDemo")} ${t("suffixEn")}`, "demoEn", "https://…")}
       {single(`${t("formDemo")} ${t("suffixHe")}`, "demoHe", "https://…")}
+      {single(t("formEmbed"), "embedUrl", "https://www.canva.com/design/…/view")}
+      <p style={{ fontSize: 13, color: COLORS.inkSoft, margin: "6px 0 0" }}>
+        {t("formEmbedHint")}
+      </p>
       {single(t("formScreenshot"), "screenshot", "https://…")}
       {single(t("formPosition"), "position", "0", "number")}
 

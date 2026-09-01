@@ -4,7 +4,7 @@ import { COLORS } from "../styles";
 import { useI18n } from "../i18n";
 import { loc } from "../utils/localized";
 import { track } from "../lib/analytics";
-import { Link, GitHub, Lock, Play, Check, Star } from "./Icons";
+import { Link, GitHub, Lock, Slides, Play, Check, Star } from "./Icons";
 import { preferWebp } from "../utils/screenshot";
 
 // Full project detail: name, context, role, tools, result, README and links.
@@ -92,7 +92,7 @@ export default function ProjectModal({ project, onClose }) {
         </>
       )}
 
-      {(project.link || project.repo || project.repoPrivate || demo) && (
+      {(project.link || project.repo || project.repoPrivate || demo || project.embedUrl) && (
         <div className="plinks" style={{ marginTop: 22 }}>
           {project.link && (
             <a className="plink" href={project.link} target="_blank" rel="noopener noreferrer" onClick={onLink}>
@@ -102,6 +102,13 @@ export default function ProjectModal({ project, onClose }) {
           {demo && (
             <a className="plink soft" href={demo} target="_blank" rel="noopener noreferrer" onClick={onLink}>
               <Play aria-hidden="true" /> <span>{t("cardWatchDemo")}</span>
+            </a>
+          )}
+          {/* The modal links out rather than opening a second overlay on top of
+              itself; the card is where an embed opens in place. */}
+          {project.embedUrl && (
+            <a className="plink soft" href={project.embedUrl} target="_blank" rel="noopener noreferrer" onClick={onLink}>
+              <Slides aria-hidden="true" /> <span>{t("cardPresentation")}</span>
             </a>
           )}
           {project.repoPrivate ? (

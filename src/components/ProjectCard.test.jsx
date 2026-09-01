@@ -96,3 +96,68 @@ describe("ProjectCard private repository", () => {
     expect(ghLink()).toBeNull();
   });
 });
+
+// The presentation lives in the laptop screen instead of a screenshot, and the
+// video and the deck both open large without leaving the portfolio.
+describe("ProjectCard Canva embeds", () => {
+  const DECK =
+    "https://www.canva.com/design/DAHIlZS0X2s/RHLvNjN8vUfCFCgN5_IOlA/view?utm_medium=link2";
+  const VIDEO =
+    "https://www.canva.com/design/DAHIlXt6qHo/KdKer3C_SbbbIzBy8WcpAA/watch?utm_medium=link2";
+
+  const frame = () => document.querySelector(".dev-laptop iframe");
+  const lightbox = () => document.querySelector(".shot-lightbox .lb-embed");
+
+  it("puts the deck in the laptop screen instead of the empty-screenshot panel", () => {
+    card({ embedUrl: DECK });
+    expect(document.querySelector(".shot-empty")).toBeNull();
+    expect(frame()).toHaveAttribute(
+      "src",
+      "https://www.canva.com/design/DAHIlZS0X2s/RHLvNjN8vUfCFCgN5_IOlA/view?embed"
+    );
+    // no phone: there is no mobile capture to pair with an embed
+    expect(document.querySelector(".dev-phone")).toBeNull();
+  });
+
+  it("opens the deck large when the laptop is clicked", () => {
+    card({ embedUrl: DECK });
+    expect(lightbox()).toBeNull();
+    fireEvent.click(document.querySelector(".dev-laptop"));
+    expect(lightbox()).toHaveAttribute(
+      "src",
+      "https://www.canva.com/design/DAHIlZS0X2s/RHLvNjN8vUfCFCgN5_IOlA/view?embed"
+    );
+  });
+
+  it("gives the deck its own button, for the phone where the frame is tiny", () => {
+    card({ embedUrl: DECK });
+    const btn = [...document.querySelectorAll(".plinks button")].find((b) =>
+      b.className.includes("soft")
+    );
+    expect(btn).toBeTruthy();
+    fireEvent.click(btn);
+    expect(lightbox()).toBeTruthy();
+  });
+
+  it("opens an embeddable video in the page rather than a new tab", () => {
+    card({ demoEn: VIDEO, demoHe: VIDEO });
+    // it is a button, not an anchor: nothing navigates away
+    expect(document.querySelector('.plinks a[href*="canva.com"]')).toBeNull();
+    const btn = [...document.querySelectorAll(".plinks button")].find((b) =>
+      b.textContent.trim()
+    );
+    fireEvent.click(btn);
+    expect(lightbox()).toHaveAttribute(
+      "src",
+      "https://www.canva.com/design/DAHIlXt6qHo/KdKer3C_SbbbIzBy8WcpAA/watch?embed"
+    );
+  });
+
+  // The demo field is generic. A link that cannot be framed must keep behaving
+  // exactly as it does today rather than opening an iframe that stays blank.
+  it("still opens a non-embeddable demo link in a new tab", () => {
+    card({ demoEn: "https://youtu.be/abc123", demoHe: "https://youtu.be/abc123" });
+    const a = document.querySelector('.plinks a[href="https://youtu.be/abc123"]');
+    expect(a).toHaveAttribute("target", "_blank");
+  });
+});

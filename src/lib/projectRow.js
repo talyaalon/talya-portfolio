@@ -54,7 +54,15 @@ export const MIGRATION_001_COLUMNS = [
 // column existed) rather than to a maybe-private guess.
 export const MIGRATION_002_COLUMNS = ["repo_private"];
 
-export const MIGRATION_COLUMNS = [...MIGRATION_001_COLUMNS, ...MIGRATION_002_COLUMNS];
+// Columns added by supabase/migrations/003-embed-url.sql. A live embed the
+// device frame shows in place of a screenshot — a Canva deck, today.
+export const MIGRATION_003_COLUMNS = ["embed_url"];
+
+export const MIGRATION_COLUMNS = [
+  ...MIGRATION_001_COLUMNS,
+  ...MIGRATION_002_COLUMNS,
+  ...MIGRATION_003_COLUMNS,
+];
 
 export const REQUIRED_COLUMNS = [...CORE_COLUMNS, ...MIGRATION_COLUMNS];
 
@@ -106,6 +114,9 @@ export function fromRow(row) {
     // A company repository: it exists on GitHub, but nobody outside can open
     // it. The card says so instead of offering a link into a 404.
     repoPrivate: row.repo_private ?? false,
+    // Shown live inside the laptop frame instead of a still capture, and
+    // opened full size from there — see utils/canva.js for what qualifies.
+    embedUrl: row.embed_url ?? "",
     // Before migration 001 there was a single `demo_url`. Fall back to it so
     // an unmigrated database keeps showing the demo links it already has.
     demoEn: row.demo_url_en ?? row.demo_url ?? "",
@@ -143,6 +154,7 @@ export function toRow(proj, columns = null) {
     link: orNull(proj.link),
     repo_url: orNull(proj.repo),
     repo_private: Boolean(proj.repoPrivate),
+    embed_url: orNull(proj.embedUrl),
     demo_url_en: orNull(proj.demoEn),
     demo_url_he: orNull(proj.demoHe),
     // Both of these used to be dropped on save, so a screenshot or an ordering
@@ -170,7 +182,7 @@ export function blankProject() {
     impactEn: "", impactHe: "",
     status: "",
     tools: [],
-    link: "", repo: "", repoPrivate: false, demoEn: "", demoHe: "",
+    link: "", repo: "", repoPrivate: false, demoEn: "", demoHe: "", embedUrl: "",
     logo: "", screenshot: "",
     position: 0,
   };
@@ -189,7 +201,7 @@ export function isValidUrl(value) {
   }
 }
 
-export const URL_FIELDS = ["link", "repo", "demoEn", "demoHe", "screenshot"];
+export const URL_FIELDS = ["link", "repo", "demoEn", "demoHe", "embedUrl", "screenshot"];
 
 export function invalidUrlFields(proj) {
   return URL_FIELDS.filter((f) => !isValidUrl(proj[f]));

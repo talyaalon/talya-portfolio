@@ -3,8 +3,9 @@ import { createPortal } from "react-dom";
 import { useI18n } from "../i18n";
 import { loc } from "../utils/localized";
 import { track } from "../lib/analytics";
-import { Check, Star, Link, Play, GitHub, Lock, Image } from "./Icons";
+import { Check, Star, Link, Play, GitHub, Lock, Slides, Image } from "./Icons";
 import { preferWebp, mobileVariant } from "../utils/screenshot";
+import { canvaEmbed } from "../utils/canva";
 
 // One project, rendered in the editorial "CV card" style: a text body on one
 // side and a screenshot panel on the other, hung off the timeline spine.
@@ -31,14 +32,20 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
   const phoneMissing = missingShot === mobileShot;
   const phoneImg = mobileShot ? preferWebp(mobileShot) : null;
 
+  // A Canva deck shown live in the laptop frame, and a recording opened from
+  // the links row. Either is null when the stored URL is not something that
+  // can be framed, and the card falls back to its ordinary behaviour instead
+  // of rendering an iframe that would never load.
+  const deckEmbed = canvaEmbed(project.embedUrl);
+  const demoEmbed = canvaEmbed(demo);
+
   const open = () => onOpen(project);
   const clickLink = (e) => {
     e.stopPropagation();
     track("click", project.id);
   };
-
   // Clicking a device frame opens that capture in a floating lightbox.
-  const [lightbox, setLightbox] = useState(null); // { src, mobile }
+  const [lightbox, setLightbox] = useState(null); // { src, mobile } | { src, kind:"embed" }
   useEffect(() => {
     if (!lightbox) return;
     const onKey = (e) => { if (e.key === "Escape") setLightbox(null); };
@@ -51,13 +58,21 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
     };
   }, [lightbox]);
 
+  // Opening an embed counts as a click on the project, the same as following
+  // the link would have.
+  const openEmbed = (src) => (e) => {
+    e.stopPropagation();
+    track("click", project.id);
+    setLightbox({ src, kind: "embed" });
+  };
+
   // The old heuristic tested the whole result line for /place|award|פרס|מקום/,
   // so "replaced", "marketplace" and "במקום" all earned a prize star. An award
   // is now an explicit status rather than something guessed from prose.
   const isAward = project.status === "award";
   // A private repo fills the links row with its own badge, so the card is not
   // link-less and should not also fall back to the "Internal system" note.
-  const hasAnyLink = project.link || demo || project.repo || project.repoPrivate;
+  const hasAnyLink = project.link || demo || project.repo || project.repoPrivate || deckEmbed;
   // An unrecognised status renders nothing rather than defaulting to
   // "Archived" — mislabelling a live project is worse than omitting the tag.
   const statusTag = statusKey(project.status);
@@ -122,10 +137,22 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
                 <Link aria-hidden="true" /> <span>{t("cardViewLive")}</span>
               </a>
             )}
-            {demo && (
-              <a className="plink soft" href={demo} target="_blank" rel="noopener noreferrer" onClick={clickLink}>
-                <Play aria-hidden="true" /> <span>{t("cardWatchDemo")}</span>
-              </a>
+            {demo &&
+              (demoEmbed ? (
+                <button type="button" className="plink soft" onClick={openEmbed(demoEmbed)}>
+                  <Play aria-hidden="true" /> <span>{t("cardWatchDemo")}</span>
+                </button>
+              ) : (
+                <a className="plink soft" href={demo} target="_blank" rel="noopener noreferrer" onClick={clickLink}>
+                  <Play aria-hidden="true" /> <span>{t("cardWatchDemo")}</span>
+                </a>
+              ))}
+            {/* The frame carries the deck on a wide screen; on a phone it is
+                small enough that a plain button is how anyone finds it. */}
+            {deckEmbed && (
+              <button type="button" className="plink soft" onClick={openEmbed(deckEmbed)}>
+                <Slides aria-hidden="true" /> <span>{t("cardPresentation")}</span>
+              </button>
             )}
             {/* The private branch comes first and does not fall through to the
                 link: a company repo must never render an href, so the URL the
@@ -163,7 +190,26 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
           )}
         </div>
 
-        {project.screenshot ? (
+        {deckEmbed ? (
+          <div className="shot">
+            <span className="devices">
+              <button
+                type="button"
+                className="dev-laptop"
+                aria-label={t("cardOpenAria") + name}
+                onClick={openEmbed(deckEmbed)}
+              >
+                <span className="dev-bar" aria-hidden="true"><i /><i /><i /></span>
+                {/* The preview is deliberately inert: pointer-events are off in
+                    CSS and it is out of the tab order, so a click always opens
+                    the full-size view instead of poking at a tiny slide. */}
+                <span className="dev-screen is-embed">
+                  <iframe src={deckEmbed} title={name} loading="lazy" tabIndex={-1} aria-hidden="true" />
+                </span>
+              </button>
+            </span>
+          </div>
+        ) : project.screenshot ? (
           <div className="shot">
             <span className="devices">
               <button
@@ -225,12 +271,23 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
         {lightbox && createPortal(
           <div className="shot-lightbox" role="dialog" aria-modal="true" onClick={() => setLightbox(null)}>
             <button type="button" className="lightbox-close" aria-label="Close" onClick={() => setLightbox(null)}>✕</button>
-            <img
-              {...preferWebp(lightbox.src)}
-              alt={name}
-              className={lightbox.mobile ? "lb-mobile" : "lb-desktop"}
-              onClick={(e) => e.stopPropagation()}
-            />
+            {lightbox.kind === "embed" ? (
+              <iframe
+                className="lb-embed"
+                src={lightbox.src}
+                title={name}
+                allow="fullscreen; autoplay"
+                allowFullScreen
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <img
+                {...preferWebp(lightbox.src)}
+                alt={name}
+                className={lightbox.mobile ? "lb-mobile" : "lb-desktop"}
+                onClick={(e) => e.stopPropagation()}
+              />
+            )}
           </div>,
           document.body
         )}

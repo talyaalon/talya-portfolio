@@ -50,7 +50,8 @@ export const TRANSLATIONS = {
     // projects
     secProjects: "Selected Projects",
     cardViewLive: "View live",
-    cardWatchDemo: "Read the guide",
+    cardWatchDemo: "Watch the video",
+    cardPresentation: "View the deck",
     cardInternal: "Internal system",
     cardRepoPrivate: "GitHub · Private repo",
     cardRepoPrivateHint: "The code lives on GitHub in a private repository — internal company code, not open to the public.",
@@ -125,7 +126,8 @@ export const TRANSLATIONS = {
 
     secProjects: "פרויקטים נבחרים",
     cardViewLive: "צפייה באתר",
-    cardWatchDemo: "למדריך המלא",
+    cardWatchDemo: "לצפייה בסרטון",
+    cardPresentation: "למצגת",
     cardInternal: "מערכת פנימית",
     cardRepoPrivate: "GitHub · ריפו פרטי",
     cardRepoPrivateHint: "הקוד יושב בגיטהאב במאגר פרטי — קוד פנימי של החברה, לא פתוח לציבור.",

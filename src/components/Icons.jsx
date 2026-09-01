@@ -62,3 +62,10 @@ export const Lock = (props) => (
     <path d="M8 10V7a4 4 0 018 0v3" />
   </svg>
 );
+export const Slides = (props) => (
+  <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="3" y="4" width="18" height="12" rx="2" />
+    <path d="M12 16v4" />
+    <path d="M8 20h8" />
+  </svg>
+);

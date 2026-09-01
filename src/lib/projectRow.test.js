@@ -10,6 +10,7 @@ import {
   CORE_COLUMNS,
   MIGRATION_001_COLUMNS,
   MIGRATION_002_COLUMNS,
+  MIGRATION_003_COLUMNS,
   pendingMigration,
 } from "./projectRow";
 
@@ -152,9 +153,15 @@ describe("an unmigrated database", () => {
     expect(pendingMigration(legacyRow())).toEqual([
       ...MIGRATION_001_COLUMNS,
       ...MIGRATION_002_COLUMNS,
+      ...MIGRATION_003_COLUMNS,
     ]);
     const migrated = {};
-    for (const c of [...CORE_COLUMNS, ...MIGRATION_001_COLUMNS, ...MIGRATION_002_COLUMNS]) {
+    for (const c of [
+      ...CORE_COLUMNS,
+      ...MIGRATION_001_COLUMNS,
+      ...MIGRATION_002_COLUMNS,
+      ...MIGRATION_003_COLUMNS,
+    ]) {
       migrated[c] = null;
     }
     expect(pendingMigration(migrated)).toEqual([]);
@@ -193,9 +200,31 @@ describe("a private repository", () => {
     expect(fromRow(row).repoPrivate).toBe(false);
   });
 
-  it("a database that ran 001 but not 002 owes exactly repo_private", () => {
+  it("a database that stopped after 001 owes every column added since", () => {
     const row = {};
     for (const c of [...CORE_COLUMNS, ...MIGRATION_001_COLUMNS]) row[c] = null;
-    expect(pendingMigration(row)).toEqual(MIGRATION_002_COLUMNS);
+    expect(pendingMigration(row)).toEqual([
+      ...MIGRATION_002_COLUMNS,
+      ...MIGRATION_003_COLUMNS,
+    ]);
+  });
+});
+
+describe("an embedded presentation", () => {
+  it("carries the embed URL in both directions", () => {
+    const url = "https://www.canva.com/design/A/B/view";
+    expect(fromRow(dbRow({ embed_url: url })).embedUrl).toBe(url);
+    expect(toRow({ ...blankProject(), embedUrl: url }).embed_url).toBe(url);
+  });
+
+  it("degrades to empty on a database that has not run migration 003", () => {
+    const row = dbRow();
+    delete row.embed_url;
+    expect(fromRow(row).embedUrl).toBe("");
+    expect(pendingMigration(row)).toEqual(MIGRATION_003_COLUMNS);
+  });
+
+  it("validates the embed URL like every other link the form accepts", () => {
+    expect(invalidUrlFields({ ...blankProject(), embedUrl: "canva.com/x" })).toEqual(["embedUrl"]);
   });
 });

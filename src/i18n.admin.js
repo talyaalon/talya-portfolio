@@ -66,6 +66,9 @@ export const ADMIN_TRANSLATIONS = {
     formRepoPrivate: "Private repository",
     formRepoPrivateHint: "The card shows \"GitHub · Private repo\" instead of a link, and the URL above stays out of the public page.",
     formDemo: "Demo / video link",
+    formEmbed: "Presentation link (Canva)",
+    formEmbedHint:
+      "A Canva /view or /watch share link. It replaces the screenshot inside the laptop frame and opens full size when clicked.",
     formTools: "Technologies",
     formToolsPlaceholder: "JavaScript, React…",
     formAdd: "Add",
@@ -161,6 +164,9 @@ export const ADMIN_TRANSLATIONS = {
     formStatusNone: "לא הוגדר",
     formLink: "קישור לאתר חי",
     formRepo: "קישור GitHub",
+    formEmbed: "קישור מצגת (Canva)",
+    formEmbedHint:
+      "קישור שיתוף של קנבה מסוג ‎/view‎ או ‎/watch‎. הוא מחליף את צילום המסך בתוך מסגרת הלפטופ ונפתח בגודל מלא בלחיצה.",
     formRepoPrivate: "ריפו פרטי",
     formRepoPrivateHint: "בכרטיס יופיע \"GitHub · ריפו פרטי\" במקום קישור, והכתובת שלמעלה לא תיכנס לעמוד הציבורי.",
     formDemo: "קישור דמו/וידאו",

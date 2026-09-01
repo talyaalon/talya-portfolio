@@ -76,6 +76,7 @@ Database, in order:
 supabase/schema.sql                    tables, indexes, storage bucket
 supabase/migrations/001-project-fields.sql   additive: role, impact, status, bilingual demo links
 supabase/migrations/002-repo-private.sql     additive: repo_private (a repo that exists but is closed)
+supabase/migrations/003-embed-url.sql        additive: embed_url (a live Canva deck in the device frame)
 supabase/policies-owner-only.sql       owner-only writes  (run last)
 ```
 
@@ -83,7 +84,8 @@ One-off scripts, each with a "look before you act" step first:
 `supabase/cleanup-demo-projects.sql` removes the placeholder projects that
 older versions of `schema.sql` seeded; `supabase/mark-private-repos.sql`
 flags the company repositories; `supabase/delete-kosher-place.sql` removes
-one retired project.
+one retired project; `supabase/sensitive-data-media.sql` attaches a video and
+a deck to the one project that had no media.
 
 Analytics only records events when `/api/track` exists, i.e. under
 `netlify dev` or in production — not under plain `vite dev`.

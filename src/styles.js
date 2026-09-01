@@ -198,6 +198,10 @@ button.chip-removable:hover{border-color:var(--tan-text)}
 .dev-screen{display:block;overflow:hidden}
 .dev-laptop .dev-screen{aspect-ratio:16/10}
 .dev-phone .dev-screen{aspect-ratio:9/17;border-radius:13px}
+/* a live embed sits where a capture would. It is inert on purpose: the click
+   belongs to the frame's button, which opens the full-size view */
+.shot .dev-screen iframe{width:100%;height:100%;border:0;display:block;background:#fff;pointer-events:none}
+.dev-laptop .dev-screen.is-embed{aspect-ratio:16/9}
 .shot .dev-screen img{width:100%;height:100%;object-fit:cover;object-position:top center;
   border-radius:0;box-shadow:none;transition:object-position 3.2s ease}
 .dev-laptop:hover .dev-screen img,.dev-laptop:focus-visible .dev-screen img,
@@ -209,6 +213,8 @@ button.chip-removable:hover{border-color:var(--tan-text)}
 .shot-lightbox img{max-width:min(1200px,94vw);max-height:88vh;width:auto;height:auto;
   border-radius:12px;background:#fff;box-shadow:0 30px 80px -20px rgba(0,0,0,.6);cursor:default}
 .shot-lightbox img.lb-mobile{max-width:min(400px,88vw)}
+.shot-lightbox .lb-embed{width:min(1200px,94vw);aspect-ratio:16/9;max-height:88vh;border:0;
+  border-radius:12px;background:#000;box-shadow:0 24px 60px rgba(0,0,0,.45)}
 .lightbox-close{position:fixed;top:18px;inset-inline-end:22px;z-index:121;width:42px;height:42px;
   background:#fff;color:#262a2a;border:none;border-radius:999px;font-size:18px;cursor:pointer;
   box-shadow:0 6px 18px rgba(0,0,0,.3)}
