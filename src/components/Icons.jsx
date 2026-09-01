@@ -69,3 +69,17 @@ export const Slides = (props) => (
     <path d="M8 20h8" />
   </svg>
 );
+export const Eye = (props) => (
+  <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);
+export const EyeOff = (props) => (
+  <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M10.6 6.2A9.9 9.9 0 0112 6c6.4 0 10 7 10 7a17.7 17.7 0 01-3.2 4.1" />
+    <path d="M6.2 6.7A17.6 17.6 0 002 13s3.6 7 10 7a9.7 9.7 0 005.1-1.4" />
+    <path d="M9.9 10.1a3 3 0 004.2 4.2" />
+    <path d="M3 3l18 18" />
+  </svg>
+);

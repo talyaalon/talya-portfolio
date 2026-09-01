@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { styles, COLORS } from "./styles";
-import { adminConfigError } from "./lib/supabaseClient";
+import { adminConfigError, ADMIN_EMAIL_DOMAIN } from "./lib/supabaseClient";
 import { useI18n } from "./i18n";
 import { useAuth } from "./hooks/useAuth";
 import { useProjectsAdmin } from "./hooks/useProjectsAdmin";
@@ -35,7 +35,13 @@ export default function AdminApp() {
           <AdminPanes />
         ) : (
           <Section narrow>
-            <AdminLogin signIn={signIn} configError={adminConfigError} notOwner={isImpostor} onSignOut={signOut} />
+            <AdminLogin
+              signIn={signIn}
+              configError={adminConfigError}
+              notOwner={isImpostor}
+              onSignOut={signOut}
+              emailDomain={ADMIN_EMAIL_DOMAIN}
+            />
             {/* /admin is a public URL, so the banner stays generic; the
                 Supabase detail goes to the console for the owner. */}
             {authError && (

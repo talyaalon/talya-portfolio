@@ -6,6 +6,7 @@ import {
   ADMIN_EMAIL_DOMAIN,
   adminConfigError,
 } from "../lib/supabaseClient";
+import { toAdminEmail } from "../lib/adminEmail";
 
 // Tracks the Supabase auth session for the admin app.
 //
@@ -74,9 +75,10 @@ export function useAuth() {
 
   const signIn = useCallback(async (username, password) => {
     if (adminConfigError) return new Error(adminConfigError);
-    const clean = String(username || "").trim().toLowerCase();
-    if (!clean || !password) return new Error("empty-credentials");
-    const email = `${clean}@${ADMIN_EMAIL_DOMAIN}`;
+    // toAdminEmail also accepts a complete address, so an autofilled
+    // "talya@gmail.com" no longer turns into "talya@gmail.com@gmail.com".
+    const email = toAdminEmail(username, ADMIN_EMAIL_DOMAIN);
+    if (!email || !password) return new Error("empty-credentials");
     // Returns the error rather than throwing, so the caller can always clear
     // its busy state — a rejection here used to leave the button stuck on
     // "Signing in…" forever.

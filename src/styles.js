@@ -283,6 +283,16 @@ button.chip-removable:hover{border-color:var(--tan-text)}
 .inp:focus{border-color:var(--tan-text)}
 select.inp{cursor:pointer}
 input[type=file].inp{padding:10px 12px;background:var(--paper);cursor:pointer}
+/* Password field with a reveal toggle. The input is dir=ltr, so the button
+   belongs at its physical right edge even when the page runs right-to-left. */
+.pw-wrap{position:relative}
+.pw-wrap .inp{padding-right:46px}
+.eye-btn{position:absolute;top:0;bottom:0;right:6px;width:36px;display:flex;align-items:center;
+  justify-content:center;background:none;border:none;padding:0;border-radius:10px;
+  color:var(--ink-soft);cursor:pointer;transition:.15s}
+.eye-btn:hover{color:var(--ink)}
+.eye-btn:focus-visible{outline:2px solid var(--tan-text);outline-offset:-2px}
+.field-hint{font-size:12.5px;color:var(--ink-soft);margin:6px 0 0}
 .primary-btn{font-weight:700;font-size:14px;background:var(--ink);color:#fff;border:none;
   padding:12px 22px;min-height:44px;border-radius:999px;cursor:pointer;transition:.18s}
 .primary-btn:hover{background:var(--tan-deep)}

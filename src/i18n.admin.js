@@ -26,7 +26,16 @@ export const ADMIN_TRANSLATIONS = {
     loginSubtitle: "This area is for the site owner.",
     loginUsername: "Username",
     loginPassword: "Password",
+    // Deliberately vague: Supabase returns one identical error for "no such
+    // user" and "wrong password", and a message that told them apart would
+    // confirm which accounts exist. The specific messages below cover only
+    // what the form can know on its own, before asking the server.
     loginWrong: "Wrong username or password",
+    loginNoUsername: "Enter your username",
+    loginNoPassword: "Enter your password",
+    loginSignsInAs: "Signs in as",
+    loginShowPassword: "Show password",
+    loginHidePassword: "Hide password",
     loginSigningIn: "Signing in…",
     loginEnter: "Sign in",
     loginNotOwner: "This account is not the site owner.",
@@ -130,6 +139,11 @@ export const ADMIN_TRANSLATIONS = {
     loginUsername: "שם משתמש",
     loginPassword: "סיסמה",
     loginWrong: "שם משתמש או סיסמה שגויים",
+    loginNoUsername: "יש להזין שם משתמש",
+    loginNoPassword: "יש להזין סיסמה",
+    loginSignsInAs: "הכניסה תתבצע עם",
+    loginShowPassword: "הצגת הסיסמה",
+    loginHidePassword: "הסתרת הסיסמה",
     loginSigningIn: "מתחברת…",
     loginEnter: "כניסה",
     loginNotOwner: "החשבון הזה אינו בעל האתר.",
