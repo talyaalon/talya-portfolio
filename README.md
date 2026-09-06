@@ -197,7 +197,13 @@ Analytics only records events when `/api/track` exists, i.e. under
 | `npm run lint`           | ESLint                                                     |
 | `npm run format`         | Prettier                                                   |
 | `npm run verify:bundle`  | asserts no admin code in the public bundle (needs a build) |
-| `npm run verify`         | lint + test + build + bundle check — what CI runs           |
+| `npm run verify`         | lint + test + full build + bundle check                     |
+
+CI runs the same steps except the pre-render, which needs Supabase
+credentials CI does not have and should not be given. Pre-rendering is
+still covered on every run by `src/prerender.test.jsx`, which renders both
+pages against fixture rows and asserts on the markup. Netlify runs the full
+build, and a failure there leaves the previous deploy serving.
 
 ## Deployment
 

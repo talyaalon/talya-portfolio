@@ -24,8 +24,18 @@ jobs:
       - name: Test
         run: npm run test
 
-      - name: Build
-        run: npm run build
+      # build:client and build:ssr, NOT the full `npm run build`.
+      #
+      # The third step (scripts/prerender.mjs) reads the projects from Supabase
+      # and fails loudly when it cannot - which is what it is for on Netlify,
+      # and wrong here: CI has no Supabase credentials and should not be given
+      # any just to compile a page. Netlify runs the full build.
+      #
+      # Pre-rendering is still covered on every run: src/prerender.test.jsx
+      # renders both pages against fixture rows and asserts on the markup, in
+      # the Test step above.
+      - name: Build (client + SSR bundles)
+        run: npm run build:client && npm run build:ssr
 
       # Fails if admin/password code ever leaks back into the public bundle.
       - name: Verify public/admin bundle separation
