@@ -1,6 +1,6 @@
 import { useI18n, CONTACT } from "../i18n";
 import { useSiteSettings } from "../hooks/useSiteSettings";
-import { cvUrl } from "../lib/siteSettings";
+import { cvHref } from "../lib/siteSettings";
 import Reveal from "./Reveal";
 import { Mail, WhatsApp, LinkedIn, GitHub, FileText } from "./Icons";
 
@@ -10,7 +10,8 @@ export default function Contact() {
   // The same file as the hero's button, from the same single request — see
   // src/hooks/useSiteSettings.js.
   const { settings } = useSiteSettings();
-  const cvHref = settings ? cvUrl(settings, lang) : "";
+  // Same order of preference as the hero: uploaded file first, /cv.pdf after.
+  const cvLink = cvHref(settings, lang);
 
   return (
     <section className="section" id="contact">
@@ -22,8 +23,8 @@ export default function Contact() {
             <a className="btn btn-primary" href={`mailto:${CONTACT.email}`}>
               <Mail aria-hidden="true" /> <span className="ltr">{CONTACT.email}</span>
             </a>
-            {cvHref && (
-              <a className="btn btn-ghost" href={cvHref} target="_blank" rel="noopener noreferrer">
+            {cvLink && (
+              <a className="btn btn-ghost" href={cvLink} target="_blank" rel="noopener noreferrer">
                 <FileText aria-hidden="true" /> <span>{t("btnCv")}</span>
               </a>
             )}

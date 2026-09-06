@@ -18,7 +18,7 @@ describe("Experience", () => {
     renderAt("en");
     expect(screen.getByRole("heading", { name: /Full Stack Developer & Operations Coordinator/ })).toBeInTheDocument();
     expect(screen.getByText(/The Kosher Place/)).toBeInTheDocument();
-    expect(screen.getByText("March 2025 – Present")).toBeInTheDocument();
+    expect(screen.getByText("March 2025 - Present")).toBeInTheDocument();
   });
 
   it("shows education, the award and languages", () => {
@@ -26,13 +26,13 @@ describe("Experience", () => {
     expect(screen.getByText("B.Sc. in Software Engineering")).toBeInTheDocument();
     expect(screen.getByText(/Lev Academic Center/)).toBeInTheDocument();
     expect(screen.getByText(/2nd place, Outstanding Projects Competition/)).toBeInTheDocument();
-    expect(screen.getByText(/Hebrew — native/)).toBeInTheDocument();
+    expect(screen.getByText(/Hebrew - native/)).toBeInTheDocument();
   });
 
   it("renders in Hebrew too", () => {
     renderAt("he");
     expect(screen.getByText(/מפתחת Full Stack ורכזת תפעול/)).toBeInTheDocument();
-    expect(screen.getByText("מרץ 2025 – היום")).toBeInTheDocument();
+    expect(screen.getByText("מרץ 2025 - היום")).toBeInTheDocument();
     expect(screen.getByText(/המרכז האקדמי לב/)).toBeInTheDocument();
   });
 });
@@ -52,7 +52,7 @@ describe("resume data", () => {
   });
 
   it("formats an open-ended period as Present", () => {
-    expect(formatPeriod("2025-03", null, "en", "Present")).toBe("March 2025 – Present");
-    expect(formatPeriod("2020", "2024", "en", "Present")).toBe("2020 – 2024");
+    expect(formatPeriod("2025-03", null, "en", "Present")).toBe("March 2025 - Present");
+    expect(formatPeriod("2020", "2024", "en", "Present")).toBe("2020 - 2024");
   });
 });

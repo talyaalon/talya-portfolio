@@ -1,0 +1,43 @@
+%PDF-1.4
+%PLACEHOLDER-CV-DO-NOT-PUBLISH
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Length 365 >>
+stream
+BT /F1 13 Tf 60 780 Td 20 TL
+(Talya Israel - CV) Tj T*
+() Tj T*
+(This is a placeholder file, not the CV.) Tj T*
+(Replace public/cv.pdf with the real PDF and redeploy.) Tj T*
+() Tj T*
+(Until it is replaced, the site does not link to this file:) Tj T*
+(the build detects the marker below and omits the button.) Tj T*
+() Tj T*
+(PLACEHOLDER-CV-DO-NOT-PUBLISH) Tj T*
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000040 00000 n 
+0000000089 00000 n 
+0000000146 00000 n 
+0000000272 00000 n 
+0000000369 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R /Info << /Title (Talya Israel - CV placeholder) >> >>
+startxref
+784
+%%EOF

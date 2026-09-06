@@ -60,7 +60,7 @@ export default function Experience() {
               <div key={e.id} dir="auto">
                 <strong>{e.degree[lang]}</strong>
                 <div className="fact-sub">
-                  {e.institution[lang]} <span aria-hidden="true">·</span> {e.from}–{e.to}
+                  {e.institution[lang]} <span aria-hidden="true">·</span> {e.from}-{e.to}
                 </div>
               </div>
             ))}

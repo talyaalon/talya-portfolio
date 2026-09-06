@@ -48,3 +48,35 @@ export function cvUrl(settings, lang) {
 }
 
 export const EMPTY_SETTINGS = { cvEn: "", cvHe: "" };
+
+// ============================================================
+//  The static CV at /cv.pdf.
+//
+//  A second, deliberately dumber mechanism alongside the uploaded one above:
+//  a file committed to the repository at a fixed address, so /cv.pdf is
+//  something that can be written on an application or in an email signature
+//  and keeps working.
+//
+//  The value is decided at BUILD time by scripts/cv-status.mjs and injected
+//  by vite.config.js. It is "" while public/cv.pdf is still the placeholder
+//  the repository ships, which is what stops a recruiter opening a one-page
+//  file that says "placeholder" - the same failure the comment on cvUrl warns
+//  about. Committing the real PDF over it turns the link on with no code
+//  change.
+//
+//  The typeof guard is for environments where the define does not run - the
+//  unit tests, which exercise these functions directly.
+// ============================================================
+export const STATIC_CV =
+  typeof __STATIC_CV_PATH__ === "string" ? __STATIC_CV_PATH__ : "";
+
+// The CV link to render, or "" for no button at all.
+//
+// The uploaded file wins: it is the one that can be replaced without a
+// deploy, so it is the more current of the two by construction. This is a
+// documented order of preference between two real sources, not a default
+// standing in for a missing value - when neither exists the answer is still
+// "no button".
+export function cvHref(settings, lang, staticCv = STATIC_CV) {
+  return cvUrl(settings ?? EMPTY_SETTINGS, lang) || staticCv;
+}

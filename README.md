@@ -11,12 +11,94 @@ React 18 · Vite 8 · Supabase (Postgres + Auth + Storage) · Netlify (static + 
 
 ## Architecture
 
-The build has **two entry points**, and the separation is load-bearing:
+The build has **three entry points**, and the separation is load-bearing:
 
-| Entry        | Serves            | Contains                                        |
-| ------------ | ----------------- | ----------------------------------------------- |
-| `index.html` | the public site   | project list, rendered read-only. No auth code.  |
-| `admin.html` | `/admin`          | sign-in, project editor, CV upload, analytics.    |
+| Entry                  | Serves              | Contains                                        |
+| ---------------------- | ------------------- | ----------------------------------------------- |
+| `index.html`           | the public site     | project list, rendered read-only. No auth code.  |
+| `projects/j-cafe.html` | `/projects/j-cafe`  | the J-Cafe case study. Public, read-only.        |
+| `admin.html`           | `/admin`            | sign-in, project editor, CV upload, analytics.   |
+
+There is deliberately **no router**. For a handful of pages, one real HTML file
+per page is smaller, is pre-rendered by the same build step, and gives a link
+that works wherever it is pasted. A new page is a Vite input, a rewrite in
+`netlify.toml` above the catch-all, and an entry in `PAGES` — see below.
+
+## Pre-rendering
+
+`npm run build` runs three steps:
+
+```
+vite build                              the client bundles
+vite build --ssr src/prerender.jsx      the same components, bundled for Node
+node scripts/prerender.mjs              fetch -> render -> inject into dist/
+```
+
+Before this, the built `index.html` was an empty `<div id="root">` and a line
+of `<noscript>` text: Google, LinkedIn's unfurler and every recruiter tool that
+does not execute JavaScript saw a portfolio with no projects in it. It now
+ships ~44 KB of real markup per page.
+
+Three details are easy to undo by accident:
+
+- The rows used at build time are embedded beside the markup as a JSON data
+  block, and the hooks start from them (`src/lib/bootData.js`). Without it the
+  browser's first render would begin at "still loading" and blank the complete
+  page it was handed.
+- The stylesheet is set with `dangerouslySetInnerHTML`. React escapes text
+  children, and a `<style>` body is raw text to the HTML parser, so an escaped
+  `>` would never decode back. This is invisible on the client and only
+  appears once the page is rendered to a string.
+- `.reveal` starts at `opacity:0` and is cleared by an IntersectionObserver, so
+  prerendered HTML carries the rule that hides itself. A `<noscript>` block
+  overrides it — otherwise the page is complete in the markup and invisible on
+  screen without JavaScript.
+
+Still `createRoot`, not `hydrateRoot`: the language is read from `localStorage`
+during render, so hydration would mismatch for every Hebrew reader.
+
+**If Supabase cannot be reached, or returns no rows, the build fails** rather
+than publishing the empty page this exists to prevent. A failed Netlify build
+leaves the previous deploy serving.
+
+The embedded copy is only as fresh as the last deploy, while projects are
+edited from `/admin` at any time. The page still fetches on mount and the fresh
+answer wins, so only a crawler that runs no JavaScript sees the build's copy.
+
+## Case studies
+
+A project's **card** comes from the database; its **case study page** comes
+from `src/content/` — structured long-form writing, pre-rendered, with no
+database round-trip to wait for. `slug` joins the two
+(`supabase/migrations/005-project-slug.sql`), and a project that has one is
+rendered as the large featured card at the top of the list.
+
+Adding a second case study is a content change plus a Vite input: write
+`src/content/<name>.js`, register it in `CASE_STUDY_PAGES`, add the HTML entry,
+the `PAGES` entry, the rewrite and the sitemap line.
+
+### Screenshots on a case study page
+
+`src/content/jcafe.js` ships its screenshot slots with `src: null` on purpose.
+The screenshots are of a live production admin area showing **real customer
+names, emails and phone numbers**. Redact them in the image file itself — paint
+the pixels out, not a CSS blur or a crop — before committing. A committed image
+stays in the git history and the CDN cache after a later commit deletes it.
+
+## The CV
+
+Two mechanisms, in order of preference:
+
+1. **Uploaded from `/admin`** into `site_settings` — replaceable without a
+   deploy, so it wins.
+2. **`public/cv.pdf`** — committed, served at a fixed address, so `/cv.pdf` is
+   something that can be written on an application.
+
+The repository ships a **placeholder** at `public/cv.pdf`, and the build
+detects it (`scripts/cv-status.mjs`) and renders no static link while it is
+still there — a button that opens a file saying "placeholder" in front of a
+hiring manager is worse than no button. Committing the real PDF over it turns
+the link on with no code change; the build prints a warning until then.
 
 The public site reads projects over plain PostgREST (`src/lib/publicApi.js`)
 rather than the Supabase SDK. That is deliberate: importing the SDK pulls its
@@ -89,6 +171,7 @@ supabase/policies-owner-only.sql       owner-only writes
 supabase/migrations/004-site-settings.sql    additive: site_settings (the CV, uploaded from /admin)
                                              run AFTER the policies file — its own
                                              policies call is_site_owner()
+supabase/migrations/005-project-slug.sql     additive: slug (joins a project to its case study page)
 ```
 
 One-off scripts, each with a "look before you act" step first:
@@ -106,7 +189,10 @@ Analytics only records events when `/api/track` exists, i.e. under
 | Command                  | What it does                                              |
 | ------------------------ | --------------------------------------------------------- |
 | `npm run dev`            | Vite dev server                                            |
-| `npm run build`          | production build of both entries                           |
+| `npm run build`          | client build + SSR build + pre-render (all three)          |
+| `npm run build:client`   | the browser bundles only                                   |
+| `npm run build:ssr`      | the Node bundle the pre-render step imports                 |
+| `npm run prerender`      | fetch, render and inject (needs a build first)              |
 | `npm test`               | Vitest (unit + component)                                  |
 | `npm run lint`           | ESLint                                                     |
 | `npm run format`         | Prettier                                                   |
@@ -115,8 +201,12 @@ Analytics only records events when `/api/track` exists, i.e. under
 
 ## Deployment
 
-Netlify builds from `main`. `netlify.toml` maps `/admin` to `admin.html`
-**above** the SPA catch-all — the order matters, or the catch-all swallows it.
+Netlify builds from `main`. `netlify.toml` maps `/admin` to `admin.html` and
+`/projects/j-cafe` to its built file, both **above** the SPA catch-all — the
+order matters, or the catch-all swallows them.
+
+The Supabase variables are needed at BUILD time now, not just in the browser:
+the pre-render step reads the projects with them, and the build fails without.
 
 These must be set in the Netlify UI:
 

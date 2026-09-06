@@ -129,7 +129,7 @@ function Slot({ lang, label, url, busy, disabled, msg, onChoose, onRemove }) {
           <>
             <span style={{ fontSize: 14, color: COLORS.inkSoft }}>{t("cvOnSite")}</span>
             {/* The stored URL is opened as-is. It carries a ?v= stamp from the
-                upload, so this is the file a visitor gets right now — not a
+                upload, so this is the file a visitor gets right now - not a
                 cached earlier one. */}
             <a className="ghost-btn" href={url} target="_blank" rel="noopener noreferrer">
               <FileText aria-hidden="true" /> <span>{t("cvView")}</span>

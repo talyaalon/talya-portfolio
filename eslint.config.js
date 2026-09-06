@@ -13,7 +13,9 @@ export default [
     languageOptions: {
       ecmaVersion: 2023,
       sourceType: "module",
-      globals: { ...globals.browser, ...globals.es2021 },
+      // __STATIC_CV_PATH__ is substituted at build time by vite.config.js
+      // (see scripts/cv-status.mjs); it is not a runtime global.
+      globals: { ...globals.browser, ...globals.es2021, __STATIC_CV_PATH__: "readonly" },
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
     settings: { react: { version: "detect" } },

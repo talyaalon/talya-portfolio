@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CV_KEYS, cvUrl, fromSettingsRows } from "./siteSettings";
+import { CV_KEYS, cvUrl, fromSettingsRows, cvHref, EMPTY_SETTINGS } from "./siteSettings";
 
 // ============================================================
 //  Site-wide settings that are not project content: today, the CV.
@@ -60,5 +60,40 @@ describe("cvUrl", () => {
   // than a button that 404s in front of a hiring manager.
   it("returns nothing when no CV has been uploaded", () => {
     expect(cvUrl({ cvEn: "", cvHe: "" }, "en")).toBe("");
+  });
+});
+
+// ============================================================
+//  The static CV at /cv.pdf, and how it relates to the uploaded one.
+// ============================================================
+
+describe("choosing between the uploaded CV and /cv.pdf", () => {
+  const uploaded = { cvEn: "https://cdn.test/cv-en.pdf", cvHe: "https://cdn.test/cv-he.pdf" };
+
+  it("prefers the uploaded file, which can be replaced without a deploy", () => {
+    expect(cvHref(uploaded, "en", "/cv.pdf")).toBe("https://cdn.test/cv-en.pdf");
+    expect(cvHref(uploaded, "he", "/cv.pdf")).toBe("https://cdn.test/cv-he.pdf");
+  });
+
+  it("falls back to the committed file when nothing has been uploaded", () => {
+    expect(cvHref(EMPTY_SETTINGS, "en", "/cv.pdf")).toBe("/cv.pdf");
+  });
+
+  it("renders no button when neither exists", () => {
+    // Better no button than one that opens a placeholder, or a 404, in front
+    // of a hiring manager.
+    expect(cvHref(EMPTY_SETTINGS, "en", "")).toBe("");
+  });
+
+  it("treats settings that have not loaded yet as no uploaded CV", () => {
+    expect(cvHref(null, "en", "/cv.pdf")).toBe("/cv.pdf");
+  });
+
+  it("still falls back across languages before falling back to the file", () => {
+    // One CV is worth more to a reader than none, and both files are the same
+    // document - so a Hebrew reader gets the English upload before /cv.pdf.
+    expect(cvHref({ cvEn: "https://cdn.test/cv-en.pdf", cvHe: "" }, "he", "/cv.pdf")).toBe(
+      "https://cdn.test/cv-en.pdf"
+    );
   });
 });

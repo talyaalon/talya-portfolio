@@ -26,15 +26,15 @@ export const EXPERIENCE = [
     bullets: [
       {
         en: "Built and shipped J-Cafe Online, a production ordering and delivery platform for a 6-branch kosher restaurant and grocery chain: bilingual (Hebrew RTL / English), up to 4 storefronts per branch and 4 role-based interfaces.",
-        he: "בניתי והשקתי את J-Cafe Online — פלטפורמת הזמנות ומשלוחים בפרודקשן לרשת מסעדות ומכולת כשרה בת 6 סניפים: דו-לשונית (עברית RTL / אנגלית), עד 4 חזיתות חנות לסניף ו-4 ממשקים לפי תפקיד.",
+        he: "בניתי והשקתי את J-Cafe Online - פלטפורמת הזמנות ומשלוחים בפרודקשן לרשת מסעדות ומכולת כשרה בת 6 סניפים: דו-לשונית (עברית RTL / אנגלית), עד 4 חזיתות חנות לסניף ו-4 ממשקים לפי תפקיד.",
       },
       {
         en: "Integrated it live with Odoo ERP/POS over JSON-RPC (catalog, stock, pricelists, POS order injection), Stripe (authorize and capture, refunds, webhooks), Shipday courier dispatch and WhatsApp / LINE / SMS messaging.",
         he: "חיברתי אותה בזמן אמת ל-Odoo ERP/POS דרך JSON-RPC (קטלוג, מלאי, מחירונים והזרקת הזמנות לקופה), ל-Stripe (אישור וחיוב, זיכויים, webhooks), לשליחויות Shipday ולהודעות WhatsApp / LINE / SMS.",
       },
       {
-        en: "Architected multi-tenancy — per-branch domain routing at the edge, data isolation and branding — with server-enforced RBAC, signed sessions, webhook signature verification and rate limiting.",
-        he: "תכננתי ארכיטקטורת ריבוי-דיירים — ניתוב דומיין לכל סניף ב-edge, בידוד נתונים ומיתוג — עם RBAC נאכף בשרת, סשנים חתומים, אימות חתימת webhooks והגבלת קצב.",
+        en: "Architected multi-tenancy - per-branch domain routing at the edge, data isolation and branding - with server-enforced RBAC, signed sessions, webhook signature verification and rate limiting.",
+        he: "תכננתי ארכיטקטורת ריבוי-דיירים - ניתוב דומיין לכל סניף ב-edge, בידוד נתונים ומיתוג - עם RBAC נאכף בשרת, סשנים חתומים, אימות חתימת webhooks והגבלת קצב.",
       },
       {
         en: "Built custom subsystems: ESC/POS receipt printing, Hebrew PDF generation in headless Chrome, a store-credit ledger, cron jobs and an in-house CX analytics module.",
@@ -42,7 +42,7 @@ export const EXPERIENCE = [
       },
       {
         en: "Designed and built Air Manage, a maintenance and asset management platform (React, Node.js, PostgreSQL) in daily use by 15+ employees: dynamic task scheduling, RBAC and multi-channel notifications (in-app, email, LINE).",
-        he: "עיצבתי ובניתי את Air Manage — פלטפורמת ניהול תחזוקה ונכסים (React, Node.js, PostgreSQL) בשימוש יומיומי של 15+ עובדים: תזמון משימות דינמי, RBAC והתראות רב-ערוציות (באפליקציה, מייל, LINE).",
+        he: "עיצבתי ובניתי את Air Manage - פלטפורמת ניהול תחזוקה ונכסים (React, Node.js, PostgreSQL) בשימוש יומיומי של 15+ עובדים: תזמון משימות דינמי, RBAC והתראות רב-ערוציות (באפליקציה, מייל, LINE).",
       },
     ],
   },
@@ -67,15 +67,15 @@ export const AWARDS = [
       he: "מקום שני, תחרות הפרויקטים המצטיינים",
     },
     detail: {
-      en: "Sensitive Data Detection & Encryption System — a Python system that detects and encrypts sensitive data in documents using Regex and NLP techniques, built in a team. National Digital Agency, Jerusalem.",
-      he: "מערכת לזיהוי והצפנה של מידע רגיש — מערכת Python שמזהה ומצפינה מידע רגיש במסמכים באמצעות Regex וטכניקות NLP, שנבנתה בעבודת צוות. מערך הדיגיטל הלאומי, ירושלים.",
+      en: "Sensitive Data Detection & Encryption System - a Python system that detects and encrypts sensitive data in documents using Regex and NLP techniques, built in a team. National Digital Agency, Jerusalem.",
+      he: "מערכת לזיהוי והצפנה של מידע רגיש - מערכת Python שמזהה ומצפינה מידע רגיש במסמכים באמצעות Regex וטכניקות NLP, שנבנתה בעבודת צוות. מערך הדיגיטל הלאומי, ירושלים.",
     },
   },
 ];
 
 export const LANGUAGES = [
-  { en: "Hebrew — native", he: "עברית — שפת אם" },
-  { en: "English — professional working proficiency", he: "אנגלית — רמה מקצועית גבוהה" },
+  { en: "Hebrew - native", he: "עברית - שפת אם" },
+  { en: "English - professional working proficiency", he: "אנגלית - רמה מקצועית גבוהה" },
 ];
 
 // "2025-03" -> "March 2025" / "מרץ 2025". Present roles render as "Present".
@@ -91,5 +91,5 @@ export function formatPeriod(from, to, lang, presentLabel) {
     if (!m) return y;
     return `${MONTHS[lang][Number(m) - 1]} ${y}`;
   };
-  return `${one(from)} – ${one(to)}`;
+  return `${one(from)} - ${one(to)}`;
 }
