@@ -7,28 +7,42 @@ import { fileURLToPath } from "node:url";
 // does not exist.
 const root = dirname(fileURLToPath(import.meta.url));
 
-// Two separate entry points, built as two independent bundles:
+// Three separate entry points, built as independent bundles:
 //
-//   index.html  → the public portfolio.  Read-only: it fetches projects and
-//                 renders them. It imports no auth code, no editor, and no
-//                 admin strings, so none of that reaches a visitor.
-//   admin.html  → the admin app at /admin. Login, project editor, analytics.
+//   index.html            → the public portfolio.  Read-only: it fetches
+//                           projects and renders them. It imports no auth
+//                           code, no editor and no admin strings, so none of
+//                           that reaches a visitor.
+//   projects/j-cafe.html  → the J-Cafe case study. Its own page rather than a
+//                           modal, so it has a URL a recruiter can be sent
+//                           and a crawler can index. Shares the public
+//                           components and stylesheet; adds no router.
+//   admin.html            → the admin app at /admin. Login, project editor,
+//                           analytics.
 //
-// This split is the reason the public bundle contains no password UI. Keep it:
-// importing anything from AdminApp into App would silently undo it. The check
-// is scripted — `npm run verify:bundle`.
-export default defineConfig({
+// The public/admin split is the reason the public bundles contain no password
+// UI. Keep it: importing anything from AdminApp into App or CaseStudy would
+// silently undo it. The check is scripted — `npm run verify:bundle`, which
+// scans every public entry listed here.
+//
+// `isSsrBuild` is the same config being reused by `vite build --ssr` for the
+// prerender step (see scripts/prerender.mjs). That build has exactly one
+// input — the server entry — so the multi-page input map must not apply, or
+// Rollup would try to bundle three HTML files for Node.
+export default defineConfig(({ isSsrBuild }) => ({
   plugins: [react()],
-  build: {
-    rollupOptions: {
-      input: {
-        main: resolve(root, "index.html"),
-        admin: resolve(root, "admin.html"),
+  build: isSsrBuild
+    ? {}
+    : {
+        rollupOptions: {
+          input: {
+            main: resolve(root, "index.html"),
+            admin: resolve(root, "admin.html"),
+          },
+        },
       },
-    },
-  },
   server: {
     port: 5173,
     open: true,
   },
-});
+}));

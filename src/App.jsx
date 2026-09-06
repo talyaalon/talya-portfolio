@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { styles, COLORS } from "./styles";
+import { styles, noScriptStyles, COLORS } from "./styles";
 import { isConfigured } from "./lib/publicApi";
 import { track } from "./lib/analytics";
 import { useI18n } from "./i18n";
@@ -84,7 +84,7 @@ function Shell({ children }) {
   const { dir, t } = useI18n();
   return (
     <div dir={dir} style={{ minHeight: "100vh", background: COLORS.cream, color: COLORS.inkSoft }}>
-      <style>{styles}</style>
+      <PageStyles />
       <a className="skip-link" href="#main">
         {t("skipToContent")}
       </a>
@@ -92,5 +92,32 @@ function Shell({ children }) {
       <main id="main">{children}</main>
       <SiteFooter />
     </div>
+  );
+}
+
+// The stylesheet, plus the override a reader without JavaScript needs.
+//
+// Two things here are deliberate and easy to undo by accident:
+//
+// 1. dangerouslySetInnerHTML, not `<style>{styles}</style>`. React escapes an
+//    element's text children, and a <style> body is raw text to the HTML
+//    parser, so a "&gt;" it wrote would never be decoded back. On the client
+//    that never showed, because React sets textContent instead of parsing
+//    markup; it only appears once the page is rendered to a string at build
+//    time, and then it appears as a stylesheet with broken selectors.
+//
+// 2. The <noscript> override. .reveal starts at opacity:0 and is only cleared
+//    by an IntersectionObserver, and the stylesheet lives inside the React
+//    tree - so prerendered HTML carries the rule that hides itself, and a
+//    reader with JavaScript off would get a styled, complete, invisible page.
+//    It is set as raw text rather than as a child element on purpose: a
+//    <style> element created through the DOM applies even inside <noscript>,
+//    which would disable the animation for everyone else.
+export function PageStyles() {
+  return (
+    <>
+      <style dangerouslySetInnerHTML={{ __html: styles }} />
+      <noscript dangerouslySetInnerHTML={{ __html: noScriptStyles }} />
+    </>
   );
 }

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchSiteSettings, isConfigured } from "../lib/publicApi";
 import { EMPTY_SETTINGS, fromSettingsRows } from "../lib/siteSettings";
+import { bootSettings } from "../lib/bootData";
 
 // Site settings for the PUBLIC site — the CV, today.
 //
@@ -44,7 +45,15 @@ function loadRows({ force } = {}) {
 }
 
 export function useSiteSettings() {
-  const [settings, setSettings] = useState(null);
+  // Seeded from the prerender for the same reason as the project list, so the
+  // hero does not render a CV button that the first client render then takes
+  // away again. Only the initial state is seeded - `cached` above is left
+  // alone deliberately, so the mount effect still fetches and a CV uploaded
+  // since the last deploy replaces the built-in copy.
+  const [settings, setSettings] = useState(() => {
+    const rows = bootSettings();
+    return rows ? fromSettingsRows(rows) : null;
+  });
   const [error, setError] = useState(null);
 
   const requestId = useRef(0);

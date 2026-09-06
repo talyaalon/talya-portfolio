@@ -386,3 +386,21 @@ input[type=file].inp{padding:10px 12px;background:var(--paper);cursor:pointer}
   .plink,.btn{border:none;padding:0;min-height:0}
 }
 `;
+
+// ============================================================
+//  Applied ONLY when scripting is off (rendered inside <noscript>).
+//
+//  The page is prerendered at build time, so its HTML is complete before any
+//  JavaScript runs. The animation rules are not: .reveal starts hidden and is
+//  revealed by an IntersectionObserver, and .to-top is faded in by a scroll
+//  listener. Without this block, a reader with JavaScript disabled - and any
+//  crawler that reads CSS but does not execute scripts - gets a page that is
+//  fully present in the markup and entirely invisible on screen.
+//
+//  Keep this in sync with the .reveal rules above. It is asserted in
+//  src/styles.test.js rather than left to memory.
+// ============================================================
+export const noScriptStyles = `<style>
+.reveal{opacity:1 !important;transform:none !important;transition:none !important}
+.to-top{display:none !important}
+</style>`;

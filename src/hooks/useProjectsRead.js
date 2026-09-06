@@ -1,14 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchProjects, isConfigured } from "../lib/publicApi";
 import { fromRow, pendingMigration } from "../lib/projectRow";
+import { bootProjects } from "../lib/bootData";
 
 // Read-only project list, used by the PUBLIC site.
 //
 // Deliberately goes through lib/publicApi (plain REST) rather than the
-// Supabase SDK: the SDK would pull its auth module — and every password
-// string in it — into the bundle every visitor downloads.
+// Supabase SDK: the SDK would pull its auth module - and every password
+// string in it - into the bundle every visitor downloads.
 export function useProjectsRead() {
-  const [projects, setProjects] = useState(null); // null = still loading
+  // Starts from whatever the build prerendered, so the first client render
+  // matches the HTML already on screen instead of blanking it back to a
+  // spinner. `null` means nothing was prerendered, and the load below is the
+  // only source - which is what the dev server and the tests get.
+  const [projects, setProjects] = useState(() => {
+    const rows = bootProjects();
+    return rows ? rows.map(fromRow) : null; // null = still loading
+  });
   const [error, setError] = useState(null);
   // Columns the migrations add that the live database does not have yet.
   const [missingColumns, setMissingColumns] = useState([]);

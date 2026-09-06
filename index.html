@@ -86,10 +86,14 @@
     </script>
   </head>
   <body style="margin: 0">
+    <!-- Filled in at build time by scripts/prerender.mjs. It is empty in the
+         source and in the dev server; the built file that ships contains the
+         whole page. -->
     <div id="root"></div>
     <noscript>
-      This portfolio needs JavaScript to display its projects. You can still reach me at
-      <a href="mailto:Talyaisrael12@gmail.com">Talyaisrael12@gmail.com</a>.
+      The projects, the CV and the contact details on this page are all in the
+      HTML above and need no JavaScript. Only the extras do: switching the site
+      to Hebrew, opening a screenshot full size, and the phone menu.
     </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
