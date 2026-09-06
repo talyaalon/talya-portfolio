@@ -58,10 +58,18 @@ export const MIGRATION_002_COLUMNS = ["repo_private"];
 // device frame shows in place of a screenshot — a Canva deck, today.
 export const MIGRATION_003_COLUMNS = ["embed_url"];
 
+// Columns added by supabase/migrations/005-project-slug.sql. The stable key
+// that joins a project row to its case study page in src/content/. Same
+// contract as the migrations above: absent means "not migrated yet", which
+// degrades to no slug — that is, to a project with no case study, which is
+// how every project behaved before the column existed.
+export const MIGRATION_005_COLUMNS = ["slug"];
+
 export const MIGRATION_COLUMNS = [
   ...MIGRATION_001_COLUMNS,
   ...MIGRATION_002_COLUMNS,
   ...MIGRATION_003_COLUMNS,
+  ...MIGRATION_005_COLUMNS,
 ];
 
 export const REQUIRED_COLUMNS = [...CORE_COLUMNS, ...MIGRATION_COLUMNS];
@@ -124,6 +132,8 @@ export function fromRow(row) {
     screenshot: row.screenshot_url ?? "",
     logo: row.logo_url ?? "",
     position: row.position ?? 0,
+    // "" means no case study page. See CASE_STUDY_PAGES in src/content/.
+    slug: row.slug ?? "",
   };
 }
 
@@ -162,6 +172,7 @@ export function toRow(proj, columns = null) {
     screenshot_url: orNull(proj.screenshot),
     logo_url: orNull(proj.logo),
     position: Number.isFinite(Number(proj.position)) ? Number(proj.position) : 0,
+    slug: orNull(proj.slug),
   };
 
   if (!columns) return row;
@@ -185,6 +196,7 @@ export function blankProject() {
     link: "", repo: "", repoPrivate: false, demoEn: "", demoHe: "", embedUrl: "",
     logo: "", screenshot: "",
     position: 0,
+    slug: "",
   };
 }
 

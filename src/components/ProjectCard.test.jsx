@@ -180,3 +180,84 @@ describe("ProjectCard Canva embeds", () => {
     expect(a).toHaveAttribute("target", "_blank");
   });
 });
+
+// ============================================================
+//  The featured card: the one project that has a full case study.
+// ============================================================
+describe("a project with a case study", () => {
+  function featuredCard(extra = {}) {
+    const project = {
+      id: "p1",
+      nameEn: "J-Cafe Online",
+      nameHe: "ג'יי-קפה אונליין",
+      shortEn: "A multi-branch ordering platform",
+      shortHe: "פלטפורמת הזמנות רב-סניפית",
+      tools: [],
+      screenshot: "",
+      logo: "",
+      slug: "j-cafe",
+      ...extra,
+    };
+    const view = render(
+      <I18nProvider>
+        <ProjectCard
+          project={project}
+          featured
+          isAdmin={false}
+          onOpen={() => {}}
+          onEdit={() => {}}
+          onDelete={() => {}}
+        />
+      </I18nProvider>
+    );
+    return view;
+  }
+
+  it("links to the case study page with a real href", () => {
+    const { getByRole } = featuredCard();
+    // A real anchor, not the "Read more" button beside it: it has to be
+    // prerendered, indexable and openable in a new tab.
+    expect(getByRole("link", { name: /Read the case study/ })).toHaveAttribute(
+      "href",
+      "/projects/j-cafe"
+    );
+  });
+
+  it("shows the headline metrics on the card itself", () => {
+    const { getByText } = featuredCard();
+    expect(getByText("483")).toBeInTheDocument();
+    expect(getByText("฿917K")).toBeInTheDocument();
+  });
+
+  it("states the scope under every number it shows", () => {
+    const { getByText, getAllByText } = featuredCard();
+    // A bare "483 orders" on a card reads as the whole business.
+    expect(getByText("one branch, Jun-Aug 2025")).toBeInTheDocument();
+    expect(getAllByText("same branch and period").length).toBeGreaterThan(0);
+  });
+
+  it("marks the card as featured so it gets the larger layout", () => {
+    const { container } = featuredCard();
+    expect(container.querySelector(".proj.is-featured")).toBeTruthy();
+  });
+
+  it("does not call itself an internal system when the case study is its only link", () => {
+    const { queryByText } = featuredCard();
+    // "Internal system" is the note for a card with nowhere to go. This card
+    // has somewhere to go.
+    expect(queryByText("Internal system")).toBeNull();
+  });
+
+  it("renders no case study link for a slug with no page behind it", () => {
+    const { queryByRole, container } = featuredCard({ slug: "typo-slug" });
+    expect(queryByRole("link", { name: /Read the case study/ })).toBeNull();
+    expect(container.querySelector(".card-metrics")).toBeNull();
+  });
+
+  it("renders an ordinary card when the database has no slug yet", () => {
+    // The state before migration 005 is run: every card behaves as it did.
+    const { queryByRole, container } = featuredCard({ slug: "" });
+    expect(queryByRole("link", { name: /Read the case study/ })).toBeNull();
+    expect(container.querySelector(".card-metrics")).toBeNull();
+  });
+});

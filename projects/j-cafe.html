@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Its own <head>, not the home page's. This is a separate Vite entry
+         (see vite.config.js), so the title, description, canonical and OG tags
+         below are what a search result and a pasted link actually show. The
+         app rewrites <title> and the description when the language toggle is
+         used (src/i18n.jsx, csDocTitle / csDocDescription); these are the
+         defaults, and they must match the default language, English. -->
+    <title>J-Cafe Online - case study | Talya Israel</title>
+    <meta
+      name="description"
+      content="How a multi-branch bilingual ordering platform for a 6-branch chain in Thailand was built: branch identity on the server, integrations with Odoo, Stripe and Shipday, and an in-house analytics module."
+    />
+    <link rel="canonical" href="https://talya-portfolio.netlify.app/projects/j-cafe" />
+    <meta name="theme-color" content="#b07a4e" />
+    <meta name="author" content="Talya Israel" />
+
+    <!-- og:type is article here, not profile: this page is a piece of writing
+         about one project, while the home page is the person. -->
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Talya Israel" />
+    <meta property="og:title" content="J-Cafe Online - case study" />
+    <meta
+      property="og:description"
+      content="A multi-branch bilingual ordering and delivery platform running live in production for a 6-branch kosher restaurant and grocery chain in Thailand."
+    />
+    <meta property="og:url" content="https://talya-portfolio.netlify.app/projects/j-cafe" />
+    <meta property="og:image" content="https://talya-portfolio.netlify.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="J-Cafe Online - case study by Talya Israel" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="he_IL" />
+    <meta property="article:author" content="Talya Israel" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="J-Cafe Online - case study" />
+    <meta
+      name="twitter:description"
+      content="A multi-branch bilingual ordering and delivery platform running live in production for a 6-branch chain in Thailand."
+    />
+    <meta name="twitter:image" content="https://talya-portfolio.netlify.app/og-image.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap"
+    />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "J-Cafe Online - case study",
+        "description": "A multi-branch bilingual ordering and delivery platform running live in production for a 6-branch kosher restaurant and grocery chain in Thailand.",
+        "url": "https://talya-portfolio.netlify.app/projects/j-cafe",
+        "image": "https://talya-portfolio.netlify.app/og-image.png",
+        "inLanguage": ["en", "he"],
+        "author": {
+          "@type": "Person",
+          "name": "Talya Israel",
+          "url": "https://talya-portfolio.netlify.app/"
+        },
+        "about": {
+          "@type": "SoftwareApplication",
+          "name": "J-Cafe Online",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Web"
+        }
+      }
+    </script>
+  </head>
+  <body style="margin: 0">
+    <!-- Filled in at build time by scripts/prerender.mjs. -->
+    <div id="root"></div>
+    <noscript>
+      The whole case study - every section, metric and caption - is in the HTML
+      above and needs no JavaScript. Only switching the site to Hebrew and the
+      phone menu do.
+    </noscript>
+    <script type="module" src="/src/case-study.jsx"></script>
+  </body>
+</html>

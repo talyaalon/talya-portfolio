@@ -93,3 +93,11 @@ export const EyeOff = (props) => (
     <path d="M3 3l18 18" />
   </svg>
 );
+
+// Points at the case study a featured card links to. Flipped in RTL by CSS,
+// not by a second icon - see .plink.primary svg in src/styles.js.
+export const ArrowRight = (props) => (
+  <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+    <path d="M5 12h13M13 6l6 6-6 6" />
+  </svg>
+);

@@ -15,7 +15,7 @@ const STORAGE_KEY = "talya:lang";
 export const TRANSLATIONS = {
   en: {
     // document head (kept in sync with the chosen language)
-    docTitle: "Talya Israel — Full Stack Developer",
+    docTitle: "Talya Israel - Full Stack Developer",
     docDescription:
       "Portfolio of Talya Israel, Full Stack Developer (B.Sc. Software Engineering). Production systems in React, Next.js, Node.js and PostgreSQL.",
 
@@ -38,14 +38,14 @@ export const TRANSLATIONS = {
     heroEyebrow: "Open to opportunities",
     heroRole: "Full Stack Developer · B.Sc. Software Engineering",
     heroLede:
-      "I build production systems end-to-end — from multi-branch e-commerce to operational platforms teams depend on every day.",
+      "I build production systems end-to-end - from multi-branch e-commerce to operational platforms teams depend on every day.",
     btnEmail: "Email me",
     btnCv: "View CV",
 
     // about
     secAbout: "About",
     aboutText:
-      "Full Stack Developer with a B.Sc. in Software Engineering, experienced in designing and building production-grade systems. Creator of Air Manage — a maintenance and asset platform in daily use by 15+ employees. Strong in React, Next.js, Node.js and PostgreSQL, with a focus on system design, workflow automation and solving complex operational problems.",
+      "Full Stack Developer with a B.Sc. in Software Engineering, experienced in designing and building production-grade systems. Creator of Air Manage - a maintenance and asset platform in daily use by 15+ employees. Strong in React, Next.js, Node.js and PostgreSQL, with a focus on system design, workflow automation and solving complex operational problems.",
 
     // experience
     secExperience: "Experience",
@@ -63,7 +63,7 @@ export const TRANSLATIONS = {
     cardOpenInCanva: "Open in Canva",
     cardInternal: "Internal system",
     cardRepoPrivate: "GitHub · Private repo",
-    cardRepoPrivateHint: "The code lives on GitHub in a private repository — internal company code, not open to the public.",
+    cardRepoPrivateHint: "The code lives on GitHub in a private repository - internal company code, not open to the public.",
     cardScreenshot: "No screenshot",
     cardReadme: "Read more",
     cardOpenAria: "Open details for ",
@@ -90,7 +90,7 @@ export const TRANSLATIONS = {
     // states
     loading: "Loading…",
     retry: "Try again",
-    emptyClient: "Projects are being updated — check back shortly.",
+    emptyClient: "Projects are being updated - check back shortly.",
     projLoadFailed: "Projects could not be loaded right now.",
     siteUnavailable: "The projects list is temporarily unavailable.",
     errorTitle: "Something went wrong on this page.",
@@ -101,10 +101,31 @@ export const TRANSLATIONS = {
     // project modal
     modalReadme: "About the project",
     modalScreenshot: "Screenshot of ",
+
+    // case study page (/projects/...)
+    csDocTitle: "J-Cafe Online - case study | Talya Israel",
+    csDocDescription:
+      "How a multi-branch bilingual ordering platform for a 6-branch chain in Thailand was built: branch identity on the server, integrations with Odoo, Stripe and Shipday, and an in-house analytics module.",
+    csBreadcrumb: "Projects",
+    csBackHome: "Back to all projects",
+    csOverview: "System overview",
+    csCaseStudies: "Case studies",
+    csStack: "Stack",
+    csMetrics: "By the numbers",
+    csScreenshots: "Screens",
+    csOnThisPage: "On this page",
+    csReadCase: "Read the case study",
+    // The five labels every case study repeats, in order.
+    csContext: "Context",
+    csProblem: "Problem",
+    csConstraints: "Constraints",
+    csDecision: "Decision",
+    csOutcome: "Outcome",
+    csShotPending: "Screenshot to follow",
   },
 
   he: {
-    docTitle: "טליה ישראל — מפתחת Full Stack",
+    docTitle: "טליה ישראל - מפתחת Full Stack",
     docDescription:
       "תיק העבודות של טליה ישראל, מפתחת Full Stack (B.Sc. הנדסת תוכנה). מערכות Production ב-React, ‏Next.js, ‏Node.js ו-PostgreSQL.",
 
@@ -125,13 +146,13 @@ export const TRANSLATIONS = {
     heroEyebrow: "פתוחה להזדמנויות",
     heroRole: "מפתחת Full Stack · B.Sc. הנדסת תוכנה",
     heroLede:
-      "אני בונה מערכות Production מקצה לקצה — מ-E-commerce רב-סניפי ועד פלטפורמות תפעוליות שצוותים מסתמכים עליהן כל יום.",
+      "אני בונה מערכות Production מקצה לקצה - מ-E-commerce רב-סניפי ועד פלטפורמות תפעוליות שצוותים מסתמכים עליהן כל יום.",
     btnEmail: "שליחת מייל",
     btnCv: "צפייה בקורות החיים",
 
     secAbout: "אודות",
     aboutText:
-      "מפתחת Full Stack עם תואר ראשון בהנדסת תוכנה, מנוסה בעיצוב ובבניית מערכות ברמת Production. יצרתי את Air Manage — פלטפורמת ניהול תחזוקה ונכסים בשימוש יומיומי של 15+ עובדים. שולטת ב-React, ‏Next.js, ‏Node.js ו-PostgreSQL, עם דגש על עיצוב מערכות, אוטומציה של תהליכים ופתרון בעיות תפעוליות מורכבות.",
+      "מפתחת Full Stack עם תואר ראשון בהנדסת תוכנה, מנוסה בעיצוב ובבניית מערכות ברמת Production. יצרתי את Air Manage - פלטפורמת ניהול תחזוקה ונכסים בשימוש יומיומי של 15+ עובדים. שולטת ב-React, ‏Next.js, ‏Node.js ו-PostgreSQL, עם דגש על עיצוב מערכות, אוטומציה של תהליכים ופתרון בעיות תפעוליות מורכבות.",
 
     secExperience: "ניסיון",
     secEducation: "השכלה",
@@ -147,7 +168,7 @@ export const TRANSLATIONS = {
     cardOpenInCanva: "פתיחה ב-Canva",
     cardInternal: "מערכת פנימית",
     cardRepoPrivate: "GitHub · ריפו פרטי",
-    cardRepoPrivateHint: "הקוד יושב בגיטהאב במאגר פרטי — קוד פנימי של החברה, לא פתוח לציבור.",
+    cardRepoPrivateHint: "הקוד יושב בגיטהאב במאגר פרטי - קוד פנימי של החברה, לא פתוח לציבור.",
     cardScreenshot: "אין צילום מסך",
     cardReadme: "קריאה נוספת",
     cardOpenAria: "פתיחת פרטים על ",
@@ -171,7 +192,7 @@ export const TRANSLATIONS = {
 
     loading: "טוען…",
     retry: "לניסיון נוסף",
-    emptyClient: "רשימת הפרויקטים מתעדכנת — נסו שוב בקרוב.",
+    emptyClient: "רשימת הפרויקטים מתעדכנת - נסו שוב בקרוב.",
     projLoadFailed: "לא הצלחנו לטעון את הפרויקטים כרגע.",
     siteUnavailable: "רשימת הפרויקטים אינה זמינה זמנית.",
     errorTitle: "משהו השתבש בעמוד הזה.",
@@ -181,6 +202,25 @@ export const TRANSLATIONS = {
 
     modalReadme: "על הפרויקט",
     modalScreenshot: "צילום מסך של ",
+
+    csDocTitle: "J-Cafe Online - מקרה בוחן | טליה ישראל",
+    csDocDescription:
+      "איך נבנתה פלטפורמת הזמנות רב-סניפית ודו-לשונית לרשת בת 6 סניפים בתאילנד: זהות הסניף בשרת, אינטגרציות מול Odoo, ‏Stripe ו-Shipday, ומודול אנליטיקה פנימי.",
+    csBreadcrumb: "פרויקטים",
+    csBackHome: "חזרה לכל הפרויקטים",
+    csOverview: "סקירת המערכת",
+    csCaseStudies: "מקרי בוחן",
+    csStack: "טכנולוגיות",
+    csMetrics: "במספרים",
+    csScreenshots: "מסכים",
+    csOnThisPage: "בעמוד הזה",
+    csReadCase: "לקריאת מקרה הבוחן",
+    csContext: "רקע",
+    csProblem: "הבעיה",
+    csConstraints: "אילוצים",
+    csDecision: "ההחלטה",
+    csOutcome: "התוצאה",
+    csShotPending: "צילום מסך יתווסף",
   },
 };
 
@@ -207,7 +247,17 @@ const I18nContext = createContext(null);
 // `extra` merges an additional translation table (see src/i18n.admin.js).
 // The public entry passes nothing, which is what keeps admin copy out of the
 // visitor bundle.
-export function I18nProvider({ children, extra }) {
+//
+// `titleKey` / `descriptionKey` name the strings that keep <title> and the
+// meta description in step with the chosen language. They are per-page: the
+// case study at /projects/j-cafe must not relabel itself with the home page's
+// title the moment a reader switches to Hebrew.
+export function I18nProvider({
+  children,
+  extra,
+  titleKey = "docTitle",
+  descriptionKey = "docDescription",
+}) {
   const [lang, setLang] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -233,9 +283,9 @@ export function I18nProvider({ children, extra }) {
 
     // The static <head> can only carry one language; keep it matching the
     // language actually on screen so crawlers and screen readers agree.
-    const title = tables[lang]?.docTitle;
+    const title = tables[lang]?.[titleKey];
     if (title) document.title = title;
-    const desc = tables[lang]?.docDescription;
+    const desc = tables[lang]?.[descriptionKey];
     const descTag = document.querySelector('meta[name="description"]');
     if (desc && descTag) descTag.setAttribute("content", desc);
 
@@ -244,7 +294,7 @@ export function I18nProvider({ children, extra }) {
     } catch {
       /* storage unavailable (private mode) — language just will not persist */
     }
-  }, [lang, dir, tables]);
+  }, [lang, dir, tables, titleKey, descriptionKey]);
 
   const toggle = () => setLang((l) => (l === "en" ? "he" : "en"));
 

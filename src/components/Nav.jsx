@@ -9,13 +9,18 @@ const LINKS = [
   ["#contact", "navContact"],
 ];
 
-// Public navigation. There is no admin control here by design — the admin app
+// Public navigation. There is no admin control here by design - the admin app
 // lives at /admin as a separate build.
 //
 // Below 720px the links used to be display:none with nothing replacing them,
 // which left phone visitors with no way to reach Projects or Contact. They now
 // collapse into a disclosure menu.
-export default function Nav() {
+//
+// `base` is what the section links hang off. It is "" on the home page, where
+// they are same-page anchors, and "/" on a case study, where the sections are
+// on another document - a bare "#work" there scrolls to nothing and looks
+// like a dead link.
+export default function Nav({ base = "" }) {
   const { t, toggle } = useI18n();
   const [open, setOpen] = useState(false);
   const panelId = useId();
@@ -58,13 +63,13 @@ export default function Nav() {
   return (
     <nav className="nav" aria-label={t("navLabel")}>
       <div className="wrap">
-        <a className="brand" href="#main">
+        <a className="brand" href={base || "#main"}>
           {t("brandFirst")} <b>{t("brandLast")}</b>
         </a>
 
         <div className="navlinks">
           {LINKS.map(([href, key]) => (
-            <a className="nl" key={href} href={href}>
+            <a className="nl" key={href} href={base + href}>
               {t(key)}
             </a>
           ))}
@@ -87,7 +92,7 @@ export default function Nav() {
 
       <div id={panelId} ref={panelRef} className={"menu-panel" + (open ? " open" : "")} hidden={!open}>
         {LINKS.map(([href, key]) => (
-          <a key={href} href={href} onClick={() => setOpen(false)}>
+          <a key={href} href={base + href} onClick={() => setOpen(false)}>
             {t(key)}
           </a>
         ))}

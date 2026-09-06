@@ -21,6 +21,23 @@
   to = "/admin.html"
   status = 200
 
+# The case study is a third Vite entry, built to dist/projects/j-cafe.html.
+# Same rule as /admin and for the same reason: it has to be ABOVE the catch-all
+# or the extensionless URL falls through to the home page. The canonical URL,
+# the sitemap and every link on the site use the extensionless form.
+[[redirects]]
+  from = "/projects/j-cafe"
+  to = "/projects/j-cafe.html"
+  status = 200
+
+# The .html address is NOT redirected to the extensionless one here. A 301 for
+# it would need force = true to fire at all (Netlify serves an existing file
+# before consulting an unforced rule), and a forced redirect whose target is
+# rewritten straight back to the same file is one evaluation-order detail away
+# from a loop on a live page. <link rel="canonical"> in projects/j-cafe.html
+# already tells crawlers which address is the real one, which is what the
+# duplicate actually costs.
+
 # SPA fallback: serve index.html for client-side routes.
 # (Function routes like /api/* are handled before this by Functions v2 `config.path`.)
 # KEEP LAST.

@@ -347,6 +347,139 @@ input[type=file].inp{padding:10px 12px;background:var(--paper);cursor:pointer}
 .spinner{width:34px;height:34px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--tan);animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ---------- the featured project card ---------- */
+/* One project has a full case study; it leads the list and is visibly the
+   biggest thing in it. Same card, more room — not a second card design. */
+.proj.is-featured .card{grid-template-columns:1.25fr 1fr;
+  border-color:var(--beige);box-shadow:0 2px 4px rgba(38,42,42,.05),0 18px 44px -16px rgba(38,42,42,.20)}
+.proj.is-featured .card-body{padding:34px 34px 30px}
+.proj.is-featured .card h3{font-size:clamp(23px,3vw,29px);margin-bottom:8px}
+.proj.is-featured .card p{font-size:16.5px;max-width:46em}
+.proj.is-featured .dot{width:20px;height:20px;top:34px}
+@media(max-width:660px){.proj.is-featured .card{grid-template-columns:1fr}
+  .proj.is-featured .card-body{padding:24px 22px}}
+
+/* Metrics on the card. Denser than the case study strip: this is a summary,
+   and the full set is one click away. */
+.card-metrics{grid-template-columns:repeat(auto-fit,minmax(116px,1fr));gap:10px;margin:0 0 18px}
+.card-metrics .stat{padding:12px 13px;border-radius:12px;background:var(--cream)}
+.card-metrics .stat-num{font-size:25px}
+.card-metrics .stat-lbl{margin-top:3px;font-size:11.5px;font-weight:600;line-height:1.35}
+.card-metrics .stat-scope{font-size:10.5px;margin-top:2px;line-height:1.35}
+
+/* The primary action on a featured card: read the case study. */
+.plink.primary{background:var(--tan-text);border-color:var(--tan-text);color:#fff}
+.plink.primary:hover{background:var(--tan-deep);border-color:var(--tan-deep);color:#fff}
+.plink.primary svg{width:15px;height:15px}
+/* One arrow asset, pointed the right way in both directions. */
+[dir=rtl] .plink.primary svg{transform:scaleX(-1)}
+
+/* ============================================================
+   CASE STUDY PAGE  (/projects/j-cafe)
+   Same tokens, type scale and spacing as the rest of the site — this is the
+   existing visual language applied to a long-form page, not a second theme.
+   ============================================================ */
+
+.cs-hero{padding:56px 0 40px;border-bottom:1px solid var(--line);background:var(--paper)}
+.cs-crumbs{margin-bottom:20px}
+.cs-crumbs a{font-size:13.5px;font-weight:600;color:var(--tan-deep);letter-spacing:.02em;
+  display:inline-flex;align-items:center;gap:7px;padding:6px 0;min-height:44px}
+.cs-crumbs a::before{content:"←";font-size:15px}
+[dir=rtl] .cs-crumbs a::before{content:"→"}
+.cs-crumbs a:hover{text-decoration:underline;text-underline-offset:4px}
+.cs-hero h1{font-size:clamp(30px,5.4vw,52px);margin-bottom:14px}
+/* ~70 characters is the readable measure the whole page is built around. */
+.cs-summary{font-size:clamp(17px,2.2vw,20px);color:var(--ink);max-width:34em;margin-bottom:18px}
+.cs-role{font-size:15px;color:var(--ink-soft);margin-bottom:20px}
+.cs-role .role-key{font-weight:700;color:var(--ink);letter-spacing:.02em}
+.cs-stack{margin-bottom:30px;max-width:52em}
+
+/* ---------- metrics ---------- */
+/* Tighter than the admin .stats grid: six numbers, not three. */
+.cs-metrics{grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:14px;margin:0}
+.cs-metrics .stat{padding:18px 20px}
+.cs-metrics .stat-num{font-size:clamp(30px,4vw,40px)}
+.cs-metrics .stat-lbl{margin-top:6px;font-size:13.5px;font-weight:600;color:var(--ink)}
+/* The scope line. Never decorative: a number without it is a claim the reader
+   cannot check. See src/components/MetricsStrip.jsx. */
+.stat-scope{display:block;margin-top:3px;font-size:12px;font-weight:400;color:var(--ink-soft);
+  letter-spacing:.01em}
+
+/* ---------- body: sticky nav + content ---------- */
+.cs-body{display:grid;grid-template-columns:212px minmax(0,1fr);gap:52px;
+  align-items:start;padding-top:44px;padding-bottom:20px}
+
+.cs-nav{position:sticky;top:calc(var(--nav-h) + 20px);
+  /* A sticky box taller than the viewport has a bottom nobody can scroll to. */
+  max-height:calc(100vh - var(--nav-h) - 40px);overflow-y:auto}
+.cs-nav-title{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--tan-deep);margin-bottom:12px}
+.cs-nav-list{list-style:none;margin:0;padding:0;border-inline-start:2px solid var(--line)}
+.cs-nav-link{display:flex;gap:9px;align-items:baseline;padding:9px 0 9px 14px;font-size:14px;
+  color:var(--ink-soft);margin-inline-start:-2px;border-inline-start:2px solid transparent;
+  transition:color .2s,border-color .2s}
+[dir=rtl] .cs-nav-link{padding:9px 14px 9px 0}
+.cs-nav-link:hover{color:var(--ink)}
+.cs-nav-link.is-active{color:var(--ink);font-weight:600;border-inline-start-color:var(--tan)}
+.cs-nav-num{font-size:11.5px;font-weight:700;color:var(--tan-deep);letter-spacing:.06em;
+  font-variant-numeric:tabular-nums}
+
+.cs-content{min-width:0}
+.cs-block{margin-bottom:52px;scroll-margin-top:calc(var(--nav-h) + 20px)}
+.cs-block-title{font-size:clamp(21px,3vw,27px);margin-bottom:18px;
+  padding-bottom:12px;border-bottom:1px solid var(--line)}
+.cs-lede{font-size:17px;line-height:1.85;color:var(--ink);max-width:70ch}
+
+/* ---------- one case study ---------- */
+.cs-case{margin-bottom:44px;scroll-margin-top:calc(var(--nav-h) + 20px)}
+.cs-case:last-child{margin-bottom:0}
+.cs-case-head{display:flex;gap:12px;align-items:baseline;margin-bottom:20px}
+.cs-case-num{font-size:13px;font-weight:700;color:var(--tan-deep);letter-spacing:.1em;
+  font-variant-numeric:tabular-nums}
+.cs-case-title{font-size:clamp(18px,2.4vw,23px);line-height:1.3;max-width:26em}
+
+.cs-parts{display:grid;gap:22px;border-inline-start:2px solid var(--beige-soft);
+  padding-inline-start:22px}
+/* The five labels are what makes the page skimmable in 20 seconds: small,
+   uppercase, tracked, and the same five in the same order every time. */
+.cs-part-label{font-size:11.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--tan-deep);margin-bottom:7px}
+/* Generous leading and a hard measure cap — this is the body text the whole
+   page exists to make readable. 70ch is the line length; 1.85 the leading. */
+.cs-part-body{font-size:16.5px;line-height:1.85;color:var(--ink);max-width:70ch;margin:0}
+
+/* ---------- screenshots ---------- */
+.cs-shots{display:grid;gap:26px}
+.cs-shot{margin:0}
+.cs-shot-frame{background:linear-gradient(135deg,#efe9e1,#e4ddd3);border:1px solid var(--line);
+  border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.cs-shot-frame img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.cs-shot-empty{display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--ink-soft)}
+.cs-shot-empty svg{width:30px;height:30px;opacity:.55}
+.cs-shot-empty span{font-size:12.5px;font-weight:600;letter-spacing:.02em}
+.cs-shot figcaption{font-size:13.5px;color:var(--ink-soft);margin-top:10px;max-width:60ch}
+
+@media(max-width:900px){
+  .cs-body{grid-template-columns:1fr;gap:26px;padding-top:30px}
+  /* Not sticky on a phone: it would eat a third of the screen permanently. */
+  .cs-nav{position:static;max-height:none;padding-bottom:18px;
+    border-bottom:1px solid var(--line)}
+  .cs-nav-list{display:flex;flex-wrap:wrap;gap:4px 16px;border-inline-start:none}
+  .cs-nav-link{padding:7px 0;border-inline-start:none;margin-inline-start:0}
+  [dir=rtl] .cs-nav-link{padding:7px 0}
+  .cs-nav-link.is-active{border-inline-start:none;text-decoration:underline;
+    text-decoration-color:var(--tan);text-underline-offset:5px}
+  .cs-parts{padding-inline-start:16px}
+}
+
+@media print{
+  .cs-nav{display:none}
+  .cs-body{grid-template-columns:1fr}
+  .cs-hero{background:#fff;border-bottom:1px solid #bbb}
+  .cs-shot-frame{display:none}
+  .cs-part-body,.cs-lede{color:#000}
+}
+
 /* reveal */
 .reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
 .reveal.in{opacity:1;transform:none}

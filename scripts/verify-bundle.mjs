@@ -49,19 +49,32 @@ function fail(msg) {
   process.exit(1);
 }
 
-let html;
-try {
-  html = readFileSync(join(DIST, "index.html"), "utf8");
-} catch {
-  fail(`${DIST}/index.html not found — run \`npm run build\` first.`);
-}
+// EVERY public entry, not just the home page. A page added to vite.config.js
+// and forgotten here would be an entry nothing checks, which is exactly how
+// the split would come undone.
+const PUBLIC_ENTRIES = ["index.html", "projects/j-cafe.html"];
 
-// Collect every JS chunk the PUBLIC entry actually pulls in, following the
+// Collect every JS chunk the PUBLIC entries actually pull in, following the
 // module graph through <script> and <link rel=modulepreload>.
 const referenced = new Set();
-for (const m of html.matchAll(/(?:src|href)="\/assets\/([^"]+\.js)"/g)) referenced.add(m[1]);
 
-if (referenced.size === 0) fail("No JS assets referenced from dist/index.html — the check would pass vacuously.");
+for (const entry of PUBLIC_ENTRIES) {
+  let html;
+  try {
+    html = readFileSync(join(DIST, entry), "utf8");
+  } catch {
+    fail(`${DIST}/${entry} not found — run \`npm run build\` first.`);
+  }
+
+  // Checked per entry, not on the merged set: a page whose scripts stopped
+  // being emitted would otherwise be covered by another page's chunks and
+  // pass without ever being looked at.
+  const own = [...html.matchAll(/(?:src|href)="\/assets\/([^"]+\.js)"/g)].map((m) => m[1]);
+  if (own.length === 0) {
+    fail(`No JS assets referenced from dist/${entry} — the check would pass vacuously.`);
+  }
+  for (const name of own) referenced.add(name);
+}
 
 // Chunks can import other chunks; walk transitively.
 const allAssets = readdirSync(ASSETS);
@@ -126,7 +139,7 @@ if (!adminHasLogin) {
   problems.push("  the admin bundle does not contain the sign-in code — check src/admin.jsx");
 }
 
-console.log(`Public entry: ${scanned} chunk(s), ${(publicBytes / 1024).toFixed(1)} KB uncompressed.`);
+console.log(`Public entries (${PUBLIC_ENTRIES.join(", ")}): ${scanned} chunk(s), ${(publicBytes / 1024).toFixed(1)} KB uncompressed.`);
 
 if (problems.length) {
   console.error("\n✗ Admin code leaked into the public bundle:\n");

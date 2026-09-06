@@ -118,3 +118,42 @@ describe("the page registry", () => {
     expect(Object.keys(PAGES)).not.toContain("admin.html");
   });
 });
+
+describe("prerendered case study page", () => {
+  const html = () => render("projects/j-cafe.html", { projects: PROJECTS, settings: [] });
+
+  it("contains the case study prose, not just the headings", () => {
+    const out = html();
+
+    expect(out).toContain("Making the server the source of truth for branch identity");
+    expect(out).toContain("Integrating with systems I do not control");
+    expect(out).toContain("Measuring the funnel instead of guessing at it");
+    // Body text, since a page of headings would pass a heading-only check.
+    expect(out).toContain("Cross-branch leakage eliminated");
+    expect(out).toContain("authorize-and-capture");
+  });
+
+  it("contains every metric with its scope", () => {
+    const out = html();
+
+    expect(out).toContain("483");
+    expect(out).toContain("one branch, Jun-Aug 2025");
+    expect(out).toContain("฿1,878");
+  });
+
+  it("repeats the five section labels for all three case studies", () => {
+    const out = html();
+
+    for (const label of ["Context", "Problem", "Constraints", "Decision", "Outcome"]) {
+      const count = out.split(`>${label}</h4>`).length - 1;
+      expect(count, `"${label}" appears ${count} times, expected 3`).toBe(3);
+    }
+  });
+
+  it("does not need the database - its content is in the repository", () => {
+    // Rendered with no projects at all: the case study is repository content,
+    // so a database outage cannot empty this page.
+    const out = render("projects/j-cafe.html", { projects: [], settings: [] });
+    expect(out).toContain("Making the server the source of truth for branch identity");
+  });
+});

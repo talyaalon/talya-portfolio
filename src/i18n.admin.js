@@ -86,6 +86,9 @@ export const ADMIN_TRANSLATIONS = {
     formReadme: "Detailed description",
     formScreenshot: "Screenshot URL",
     formPosition: "Sort position (lower shows first)",
+    formSlug: "Case study slug",
+    formSlugHint:
+      "Links this project to its case study page. Only \"j-cafe\" has one today, and it renders that project as the large featured card at the top of the list. Leave empty for every other project.",
     formUploadLogo: "Project logo",
     formLogoHint: "Optional. Resized to 256px and uploaded when you save.",
     formLogoChosen: "New logo selected",
@@ -107,7 +110,7 @@ export const ADMIN_TRANSLATIONS = {
       "The file behind the CV button at the top of the site, and in the contact section. Upload one per language; if only one is there, every visitor is given that one.",
     cvLabelEn: "English CV (PDF)",
     cvLabelHe: "Hebrew CV (PDF)",
-    cvNone: "Nothing uploaded yet — the button is not shown.",
+    cvNone: "Nothing uploaded yet - the button is not shown.",
     cvOnSite: "On the site now",
     cvView: "Open the file",
     cvRemove: "Remove",
@@ -146,7 +149,7 @@ export const ADMIN_TRANSLATIONS = {
     anDeviceTablet: "Tablet",
     anDeviceDesktop: "Desktop",
     anInfoNote:
-      "About data collection: this data is real and collected server-side. We collect what can be gathered anonymously — referrer, estimated country/city by IP, device type, and the date. A visitor's email address is not exposed to any website in the browser, so it is never collected.",
+      "About data collection: this data is real and collected server-side. We collect what can be gathered anonymously - referrer, estimated country/city by IP, device type, and the date. A visitor's email address is not exposed to any website in the browser, so it is never collected.",
   },
 
   he: {
@@ -215,6 +218,9 @@ export const ADMIN_TRANSLATIONS = {
     formReadme: "תיאור מפורט",
     formScreenshot: "כתובת צילום מסך",
     formPosition: "מיקום במיון (נמוך = מוצג ראשון)",
+    formSlug: "מזהה מקרה בוחן",
+    formSlugHint:
+      "מקשר את הפרויקט לעמוד מקרה הבוחן שלו. כרגע קיים עמוד אחד בלבד, עבור הערך j-cafe, והוא גם מציג את הפרויקט ככרטיס הראשי הגדול בראש הרשימה. לכל פרויקט אחר יש להשאיר ריק.",
     formUploadLogo: "לוגו הפרויקט",
     formLogoHint: "אופציונלי. מוקטן ל-256 פיקסלים ומועלה בשמירה.",
     formLogoChosen: "נבחר לוגו חדש",
@@ -228,7 +234,7 @@ export const ADMIN_TRANSLATIONS = {
     suffixEn: "(אנגלית)",
     suffixHe: "(עברית)",
     formBilingualHint:
-      "מלאי כל שדה בשתי השפות. אם תשאירי אחד ריק — תוצג השפה השנייה במקומו.",
+      "מלאי כל שדה בשתי השפות. אם תשאירי אחד ריק - תוצג השפה השנייה במקומו.",
 
     // cv
     cvTitle: "קורות חיים",
@@ -236,7 +242,7 @@ export const ADMIN_TRANSLATIONS = {
       "הקובץ שנפתח מכפתור קורות החיים בראש האתר ובאזור יצירת הקשר. אפשר להעלות קובץ לכל שפה; אם הועלה רק אחד, הוא יוצג לכולם.",
     cvLabelEn: "קורות חיים באנגלית (PDF)",
     cvLabelHe: "קורות חיים בעברית (PDF)",
-    cvNone: "עדיין לא הועלה קובץ — הכפתור אינו מוצג.",
+    cvNone: "עדיין לא הועלה קובץ - הכפתור אינו מוצג.",
     cvOnSite: "נמצא באתר כעת",
     cvView: "פתיחת הקובץ",
     cvRemove: "הסרה",
@@ -273,6 +279,6 @@ export const ADMIN_TRANSLATIONS = {
     anDeviceTablet: "טאבלט",
     anDeviceDesktop: "מחשב",
     anInfoNote:
-      "על איסוף הנתונים: הנתונים כאן אמיתיים ונאספים בצד-שרת. נאסף מה שאפשר באופן אנונימי — referrer, מדינה/עיר משוערת לפי IP, סוג המכשיר, והתאריך. כתובת המייל של מבקר אינה חשופה לאף אתר בדפדפן, ולכן אינה נאספת.",
+      "על איסוף הנתונים: הנתונים כאן אמיתיים ונאספים בצד-שרת. נאסף מה שאפשר באופן אנונימי - referrer, מדינה/עיר משוערת לפי IP, סוג המכשיר, והתאריך. כתובת המייל של מבקר אינה חשופה לאף אתר בדפדפן, ולכן אינה נאספת.",
   },
 };

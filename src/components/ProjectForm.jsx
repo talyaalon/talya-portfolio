@@ -182,6 +182,10 @@ export default function ProjectForm({ project, onCancel, onSave, uploadLogo }) {
       </p>
       {single(t("formScreenshot"), "screenshot", "https://…")}
       {single(t("formPosition"), "position", "0", "number")}
+      {single(t("formSlug"), "slug", "j-cafe")}
+      <p style={{ fontSize: 13, color: COLORS.inkSoft, margin: "6px 0 0" }}>
+        {t("formSlugHint")}
+      </p>
 
       <label className="lbl" htmlFor={fieldId("logo")}>
         {t("formUploadLogo")}

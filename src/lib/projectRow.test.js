@@ -11,6 +11,7 @@ import {
   MIGRATION_001_COLUMNS,
   MIGRATION_002_COLUMNS,
   MIGRATION_003_COLUMNS,
+  MIGRATION_005_COLUMNS,
   pendingMigration,
 } from "./projectRow";
 
@@ -154,6 +155,7 @@ describe("an unmigrated database", () => {
       ...MIGRATION_001_COLUMNS,
       ...MIGRATION_002_COLUMNS,
       ...MIGRATION_003_COLUMNS,
+      ...MIGRATION_005_COLUMNS,
     ]);
     const migrated = {};
     for (const c of [
@@ -161,6 +163,7 @@ describe("an unmigrated database", () => {
       ...MIGRATION_001_COLUMNS,
       ...MIGRATION_002_COLUMNS,
       ...MIGRATION_003_COLUMNS,
+      ...MIGRATION_005_COLUMNS,
     ]) {
       migrated[c] = null;
     }
@@ -206,6 +209,7 @@ describe("a private repository", () => {
     expect(pendingMigration(row)).toEqual([
       ...MIGRATION_002_COLUMNS,
       ...MIGRATION_003_COLUMNS,
+      ...MIGRATION_005_COLUMNS,
     ]);
   });
 });

@@ -6,11 +6,17 @@ import { track } from "../lib/analytics";
 import { Check, Star, Link, Play, GitHub, Lock, Slides, Image } from "./Icons";
 import { preferWebp, mobileVariant } from "../utils/screenshot";
 import { canvaEmbed } from "../utils/canva";
+import { caseStudyFor, caseStudyPath } from "../lib/caseStudies";
+import MetricsStrip from "./MetricsStrip";
+import { ArrowRight } from "./Icons";
 
 // One project, rendered in the editorial "CV card" style: a text body on one
 // side and a screenshot panel on the other, hung off the timeline spine.
-export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete }) {
+export default function ProjectCard({ project, featured = false, isAdmin, onOpen, onEdit, onDelete }) {
   const { t, lang } = useI18n();
+  // The case study is the reason a card is featured, and the source of the
+  // metrics it shows. Null for every project that is only a card.
+  const study = caseStudyFor(project);
   const name = loc(project, "name", lang);
   const meta = loc(project, "meta", lang);
   const role = loc(project, "role", lang);
@@ -78,14 +84,14 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
   const isAward = project.status === "award";
   // A private repo fills the links row with its own badge, so the card is not
   // link-less and should not also fall back to the "Internal system" note.
-  const hasAnyLink = project.link || demo || project.repo || project.repoPrivate || deckEmbed;
+  const hasAnyLink = project.link || demo || project.repo || project.repoPrivate || deckEmbed || study;
   // An unrecognised status renders nothing rather than defaulting to
   // "Archived" — mislabelling a live project is worse than omitting the tag.
   const statusTag = statusKey(project.status);
   const statusLabel = statusTag ? t(statusTag) : "";
 
   return (
-    <article className="proj">
+    <article className={"proj" + (featured ? " is-featured" : "")}>
       <div className="dot" aria-hidden="true" />
       <div className="card">
         <div className="card-body">
@@ -137,7 +143,23 @@ export default function ProjectCard({ project, isAdmin, onOpen, onEdit, onDelete
             </p>
           )}
 
+          {/* The headline numbers, on the card itself. A recruiter who reads
+              nothing else should still leave with the scale of the thing -
+              and every caption carries the scope it was measured over, so the
+              numbers cannot be read as bigger than they are. */}
+          {featured && study && <MetricsStrip metrics={study.cardMetrics} className="card-metrics" />}
+
           <div className="plinks">
+            {/* First in the row and styled as the primary action: on a
+                featured card this is the point of the card. A real <a> with a
+                real href, so it is prerendered, indexable, and openable in a
+                new tab - unlike the "Read more" button beside it, which opens
+                a dialog that only exists once JavaScript has run. */}
+            {study && (
+              <a className="plink primary" href={caseStudyPath(study.slug)} onClick={clickLink}>
+                <span>{t("csReadCase")}</span> <ArrowRight aria-hidden="true" />
+              </a>
+            )}
             {project.link && (
               <a className="plink" href={project.link} target="_blank" rel="noopener noreferrer" onClick={clickLink}>
                 <Link aria-hidden="true" /> <span>{t("cardViewLive")}</span>

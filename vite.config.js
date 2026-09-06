@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { hasRealCv, CV_PUBLIC_PATH } from "./scripts/cv-status.mjs";
 
 // "type": "module" in package.json means this file is ESM, where __dirname
 // does not exist.
@@ -31,12 +32,21 @@ const root = dirname(fileURLToPath(import.meta.url));
 // Rollup would try to bundle three HTML files for Node.
 export default defineConfig(({ isSsrBuild }) => ({
   plugins: [react()],
+  define: {
+    // Whether public/cv.pdf is a real CV or still the committed placeholder,
+    // decided at build time. The hero links to it only when it is real: a
+    // button that opens a file saying "placeholder" in front of a hiring
+    // manager is the failure src/lib/siteSettings.js already warns about.
+    // Replacing the file is all it takes to turn the link on.
+    __STATIC_CV_PATH__: JSON.stringify(hasRealCv(root) ? CV_PUBLIC_PATH : ""),
+  },
   build: isSsrBuild
     ? {}
     : {
         rollupOptions: {
           input: {
             main: resolve(root, "index.html"),
+            jcafe: resolve(root, "projects/j-cafe.html"),
             admin: resolve(root, "admin.html"),
           },
         },
